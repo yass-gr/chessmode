@@ -60,7 +60,7 @@
 						{#if s.due}<span class="chip accent">{s.due} due</span>{/if}
 					</button>
 				{/each}
-				<a class="all" href="/course/{course?.id}">Course details</a>
+				<a class="all" href="/courses">Browse all courses</a>
 			</div>
 		{/if}
 	</header>
