@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { scale } from 'svelte/transition';
+	import { easeOut, reducedMotion } from '#lib/motion.ts';
 	import { onMount, tick } from 'svelte';
 	import { courses } from '#lib/courses/index.ts';
 	import type { Course, LineKey } from '#lib/courses/types.ts';
@@ -51,7 +53,7 @@
 			<b>{streakDays}</b>
 		</a>
 		{#if switcher}
-			<div class="menu card" role="listbox" aria-label="Courses">
+			<div class="menu card" role="listbox" aria-label="Courses" transition:scale={{ start: 0.96, duration: reducedMotion() ? 0 : 180, easing: easeOut }}>
 				{#each courses as c (c.id)}
 					{@const s = courseStats(c, progress, now)}
 					<button role="option" aria-selected={c.id === course?.id} class:on={c.id === course?.id} onclick={() => choose(c)}>
@@ -216,13 +218,7 @@
 		display: grid;
 		background: var(--surface-3);
 		box-shadow: var(--d-raised);
-		animation: drop 0.18s var(--ease-out);
-	}
-	@keyframes drop {
-		from {
-			transform: translateY(-6px);
-			opacity: 0;
-		}
+		transform-origin: top left;
 	}
 	.menu button {
 		display: flex;
@@ -232,9 +228,13 @@
 		border-radius: 12px;
 		text-align: left;
 	}
-	.menu button.on,
-	.menu button:hover {
+	.menu button.on {
 		background: var(--surface-4);
+	}
+	@media (hover: hover) and (pointer: fine) {
+		.menu button:hover {
+			background: var(--surface-4);
+		}
 	}
 	.menu .t {
 		flex: 1;
@@ -364,7 +364,7 @@
 		display: block;
 		width: 82px;
 		height: 82px;
-		transition: transform 0.18s var(--ease-press);
+		transition: transform var(--dur-press) var(--ease-out);
 	}
 	.node:active {
 		transform: translateY(2px) scale(0.98);

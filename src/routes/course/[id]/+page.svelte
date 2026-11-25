@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { slide } from 'svelte/transition';
+	import { easeOut, reducedMotion } from '#lib/motion.ts';
+	import { seg } from '#lib/components/seg.ts';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
@@ -34,6 +37,7 @@
 
 	const stats = $derived(course ? courseStats(course, progress, now) : undefined);
 	const orientation = $derived(course?.side === 'w' ? 'white' : 'black');
+	const reveal = { duration: reducedMotion() ? 0 : 220, easing: easeOut };
 	const hasQuiz = $derived(course?.chapters.some((c) => c.quiz.length) ?? false);
 
 	async function remove() {
@@ -89,7 +93,7 @@
 					{#if coverage.gaps.length}<svg class:flip={gapsOpen} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6" /></svg>{/if}
 				</button>
 				{#if gapsOpen}
-					<ol class="gaps">
+					<ol class="gaps" transition:slide={reveal}>
 						{#each coverage.gaps.slice(0, 8) as gap (gap.key + gap.uci)}
 							{@const n = gap.path.length}
 							<li>
@@ -102,7 +106,7 @@
 			</section>
 		{/if}
 
-		<div class="seg" role="group" aria-label="Sections">
+		<div class="seg" use:seg role="group" aria-label="Sections">
 			<button aria-pressed={tab === 'lines'} onclick={() => (tab = 'lines')}>Lines</button>
 			<button aria-pressed={tab === 'ideas'} onclick={() => (tab = 'ideas')}>Ideas</button>
 			{#if hasQuiz}<button aria-pressed={tab === 'quiz'} onclick={() => (tab = 'quiz')}>Quiz</button>{/if}
@@ -118,7 +122,7 @@
 						<svg class:flip={open === chapter.id} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6" /></svg>
 					</button>
 					{#if open === chapter.id}
-						<p class="intro">{chapter.intro}</p>
+						<p class="intro" transition:slide={reveal}>{chapter.intro}</p>
 					{/if}
 					<div class="card rows">
 						{#each chapter.lines as line (line.key)}
@@ -246,7 +250,7 @@
 	}
 	.cov-head svg {
 		color: var(--text-3);
-		transition: transform 0.2s;
+		transition: transform 220ms var(--ease-out);
 	}
 	.cov-head svg.flip {
 		transform: rotate(180deg);
@@ -310,7 +314,7 @@
 	}
 	.ch-head svg {
 		color: var(--text-3);
-		transition: transform 0.2s;
+		transition: transform 220ms var(--ease-out);
 	}
 	.ch-head svg.flip {
 		transform: rotate(180deg);
