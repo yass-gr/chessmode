@@ -7,7 +7,7 @@
  import { startLine, step } from '#lib/train/reducer.ts';
  import { finishLearn, finishPractice } from '#lib/srs.ts';
  import { logSession } from '#lib/progress.ts';
- import { getSetting } from '#lib/db.ts';
+ import { getSetting, setSetting } from '#lib/db.ts';
  let { course, line, mode, oncontinue }: { course: Course; line: Line; mode: TrainerMode; oncontinue?: () => void } = $props();
  let run = $state(untrack(() => startLine(line, mode)));
  let saved = $state(false); let due = $state<Date>(); let muted = $state(false); let flash = $state(false);
@@ -34,7 +34,7 @@
  }
 </script>
 <main class="page stack runner">
- <header class="row"><a class="icon-btn" href={mode === 'learn' ? `/course/${course.id}` : '/practice'} aria-label="Close">✕</a><div class="progress" style="flex:1"><i style:width={`${100 * index / line.plies.length}%`}></i></div><span class="label">{index}/{line.plies.length}</span></header>
+ <header class="row"><a class="icon-btn" href={mode === 'learn' ? `/course/${course.id}` : '/practice'} aria-label="Close">✕</a><div class="progress" style="flex:1"><i style:width={`${100 * index / line.plies.length}%`}></i></div><span class="label">{index}/{line.plies.length}</span><button class="icon-btn" aria-label={muted ? 'Unmute sound' : 'Mute sound'} onclick={() => { muted = !muted; void setSetting('muted', muted); }}>{muted ? '♩' : '♪'}</button></header>
  {#if run.state.kind === 'done'}
   <div class="card complete"><p class="label">LINE COMPLETE</p><h1 class="h-display">Well played!</h1><p>{run.mistakes} mistakes · {run.hints} hints</p>{#if due}<p class="muted">Next review: {new Date(due).toLocaleDateString()}</p>{/if}{#if oncontinue}<button class="btn btn-primary" onclick={oncontinue}>Continue</button>{:else}<a class="btn btn-primary" href="/">Continue</a>{/if}</div>
  {:else}
@@ -46,5 +46,5 @@
  {/if}
 </main>
 <style>
- .runner{padding-top:20px;max-width:620px;gap:16px}.complete,.note{padding:20px;display:grid;gap:10px}.complete{margin-top:60px;text-align:center}.moves{display:flex;gap:6px;overflow-x:auto;white-space:nowrap;color:var(--text-3);font:13px var(--mono)}.moves span{padding:4px;border-radius:4px}.moves .current{background:var(--surface-3);color:var(--text)}.shake{animation:shake .35s}.flash{filter:brightness(1.1)}@keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+ .runner{padding-top:20px;max-width:620px;gap:16px}.complete,.note{padding:20px;display:grid;gap:10px}.complete{margin-top:60px;text-align:center}.moves{display:flex;gap:6px;overflow-x:auto;white-space:nowrap;color:var(--text-3);font:13px var(--mono)}.moves span{padding:4px;border-radius:4px}.moves .current{background:var(--surface-3);color:var(--text)}.shake{animation:shake .35s}.flash :global(cg-board square.last-move){animation:square-flash .3s}@keyframes square-flash{50%{background-color:rgba(255,255,255,.7)}}@keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
 </style>
