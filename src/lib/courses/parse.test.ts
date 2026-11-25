@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseCourse, tokenize } from './parse.ts';
+import { lazyCourse, parseCourse, tokenize } from './parse.ts';
 import type { CourseFile } from './types.ts';
 import fixture from './fixtures/test-course.json';
 import { posKey } from '#lib/chess/types.ts';
@@ -26,5 +26,20 @@ describe('course parsing', () => {
 	it('rejects unsupported PGN constructs', () => {
 		expect(() => tokenize('1. e4 (1. d4)')).toThrow();
 		expect(() => tokenize('1. e4 {oops')).toThrow();
+	});
+	it('replays a line only when it is read', () => {
+		const broken = { ...file, chapters: [{ ...file.chapters[0], lines: [...file.chapters[0].lines, { id: 'bad', name: 'bad', pgn: '1. e4 e5 2. Ke3' }] }] };
+		const course = lazyCourse(broken);
+		expect(course.lines[0].plies[0].san).toBe('e4');
+		expect(() => course.lines.at(-1)!.plies).toThrow();
+		expect(() => parseCourse(broken)).toThrow();
+	});
+});
+
+describe('bundled courses', () => {
+	const files = import.meta.glob<CourseFile>('./*.json', { eager: true, import: 'default' });
+	it.each(Object.keys(files))('%s parses with one student move per position', (path) => {
+		const course = parseCourse(files[path]);
+		expect(course.lines.length).toBeGreaterThan(0);
 	});
 });

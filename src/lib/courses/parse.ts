@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
-import { posKey, type Fen, type San, type Uci } from '#lib/chess/types.ts';
-import type { Course, CourseFile, CourseId, CoursePly, LineKey, RepertoireNode } from '#lib/courses/types.ts';
+import { posKey, START_FEN, type Fen, type San, type Uci } from '#lib/chess/types.ts';
+import type { Chapter, Course, CourseFile, CourseId, CoursePly, Line, LineKey, RepertoireNode } from '#lib/courses/types.ts';
 
 export function tokenize(pgn: string): { san: string; note?: string }[] {
 	const moves: { san: string; note?: string }[] = [];
@@ -31,24 +31,49 @@ export function tokenize(pgn: string): { san: string; note?: string }[] {
 	return moves;
 }
 
+type Step = Pick<CoursePly, 'san' | 'uci' | 'color' | 'fenBefore' | 'fenAfter'>;
+
+/**
+ * Course lines share long opening prefixes, so each (position, move) is played through chess.js once
+ * and reused; replaying every line from move one made startup grow with the catalog.
+ */
+const steps = new Map<string, Step>();
+
 function plies(pgn: string, side: CourseFile['side']): CoursePly[] {
-	const game = new Chess();
+	let fen = START_FEN;
+	/** In sync with `fen` while defined; a cache hit moves `fen` on without it. */
+	let game: Chess | undefined = new Chess();
 	return tokenize(pgn).map(({ san, note }) => {
-		const fenBefore = game.fen() as Fen;
-		const move = game.move(san);
-		return { san: move.san as San, uci: (move.from + move.to + (move.promotion ?? '')) as Uci,
-			color: move.color, fenBefore, fenAfter: game.fen() as Fen, student: move.color === side, ...(note ? { note } : {}) };
+		const key = `${fen}|${san}`;
+		let step = steps.get(key);
+		if (step) game = undefined;
+		else {
+			game ??= new Chess(fen);
+			const move = game.move(san);
+			step = { san: move.san as San, uci: (move.from + move.to + (move.promotion ?? '')) as Uci, color: move.color, fenBefore: fen, fenAfter: game.fen() as Fen };
+			steps.set(key, step);
+		}
+		fen = step.fenAfter;
+		return { ...step, student: step.color === side, ...(note ? { note } : {}) };
 	});
 }
 
-export function parseCourse(file: CourseFile): Course {
+/** Defines `key` on `obj` as computed on first read, then stored. */
+function later<T extends object, K extends PropertyKey, V>(obj: T, key: K, make: () => V): T & Record<K, V> {
+	Object.defineProperty(obj, key, {
+		configurable: true,
+		enumerable: true,
+		get() {
+			const value = make();
+			Object.defineProperty(obj, key, { value, enumerable: true });
+			return value;
+		}
+	});
+	return obj as T & Record<K, V>;
+}
+
+function buildRepertoire(lines: Line[]): Course['repertoire'] {
 	const repertoire = new Map<ReturnType<typeof posKey>, RepertoireNode>();
-	const chapters = file.chapters.map(chapter => ({ ...chapter,
-		lines: chapter.lines.map(line => ({ id: line.id, name: line.name, chapterId: chapter.id,
-			key: `${file.id}/${line.id}` as LineKey, plies: plies(line.pgn, file.side) })),
-		quiz: (chapter.quiz ?? []).map(quiz => ({ ...quiz, plies: plies(quiz.pgn, file.side) }))
-	}));
-	const lines = chapters.flatMap(chapter => chapter.lines);
 	for (const line of lines) for (const ply of line.plies) {
 		const key = posKey(ply.fenBefore);
 		const node = repertoire.get(key) ?? { replies: [], lines: [] };
@@ -59,6 +84,32 @@ export function parseCourse(file: CourseFile): Course {
 		if (!node.lines.includes(line.key)) node.lines.push(line.key);
 		repertoire.set(key, node);
 	}
-	return { id: file.id as CourseId, name: file.name, side: file.side, level: file.level,
-		tagline: file.tagline, description: file.description, chapters, lines, repertoire };
+	return repertoire;
+}
+
+/**
+ * A course whose moves are replayed only when something reads them: a line's `plies` on first use,
+ * the `repertoire` when a feature needs every position. Bundled courses load this way, so startup
+ * does not grow with the catalog; `scripts/validate-course.mjs` and the tests check them strictly.
+ */
+export function lazyCourse(file: CourseFile): Course {
+	const chapters: Chapter[] = file.chapters.map(chapter => {
+		const lines = chapter.lines.map(line => later(
+			{ id: line.id, name: line.name, chapterId: chapter.id, key: `${file.id}/${line.id}` as LineKey },
+			'plies', () => plies(line.pgn, file.side)));
+		const quiz = (chapter.quiz ?? []).map(({ pgn, ...rest }) => later(rest, 'plies', () => plies(pgn, file.side)));
+		return { id: chapter.id, name: chapter.name, intro: chapter.intro, ...(chapter.moves ? { moves: chapter.moves } : {}), lines, quiz };
+	});
+	const lines = chapters.flatMap(chapter => chapter.lines);
+	const course = { id: file.id as CourseId, name: file.name, side: file.side, level: file.level,
+		tagline: file.tagline, description: file.description, chapters, lines };
+	return later(course, 'repertoire', () => buildRepertoire(lines));
+}
+
+/** Replays every move now and rejects conflicting student moves; for data the student supplies. */
+export function parseCourse(file: CourseFile): Course {
+	const course = lazyCourse(file);
+	void course.repertoire;
+	for (const chapter of course.chapters) for (const quiz of chapter.quiz) void quiz.plies;
+	return course;
 }
