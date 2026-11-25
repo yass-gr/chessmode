@@ -21,10 +21,11 @@
 	import type { Key } from 'chessground/types';
 	import type { DrawShape, DrawBrushes } from 'chessground/draw';
 	import { Chess, type Square } from 'chess.js';
- import { boardColors } from '#lib/settings/appearance.ts';
- import type { BoardTheme, PieceSet } from '#lib/settings/types.ts';
- import { reducedMotion } from '#lib/motion.ts';
- import { resolvePremove, type QueuedPremove } from '#lib/settings/premove.ts';
+	import { boardColors } from '#lib/settings/appearance.ts';
+	import type { BoardTheme, PieceSet } from '#lib/settings/types.ts';
+	import { reducedMotion } from '#lib/motion.ts';
+	import { resolvePremove, type QueuedPremove } from '#lib/settings/premove.ts';
+	import { parseKeyboardMove } from '#lib/settings/keyboard.ts';
 	import 'chessground/assets/chessground.base.css';
 	import 'chessground/assets/chessground.cburnett.css';
  import './board-assets/pieces.css';
@@ -53,14 +54,16 @@
 		marker,
 		coordinates = true,
   theme = 'default',
-  pieces = 'default',
+		pieces = 'cburnett',
   premove,
 		onmove
 	}: Props = $props();
 
 	let el: HTMLDivElement;
 	let cg: Api | undefined;
- let queued: QueuedPremove | undefined;
+	let queued: QueuedPremove | undefined;
+	let entry = $state('');
+	let promoOverride: string | undefined;
 
 	const BRUSHES: Record<Brush, string> = {
 		accent: '#ff6b2c',
@@ -89,15 +92,25 @@
 			game = undefined;
 		}
 		const turn = game?.turn() ?? 'w';
-  if (queued && (queued.session !== premove?.session || movable === 'none' || movable === 'both')) { queued = undefined; cg.cancelPremove(); }
-  if (queued && queued.fen !== fen) {
-   const pending = queued; queued = undefined; cg.cancelPremove();
-   if (premove && (movable === 'w' || movable === 'b')) {
-    const move = resolvePremove(pending, fen, premove.session, movable);
-    const currentFen = fen, currentSession = premove.session;
-    if (move) queueMicrotask(() => { if (fen === currentFen && premove?.session === currentSession) onmove?.(move); });
-   }
-  }
+		if (queued && (queued.session !== premove?.session || movable === 'none' || movable === 'both')) {
+			queued = undefined;
+			cg.cancelPremove();
+		}
+		if (queued && queued.fen !== fen) {
+			const pending = queued;
+			queued = undefined;
+			cg.cancelPremove();
+			if (premove && (movable === 'w' || movable === 'b')) {
+				const move = resolvePremove(pending, fen, premove.session, movable);
+				const currentFen = fen;
+				const currentSession = premove.session;
+				if (move) {
+					queueMicrotask(() => {
+						if (fen === currentFen && premove?.session === currentSession) onmove?.(move);
+					});
+				}
+			}
+		}
 		const canMove = movable === 'both' || movable === turn;
 		cg.set({
 			fen,
@@ -106,7 +119,7 @@
 			lastMove: lastMove as Key[] | undefined,
 			check: game?.inCheck() ? (turn === 'w' ? 'white' : 'black') : false,
 			coordinates,
-   premovable: { enabled: !!premove && (movable === 'w' || movable === 'b') },
+			premovable: { enabled: !!premove && (movable === 'w' || movable === 'b') },
 			movable: {
 				free: false,
 				color: movable === 'both' ? (turn === 'w' ? 'white' : 'black') : movable === 'w' ? 'white' : movable === 'b' ? 'black' : undefined,
@@ -128,7 +141,23 @@
 		cg = Chessground(el, {
 			animation: { enabled: !reducedMotion(), duration: 200 },
 			highlight: { lastMove: true, check: true },
-			premovable: { enabled: true, events: { set: (from, to) => { const current = cg?.state.premovable.current; if (premove && (movable === 'w' || movable === 'b') && current?.[0] === from && current[1] === to && new Chess(fen).turn() !== movable) queued = { from, to, fen, session: premove.session }; else cg?.cancelPremove(); }, unset: () => { if (!cg?.state.premovable.current) queued = undefined; } } },
+			premovable: {
+				enabled: true,
+				events: {
+					set: (from, to) => {
+						const current = cg?.state.premovable.current;
+						const waiting = premove && (movable === 'w' || movable === 'b') && new Chess(fen).turn() !== movable;
+						const piece = new Chess(fen).get(from as Square);
+						const wouldPromote = piece?.type === 'p' && (piece.color === movable) && (to[1] === '8' || to[1] === '1');
+						if (waiting && !wouldPromote && current?.[0] === from && current[1] === to) {
+							queued = { from, to, fen, session: premove.session };
+						} else cg?.cancelPremove();
+					},
+					unset: () => {
+						if (!cg?.state.premovable.current) queued = undefined;
+					}
+				}
+			},
 			draggable: { enabled: true, showGhost: true },
 			drawable: {
 				enabled: true,
@@ -142,7 +171,9 @@
 					after: (orig, dest) => {
 						const game = new Chess(fen);
 						const piece = game.get(orig as Square);
-						const promo = piece?.type === 'p' && (dest[1] === '8' || dest[1] === '1') ? 'q' : '';
+						const needsPromotion = piece?.type === 'p' && (dest[1] === '8' || dest[1] === '1');
+						const promo = needsPromotion ? promoOverride || 'q' : '';
+						promoOverride = undefined;
 						onmove?.(orig + dest + promo);
 						// Re-sync after the parent reacts: keeps the move if `fen` changed, undoes it if not.
 						tick().then(apply);
@@ -154,11 +185,64 @@
 		return () => cg?.destroy();
 	});
 
+	let entryFen = '';
 	$effect(() => {
 		// Track every prop that feeds the board.
-		void [fen, orientation, movable, lastMove, arrows, coordinates, premove];
+		void [orientation, movable, lastMove, arrows, coordinates, premove];
+		if (fen !== entryFen) {
+			entryFen = fen;
+			entry = '';
+		}
 		apply();
 	});
+
+	function cancelQueuedPremove() {
+		queued = undefined;
+		entry = '';
+		cg?.cancelPremove();
+	}
+
+	function playTyped(force: boolean) {
+		if (movable !== 'w' && movable !== 'b') return;
+		const parsed = parseKeyboardMove(fen, entry, movable, force);
+		if (!parsed || !cg) return;
+		const orig = parsed.uci.slice(0, 2) as Key;
+		const dest = parsed.uci.slice(2, 4) as Key;
+		promoOverride = parsed.uci[4];
+		entry = '';
+		cg.selectSquare(orig);
+		cg.selectSquare(dest);
+		if (parsed.kind === 'premove' && !cg.state.premovable.current) promoOverride = undefined;
+	}
+
+	function onKeydown(event: KeyboardEvent) {
+		if (movable !== 'w' && movable !== 'b') return;
+		if (event.metaKey || event.ctrlKey || event.altKey) return;
+		if (event.key === 'Escape') {
+			event.preventDefault();
+			cancelQueuedPremove();
+			return;
+		}
+		if (event.key === 'Backspace') {
+			event.preventDefault();
+			entry = entry.slice(0, -1);
+			return;
+		}
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			playTyped(true);
+			return;
+		}
+		if (event.key.length !== 1 || !/[a-h1-8nbrqkox=#-]/i.test(event.key)) return;
+		event.preventDefault();
+		entry += event.key;
+		playTyped(false);
+	}
+
+	function onPointerDown(event: PointerEvent) {
+		// Right-click cancels a queued premove. Drawing still uses that button.
+		if (event.button === 2) cancelQueuedPremove();
+	}
 
 	const markerPos = $derived.by(() => {
 		if (!marker) return undefined;
@@ -170,8 +254,25 @@
 	});
 </script>
 
-<div class:piece-geometric={pieces === 'geometric'} class:piece-outline={pieces === 'outline'} class="board-wrap" style:--light={boardColors[theme][0]} style:--dark={boardColors[theme][1]}>
+<!-- The board is the keyboard move target. It is a widget, not a button. -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<div
+	class="board-wrap piece-{pieces}"
+	style:--light={boardColors[theme][0]}
+	style:--dark={boardColors[theme][1]}
+	role="application"
+	tabindex={movable === 'w' || movable === 'b' ? 0 : undefined}
+	aria-label="Chess board. Type a move such as e4 or e2e4."
+	data-entry={entry}
+	onkeydown={onKeydown}
+	onpointerdown={onPointerDown}
+	oncontextmenu={cancelQueuedPremove}
+>
 	<div class="cg-host" bind:this={el}></div>
+	{#if entry}
+		<span class="entry">{entry}</span>
+	{/if}
 	{#if marker && markerPos}
 		<span
 			class="marker"
@@ -190,9 +291,28 @@
 		width: 100%;
 		aspect-ratio: 1;
 		border-radius: var(--r-sm);
+		outline: none;
 		box-shadow:
 			0 0 0 1px rgba(255, 255, 255, 0.06),
 			0 18px 40px -20px rgba(0, 0, 0, 0.9);
+	}
+	.board-wrap:focus-visible {
+		box-shadow:
+			0 0 0 2px var(--accent),
+			0 18px 40px -20px rgba(0, 0, 0, 0.9);
+	}
+	.entry {
+		position: absolute;
+		z-index: 6;
+		left: 8px;
+		bottom: 8px;
+		padding: 4px 8px;
+		border-radius: var(--r-sm);
+		background: var(--surface-1);
+		color: var(--text);
+		border: 1px solid var(--accent);
+		font: 600 13px/1 var(--mono);
+		pointer-events: none;
 	}
 	.cg-host {
 		position: absolute;

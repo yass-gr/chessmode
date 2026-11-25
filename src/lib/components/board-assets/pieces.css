@@ -1,24 +1,240 @@
-.piece-geometric piece.white.pawn { background-image: url("./geometric-white-pawn.svg"); }
-.piece-geometric piece.white.rook { background-image: url("./geometric-white-rook.svg"); }
-.piece-geometric piece.white.knight { background-image: url("./geometric-white-knight.svg"); }
-.piece-geometric piece.white.bishop { background-image: url("./geometric-white-bishop.svg"); }
-.piece-geometric piece.white.queen { background-image: url("./geometric-white-queen.svg"); }
-.piece-geometric piece.white.king { background-image: url("./geometric-white-king.svg"); }
-.piece-geometric piece.black.pawn { background-image: url("./geometric-black-pawn.svg"); }
-.piece-geometric piece.black.rook { background-image: url("./geometric-black-rook.svg"); }
-.piece-geometric piece.black.knight { background-image: url("./geometric-black-knight.svg"); }
-.piece-geometric piece.black.bishop { background-image: url("./geometric-black-bishop.svg"); }
-.piece-geometric piece.black.queen { background-image: url("./geometric-black-queen.svg"); }
-.piece-geometric piece.black.king { background-image: url("./geometric-black-king.svg"); }
-.piece-outline piece.white.pawn { background-image: url("./outline-white-pawn.svg"); }
-.piece-outline piece.white.rook { background-image: url("./outline-white-rook.svg"); }
-.piece-outline piece.white.knight { background-image: url("./outline-white-knight.svg"); }
-.piece-outline piece.white.bishop { background-image: url("./outline-white-bishop.svg"); }
-.piece-outline piece.white.queen { background-image: url("./outline-white-queen.svg"); }
-.piece-outline piece.white.king { background-image: url("./outline-white-king.svg"); }
-.piece-outline piece.black.pawn { background-image: url("./outline-black-pawn.svg"); }
-.piece-outline piece.black.rook { background-image: url("./outline-black-rook.svg"); }
-.piece-outline piece.black.knight { background-image: url("./outline-black-knight.svg"); }
-.piece-outline piece.black.bishop { background-image: url("./outline-black-bishop.svg"); }
-.piece-outline piece.black.queen { background-image: url("./outline-black-queen.svg"); }
-.piece-outline piece.black.king { background-image: url("./outline-black-king.svg"); }
+.piece-cburnett.cg-wrap piece.pawn.white,
+.piece-cburnett .cg-wrap piece.pawn.white,
+.piece-cburnett piece.pawn.white {
+	background-image: url("./cburnett/wP.svg");
+}
+.piece-cburnett.cg-wrap piece.knight.white,
+.piece-cburnett .cg-wrap piece.knight.white,
+.piece-cburnett piece.knight.white {
+	background-image: url("./cburnett/wN.svg");
+}
+.piece-cburnett.cg-wrap piece.bishop.white,
+.piece-cburnett .cg-wrap piece.bishop.white,
+.piece-cburnett piece.bishop.white {
+	background-image: url("./cburnett/wB.svg");
+}
+.piece-cburnett.cg-wrap piece.rook.white,
+.piece-cburnett .cg-wrap piece.rook.white,
+.piece-cburnett piece.rook.white {
+	background-image: url("./cburnett/wR.svg");
+}
+.piece-cburnett.cg-wrap piece.queen.white,
+.piece-cburnett .cg-wrap piece.queen.white,
+.piece-cburnett piece.queen.white {
+	background-image: url("./cburnett/wQ.svg");
+}
+.piece-cburnett.cg-wrap piece.king.white,
+.piece-cburnett .cg-wrap piece.king.white,
+.piece-cburnett piece.king.white {
+	background-image: url("./cburnett/wK.svg");
+}
+.piece-cburnett.cg-wrap piece.pawn.black,
+.piece-cburnett .cg-wrap piece.pawn.black,
+.piece-cburnett piece.pawn.black {
+	background-image: url("./cburnett/bP.svg");
+}
+.piece-cburnett.cg-wrap piece.knight.black,
+.piece-cburnett .cg-wrap piece.knight.black,
+.piece-cburnett piece.knight.black {
+	background-image: url("./cburnett/bN.svg");
+}
+.piece-cburnett.cg-wrap piece.bishop.black,
+.piece-cburnett .cg-wrap piece.bishop.black,
+.piece-cburnett piece.bishop.black {
+	background-image: url("./cburnett/bB.svg");
+}
+.piece-cburnett.cg-wrap piece.rook.black,
+.piece-cburnett .cg-wrap piece.rook.black,
+.piece-cburnett piece.rook.black {
+	background-image: url("./cburnett/bR.svg");
+}
+.piece-cburnett.cg-wrap piece.queen.black,
+.piece-cburnett .cg-wrap piece.queen.black,
+.piece-cburnett piece.queen.black {
+	background-image: url("./cburnett/bQ.svg");
+}
+.piece-cburnett.cg-wrap piece.king.black,
+.piece-cburnett .cg-wrap piece.king.black,
+.piece-cburnett piece.king.black {
+	background-image: url("./cburnett/bK.svg");
+}
+.piece-merida.cg-wrap piece.pawn.white,
+.piece-merida .cg-wrap piece.pawn.white,
+.piece-merida piece.pawn.white {
+	background-image: url("./merida/wP.svg");
+}
+.piece-merida.cg-wrap piece.knight.white,
+.piece-merida .cg-wrap piece.knight.white,
+.piece-merida piece.knight.white {
+	background-image: url("./merida/wN.svg");
+}
+.piece-merida.cg-wrap piece.bishop.white,
+.piece-merida .cg-wrap piece.bishop.white,
+.piece-merida piece.bishop.white {
+	background-image: url("./merida/wB.svg");
+}
+.piece-merida.cg-wrap piece.rook.white,
+.piece-merida .cg-wrap piece.rook.white,
+.piece-merida piece.rook.white {
+	background-image: url("./merida/wR.svg");
+}
+.piece-merida.cg-wrap piece.queen.white,
+.piece-merida .cg-wrap piece.queen.white,
+.piece-merida piece.queen.white {
+	background-image: url("./merida/wQ.svg");
+}
+.piece-merida.cg-wrap piece.king.white,
+.piece-merida .cg-wrap piece.king.white,
+.piece-merida piece.king.white {
+	background-image: url("./merida/wK.svg");
+}
+.piece-merida.cg-wrap piece.pawn.black,
+.piece-merida .cg-wrap piece.pawn.black,
+.piece-merida piece.pawn.black {
+	background-image: url("./merida/bP.svg");
+}
+.piece-merida.cg-wrap piece.knight.black,
+.piece-merida .cg-wrap piece.knight.black,
+.piece-merida piece.knight.black {
+	background-image: url("./merida/bN.svg");
+}
+.piece-merida.cg-wrap piece.bishop.black,
+.piece-merida .cg-wrap piece.bishop.black,
+.piece-merida piece.bishop.black {
+	background-image: url("./merida/bB.svg");
+}
+.piece-merida.cg-wrap piece.rook.black,
+.piece-merida .cg-wrap piece.rook.black,
+.piece-merida piece.rook.black {
+	background-image: url("./merida/bR.svg");
+}
+.piece-merida.cg-wrap piece.queen.black,
+.piece-merida .cg-wrap piece.queen.black,
+.piece-merida piece.queen.black {
+	background-image: url("./merida/bQ.svg");
+}
+.piece-merida.cg-wrap piece.king.black,
+.piece-merida .cg-wrap piece.king.black,
+.piece-merida piece.king.black {
+	background-image: url("./merida/bK.svg");
+}
+.piece-pirouetti.cg-wrap piece.pawn.white,
+.piece-pirouetti .cg-wrap piece.pawn.white,
+.piece-pirouetti piece.pawn.white {
+	background-image: url("./pirouetti/wP.svg");
+}
+.piece-pirouetti.cg-wrap piece.knight.white,
+.piece-pirouetti .cg-wrap piece.knight.white,
+.piece-pirouetti piece.knight.white {
+	background-image: url("./pirouetti/wN.svg");
+}
+.piece-pirouetti.cg-wrap piece.bishop.white,
+.piece-pirouetti .cg-wrap piece.bishop.white,
+.piece-pirouetti piece.bishop.white {
+	background-image: url("./pirouetti/wB.svg");
+}
+.piece-pirouetti.cg-wrap piece.rook.white,
+.piece-pirouetti .cg-wrap piece.rook.white,
+.piece-pirouetti piece.rook.white {
+	background-image: url("./pirouetti/wR.svg");
+}
+.piece-pirouetti.cg-wrap piece.queen.white,
+.piece-pirouetti .cg-wrap piece.queen.white,
+.piece-pirouetti piece.queen.white {
+	background-image: url("./pirouetti/wQ.svg");
+}
+.piece-pirouetti.cg-wrap piece.king.white,
+.piece-pirouetti .cg-wrap piece.king.white,
+.piece-pirouetti piece.king.white {
+	background-image: url("./pirouetti/wK.svg");
+}
+.piece-pirouetti.cg-wrap piece.pawn.black,
+.piece-pirouetti .cg-wrap piece.pawn.black,
+.piece-pirouetti piece.pawn.black {
+	background-image: url("./pirouetti/bP.svg");
+}
+.piece-pirouetti.cg-wrap piece.knight.black,
+.piece-pirouetti .cg-wrap piece.knight.black,
+.piece-pirouetti piece.knight.black {
+	background-image: url("./pirouetti/bN.svg");
+}
+.piece-pirouetti.cg-wrap piece.bishop.black,
+.piece-pirouetti .cg-wrap piece.bishop.black,
+.piece-pirouetti piece.bishop.black {
+	background-image: url("./pirouetti/bB.svg");
+}
+.piece-pirouetti.cg-wrap piece.rook.black,
+.piece-pirouetti .cg-wrap piece.rook.black,
+.piece-pirouetti piece.rook.black {
+	background-image: url("./pirouetti/bR.svg");
+}
+.piece-pirouetti.cg-wrap piece.queen.black,
+.piece-pirouetti .cg-wrap piece.queen.black,
+.piece-pirouetti piece.queen.black {
+	background-image: url("./pirouetti/bQ.svg");
+}
+.piece-pirouetti.cg-wrap piece.king.black,
+.piece-pirouetti .cg-wrap piece.king.black,
+.piece-pirouetti piece.king.black {
+	background-image: url("./pirouetti/bK.svg");
+}
+.piece-chessnut.cg-wrap piece.pawn.white,
+.piece-chessnut .cg-wrap piece.pawn.white,
+.piece-chessnut piece.pawn.white {
+	background-image: url("./chessnut/wP.svg");
+}
+.piece-chessnut.cg-wrap piece.knight.white,
+.piece-chessnut .cg-wrap piece.knight.white,
+.piece-chessnut piece.knight.white {
+	background-image: url("./chessnut/wN.svg");
+}
+.piece-chessnut.cg-wrap piece.bishop.white,
+.piece-chessnut .cg-wrap piece.bishop.white,
+.piece-chessnut piece.bishop.white {
+	background-image: url("./chessnut/wB.svg");
+}
+.piece-chessnut.cg-wrap piece.rook.white,
+.piece-chessnut .cg-wrap piece.rook.white,
+.piece-chessnut piece.rook.white {
+	background-image: url("./chessnut/wR.svg");
+}
+.piece-chessnut.cg-wrap piece.queen.white,
+.piece-chessnut .cg-wrap piece.queen.white,
+.piece-chessnut piece.queen.white {
+	background-image: url("./chessnut/wQ.svg");
+}
+.piece-chessnut.cg-wrap piece.king.white,
+.piece-chessnut .cg-wrap piece.king.white,
+.piece-chessnut piece.king.white {
+	background-image: url("./chessnut/wK.svg");
+}
+.piece-chessnut.cg-wrap piece.pawn.black,
+.piece-chessnut .cg-wrap piece.pawn.black,
+.piece-chessnut piece.pawn.black {
+	background-image: url("./chessnut/bP.svg");
+}
+.piece-chessnut.cg-wrap piece.knight.black,
+.piece-chessnut .cg-wrap piece.knight.black,
+.piece-chessnut piece.knight.black {
+	background-image: url("./chessnut/bN.svg");
+}
+.piece-chessnut.cg-wrap piece.bishop.black,
+.piece-chessnut .cg-wrap piece.bishop.black,
+.piece-chessnut piece.bishop.black {
+	background-image: url("./chessnut/bB.svg");
+}
+.piece-chessnut.cg-wrap piece.rook.black,
+.piece-chessnut .cg-wrap piece.rook.black,
+.piece-chessnut piece.rook.black {
+	background-image: url("./chessnut/bR.svg");
+}
+.piece-chessnut.cg-wrap piece.queen.black,
+.piece-chessnut .cg-wrap piece.queen.black,
+.piece-chessnut piece.queen.black {
+	background-image: url("./chessnut/bQ.svg");
+}
+.piece-chessnut.cg-wrap piece.king.black,
+.piece-chessnut .cg-wrap piece.king.black,
+.piece-chessnut piece.king.black {
+	background-image: url("./chessnut/bK.svg");
+}
