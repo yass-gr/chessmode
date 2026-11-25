@@ -88,6 +88,7 @@ export interface GameRecord {
 	termination?: string;
 	timeControl?: string;
 	speed?: string;
+	opening?: { eco: string; name: string };
 	playedAt: number;
 	pgn: string;
 	/** Which side the importing user played, when known. */
