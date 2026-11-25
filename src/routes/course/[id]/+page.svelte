@@ -1,13 +1,297 @@
 <script lang="ts">
- import { onMount } from 'svelte'; import { page } from '$app/state';
- import { findCourse } from '#lib/courses/index.ts'; import { db, type LineProgress } from '#lib/db.ts';
- let course = $derived(findCourse(page.params.id)); let tab = $state<'lines' | 'chapters' | 'quiz'>('lines'); let progress = $state<LineProgress[]>([]);
- let next = $derived(course?.lines.find(l => !progress.some(p => p.key === l.key)) ?? course?.lines[0]);
- onMount(async () => { progress = await db.progress.toArray(); });
+	import { onMount } from 'svelte';
+	import { page } from '$app/state';
+	import { getCourse } from '#lib/courses/index.ts';
+	import type { LineKey } from '#lib/courses/types.ts';
+	import type { LineProgress } from '#lib/db.ts';
+	import MiniBoard from '#lib/components/MiniBoard.svelte';
+	import { loadProgress, setActiveCourse } from '#lib/train/data.ts';
+	import { courseStats, lineEnd, lineStatus, lineTail, relativeTime } from '#lib/train/stats.ts';
+
+	const course = $derived(getCourse(page.params.id));
+	let progress = $state.raw(new Map<LineKey, LineProgress>());
+	let tab = $state<'lines' | 'ideas' | 'quiz'>('lines');
+	let open = $state<string | undefined>();
+	const now = Date.now();
+
+	onMount(async () => {
+		progress = await loadProgress();
+		if (course) await setActiveCourse(course.id);
+	});
+
+	const stats = $derived(course ? courseStats(course, progress, now) : undefined);
+	const orientation = $derived(course?.side === 'w' ? 'white' : 'black');
+	const minutes = $derived(course ? Math.round(course.lines.reduce((s, l) => s + l.plies.filter((p) => p.student).length, 0) * 0.25) : 0);
 </script>
-<main class="page stack course"><a href="/">← Home</a>{#if course}<div class="hero card"><img src="/img/board-hero.webp" alt="" /><div><span class="chip">{course.side === 'w' ? 'White' : 'Black'} · {course.level}</span><h1 class="h-display">{course.name}</h1><p>{course.description}</p></div></div>
-<div class="row"><strong>{progress.filter(p => p.courseId === course.id).length} / {course.lines.length} lines learned</strong></div><div class="progress"><i style:width={`${100 * progress.filter(p => p.courseId === course.id).length / course.lines.length}%`}></i></div>
-{#if next}<a class="btn btn-primary" href="/learn/{course.id}/{next.id}">Continue learning →</a>{/if}
-<div class="seg"><button aria-pressed={tab === 'lines'} onclick={() => tab = 'lines'}>Lines</button><button aria-pressed={tab === 'chapters'} onclick={() => tab = 'chapters'}>Chapters</button><button aria-pressed={tab === 'quiz'} onclick={() => tab = 'quiz'}>Quiz</button></div>
-{#each course.chapters as chapter}<section class="stack"><h2 class="h-title">{chapter.name}</h2>{#if tab === 'lines'}{#each chapter.lines as line}{@const row = progress.find(p => p.key === line.key)}<a class="card item" href="/learn/{course.id}/{line.id}"><span>{row ? '✓' : '○'} &nbsp; {line.name}</span><small class="muted">{row ? `Due ${new Date(row.card.due).toLocaleDateString()}` : 'Learn'} →</small></a>{/each}{:else if tab === 'chapters'}<p class="muted">{chapter.intro}</p>{:else if chapter.quiz.length}<a class="card item" href="/quiz/{course.id}/{chapter.id}">Test your plans <span>→</span></a>{:else}<p class="muted">No quiz for this chapter yet.</p>{/if}</section>{/each}{:else}<h1>Course not found</h1>{/if}</main>
-<style>.course{padding-top:24px;gap:16px}.hero img{width:100%;height:160px;object-fit:cover}.hero>div{padding:20px;display:grid;gap:10px}.hero p{color:var(--text-2)}.item{padding:16px;display:flex;justify-content:space-between;gap:10px;align-items:center}.item small{text-align:right;white-space:nowrap}section{margin-top:8px}</style>
+
+<svelte:head><title>{course?.name ?? 'Course'} · Chessmode</title></svelte:head>
+
+{#if course && stats}
+	<main class="page">
+		<header class="top">
+			<a class="icon-btn" href="/" aria-label="Back">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+			</a>
+		</header>
+
+		<div class="hero card">
+			<img src="/img/board-hero.webp" alt="" />
+		</div>
+
+		<h1 class="h-display title">{course.name}</h1>
+		<p class="tagline muted">{course.tagline}</p>
+		<div class="meta">
+			<span class="chip"><span class="side" class:black={course.side === 'b'}></span>{course.side === 'w' ? 'White' : 'Black'}</span>
+			<span class="chip">{course.lines.length} lines</span>
+			<span class="chip">{course.chapters.length} chapters</span>
+			<span class="chip">≈{Math.round(minutes / 6) * 6 >= 60 ? `${Math.round(minutes / 60)} h` : `${minutes} min`}</span>
+		</div>
+
+		<div class="bar">
+			<div class="progress"><i style:width="{(100 * stats.learned) / stats.total}%"></i></div>
+			<span>{Math.round((100 * stats.learned) / stats.total)}%</span>
+		</div>
+
+		<div class="seg" role="group" aria-label="Sections">
+			<button aria-pressed={tab === 'lines'} onclick={() => (tab = 'lines')}>Lines</button>
+			<button aria-pressed={tab === 'ideas'} onclick={() => (tab = 'ideas')}>Ideas</button>
+			<button aria-pressed={tab === 'quiz'} onclick={() => (tab = 'quiz')}>Quiz</button>
+		</div>
+
+		{#if tab === 'lines'}
+			{#each course.chapters as chapter, ci (chapter.id)}
+				{@const learned = chapter.lines.filter((l) => progress.has(l.key)).length}
+				<section class="chapter">
+					<button class="ch-head" onclick={() => (open = open === chapter.id ? undefined : chapter.id)} aria-expanded={open === chapter.id}>
+						<span class="num">{ci + 1}</span>
+						<span class="t"><b>{chapter.name}</b><small>{learned}/{chapter.lines.length} learned{chapter.moves ? ` · ${chapter.moves}` : ''}</small></span>
+						<svg class:flip={open === chapter.id} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6" /></svg>
+					</button>
+					{#if open === chapter.id}
+						<p class="intro">{chapter.intro}</p>
+					{/if}
+					<div class="card rows">
+						{#each chapter.lines as line (line.key)}
+							{@const st = lineStatus(progress, line.key, now)}
+							<a class="row-item" href={st.kind === 'new' ? `/learn/${course.id}/${line.id}` : `/practice/run?line=${encodeURIComponent(line.key)}`}>
+								<MiniBoard fen={lineEnd(line)} {orientation} size={52} />
+								<span class="t">
+									<b>{line.name}</b>
+									<span class="mono">{lineTail(line, 4)}</span>
+								</span>
+								{#if st.kind === 'new'}
+									<span class="chip">Learn</span>
+								{:else if st.kind === 'due'}
+									<span class="chip accent">Due</span>
+								{:else}
+									<span class="when">{relativeTime(st.due, now)}</span>
+								{/if}
+							</a>
+						{/each}
+					</div>
+				</section>
+			{/each}
+		{:else if tab === 'ideas'}
+			<p class="desc">{course.description}</p>
+			{#each course.chapters as chapter, ci (chapter.id)}
+				<article class="card idea">
+					<p class="label">Chapter {ci + 1}{chapter.moves ? ` · ${chapter.moves}` : ''}</p>
+					<h2 class="h-head">{chapter.name}</h2>
+					<p>{chapter.intro}</p>
+				</article>
+			{/each}
+		{:else}
+			<p class="desc">Check that you know the plans, not only the moves.</p>
+			<div class="card rows">
+				{#each course.chapters.filter((c) => c.quiz.length) as chapter (chapter.id)}
+					<a class="row-item" href="/quiz/{course.id}/{chapter.id}">
+						<span class="qicon">?</span>
+						<span class="t"><b>{chapter.name}</b><span>{chapter.quiz.length} questions</span></span>
+						<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6" /></svg>
+					</a>
+				{/each}
+			</div>
+		{/if}
+	</main>
+
+	<div class="cta">
+		{#if stats.due}
+			<a class="btn btn-primary block" href="/practice/run?course={course.id}">Practice {stats.due} due {stats.due === 1 ? 'line' : 'lines'}</a>
+		{:else if stats.next}
+			<a class="btn btn-primary block" href="/learn/{course.id}/{stats.next.id}">{stats.learned ? 'Learn the next line' : 'Start the course'}</a>
+		{:else}
+			<a class="btn btn-primary block" href="/drill/run?mode=drill&course={course.id}">Drill this course</a>
+		{/if}
+	</div>
+{:else}
+	<main class="page" style="padding-top:48px">
+		<h1 class="h-title">Course not found</h1>
+	</main>
+{/if}
+
+<style>
+	.top {
+		padding: 14px 0 10px;
+	}
+	.hero {
+		height: 200px;
+		display: grid;
+		place-items: center;
+		background: var(--g-card-glow), radial-gradient(circle at 50% 40%, #252527, #141415 75%);
+	}
+	.hero img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		position: relative;
+	}
+	.title {
+		margin-top: 20px;
+	}
+	.tagline {
+		margin-top: 6px;
+	}
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin-top: 14px;
+	}
+	.side {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: #f4f4f2;
+	}
+	.side.black {
+		background: #111;
+		box-shadow: 0 0 0 1.5px #666;
+	}
+	.bar {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin: 18px 0 20px;
+	}
+	.bar .progress {
+		flex: 1;
+	}
+	.bar span {
+		font: 600 13px var(--mono);
+		color: var(--text-2);
+	}
+	.chapter {
+		margin-top: 22px;
+	}
+	.ch-head {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		width: 100%;
+		text-align: left;
+		padding: 4px 2px 10px;
+	}
+	.ch-head svg {
+		color: var(--text-3);
+		transition: transform 0.2s;
+	}
+	.ch-head svg.flip {
+		transform: rotate(180deg);
+	}
+	.num {
+		width: 28px;
+		height: 28px;
+		border-radius: 9px;
+		display: grid;
+		place-items: center;
+		font: 600 12px var(--mono);
+		background: var(--surface-3);
+		color: var(--text-2);
+		flex: 0 0 auto;
+	}
+	.t {
+		flex: 1;
+		min-width: 0;
+		display: grid;
+	}
+	.t b {
+		font-weight: 600;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.t small,
+	.t span {
+		font-size: 12px;
+		color: var(--text-3);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.intro {
+		margin: 0 0 12px;
+		padding: 14px 16px;
+		border-radius: var(--r-md);
+		background: var(--surface-1);
+		border: 1px solid var(--stroke);
+		font-size: 14px;
+		line-height: 1.55;
+		color: var(--text-2);
+	}
+	.rows {
+		padding: 2px 14px;
+	}
+	.row-item {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px 0;
+		border-top: 1px solid var(--stroke);
+		position: relative;
+	}
+	.row-item:first-child {
+		border-top: 0;
+	}
+	.row-item .t b {
+		font-weight: 500;
+	}
+	.when {
+		font-size: 12px;
+		color: var(--text-3);
+		white-space: nowrap;
+	}
+	.desc {
+		margin: 4px 0 14px;
+		color: var(--text-2);
+		line-height: 1.55;
+	}
+	.idea {
+		padding: 16px 18px;
+		display: grid;
+		gap: 6px;
+		margin-bottom: 10px;
+	}
+	.idea p:last-child {
+		font-size: 14px;
+		line-height: 1.55;
+		color: var(--text-2);
+	}
+	.qicon {
+		width: 40px;
+		height: 40px;
+		border-radius: 12px;
+		display: grid;
+		place-items: center;
+		background: var(--accent-soft);
+		color: var(--accent-hi);
+		font-weight: 700;
+	}
+	.cta {
+		position: fixed;
+		left: 50%;
+		transform: translateX(-50%);
+		bottom: calc(var(--tabbar-h) + 26px + var(--safe-bottom));
+		width: min(calc(100% - 36px), 520px);
+		z-index: 30;
+	}
+</style>
