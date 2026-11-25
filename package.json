@@ -13,7 +13,9 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"test": "vitest run",
+		"validate:courses": "for f in src/lib/courses/*.json; do node scripts/validate-course.mjs $f || exit 1; done"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^4.0.1",
@@ -22,7 +24,8 @@
 		"svelte": "^5.57.3",
 		"svelte-check": "^4.7.8",
 		"typescript": "^6.0.3",
-		"vite": "^8.3.8"
+		"vite": "^8.3.8",
+		"vitest": "^5.1.1"
 	},
 	"dependencies": {
 		"chess.js": "^1.4.0",
