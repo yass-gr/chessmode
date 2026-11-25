@@ -53,6 +53,7 @@ export interface MoveReview {
 	best: { uci: Uci; san: San; pv: Uci[]; score: Score };
 	/** Score of fenAfter (White POV). */
 	scoreAfter: Score;
+	alternatives?: EngineLine[];
 	/** Coach text, built from the analysis. */
 	explanation: { headline: string; detail?: string };
 }

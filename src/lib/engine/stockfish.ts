@@ -1,3 +1,4 @@
+import { Chess } from 'chess.js';
 import { turnOf, type Color, type Fen, type Uci } from '#lib/chess/types.ts';
 import type { EngineLine, PositionAnalysis } from '#lib/review/types.ts';
 import type { AnalyseOptions, Engine } from '#lib/engine/types.ts';
@@ -109,7 +110,10 @@ class Stockfish implements Engine {
 
 	private async search(fen: Fen, opts: AnalyseOptions, onUpdate?: (a: PositionAnalysis) => void) {
 		const { signal, depth, searchMoves } = opts;
-		const multiPv = opts.multiPv ?? 1;
+		const requestedLines = opts.multiPv ?? 1;
+		const multiPv = requestedLines > 1
+			? Math.max(1, Math.min(requestedLines, searchMoves?.length || new Chess(fen).moves().length))
+			: 1;
 		const turn = turnOf(fen);
 		const linesByDepth = new Map<number, EngineLine[]>();
 		let result: PositionAnalysis = { fen, depth: 0, lines: [] };

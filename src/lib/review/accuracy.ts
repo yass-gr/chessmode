@@ -31,7 +31,7 @@ export function gameAccuracy(win: readonly number[], colors: readonly Color[], c
 		const accuracy = color === 'w' ? moveAccuracy(win[i], win[i + 1]) : moveAccuracy(win[i + 1], win[i]);
 		weighted += accuracy * weight;
 		weightSum += weight;
-		reciprocal += 1 / accuracy;
+		reciprocal += 1 / Math.max(1, accuracy);
 		count++;
 	}
 	return count ? (weighted / weightSum + count / reciprocal) / 2 : 0;
