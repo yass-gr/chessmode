@@ -16,7 +16,10 @@ export async function activeCourse(): Promise<Course | undefined> {
 export const setActiveCourse = (id: string) => setSetting('course', id);
 
 export const loadDepth = async (id: string) => normalizeDepth(await getSetting<Partial<DepthChoice> | null>(`depth/${id}`, null));
-export const saveDepth = (id: string, choice: DepthChoice) => setSetting(`depth/${id}`, choice);
+export async function saveDepth(id: string, choice: DepthChoice) {
+	await setSetting(`depth/${id}`, choice);
+	if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('depth-change', { detail: id }));
+}
 /** A trainer URL counts as opening the course: library membership, resume target, and an out-of-tier pin. */
 export async function enterFromTrainer(courseId: string, lineKey?: LineKey) {
 	const course = getCourse(courseId);
