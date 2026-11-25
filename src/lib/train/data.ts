@@ -12,3 +12,15 @@ export async function activeCourse(): Promise<Course | undefined> {
 }
 
 export const setActiveCourse = (id: string) => setSetting('course', id);
+
+import { defaultDepth, type DepthChoice } from '#lib/courses/depth.ts';
+export const loadDepth = (id: string) => getSetting<DepthChoice>(`depth/${id}`, defaultDepth());
+export const saveDepth = (id: string, choice: DepthChoice) => setSetting(`depth/${id}`, choice);
+export const loadLibrary = () => getSetting<string[]>('library', []);
+export async function addToLibrary(id: string) {
+ const library = await loadLibrary();
+ if (!library.includes(id)) await setSetting('library', [...library, id]);
+}
+export async function removeFromLibrary(id: string) {
+ await setSetting('library', (await loadLibrary()).filter(item => item !== id));
+}

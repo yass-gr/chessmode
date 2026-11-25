@@ -10,12 +10,17 @@
 	import type { LineKey } from '#lib/courses/types.ts';
 	import type { LineProgress } from '#lib/db.ts';
 	import MiniBoard from '#lib/components/MiniBoard.svelte';
-	import { loadProgress, setActiveCourse } from '#lib/train/data.ts';
+	import { loadProgress, setActiveCourse, loadDepth, saveDepth, addToLibrary } from '#lib/train/data.ts';
+	import { courseScope, defaultDepth } from '#lib/courses/depth.ts';
+	import { modeAvailability, type CourseMode } from '#lib/courses/unlocks.ts';
 	import { courseStats, lineEnd, lineStatus, lineTail, relativeTime } from '#lib/train/stats.ts';
 	import { courseCoverage, type Coverage } from '#lib/explorer/coverage.ts';
 	import { loadExplorer } from '#lib/explorer/types.ts';
 
 	const course = $derived(getCourse(page.params.id));
+	let choice = $state(defaultDepth());
+	let previewTier = $state(0);
+	let chooser = $state(false);
 	let progress = $state.raw(new Map<LineKey, LineProgress>());
 	let tab = $state<'lines' | 'ideas' | 'quiz'>('lines');
 	let open = $state<string | undefined>();
@@ -28,6 +33,10 @@
 		progress = await loadProgress();
 		if (!course) return;
 		await setActiveCourse(course.id);
+		await addToLibrary(course.id);
+		choice = await loadDepth(course.id);
+		previewTier = choice.tier;
+		chooser = !choice.seen && courseScope(course, choice, progress).tiers.length > 1;
 		const explorer = isCustom(course.id) ? undefined : await loadExplorer(course.id);
 		if (explorer) {
 			coverage = courseCoverage(course, explorer);
@@ -35,7 +44,19 @@
 		}
 	});
 
-	const stats = $derived(course ? courseStats(course, progress, now) : undefined);
+	const scope = $derived(course ? courseScope(course, choice, progress) : undefined);
+	const stats = $derived(course && scope ? courseStats({ ...course, lines: scope.lines }, progress, now) : undefined);
+	async function closeChooser(confirm: boolean) {
+		if (!course) return;
+		choice = { ...choice, seen: true, tier: confirm ? previewTier : choice.tier };
+		await saveDepth(course.id, $state.snapshot(choice));
+		chooser = false;
+	}
+	async function pin(key: LineKey) {
+		if (!course || choice.pinned.includes(key)) return;
+		choice = { ...choice, pinned: [...choice.pinned, key] };
+		await saveDepth(course.id, $state.snapshot(choice));
+	}
 	const orientation = $derived(course?.side === 'w' ? 'white' : 'black');
 	const reveal = { duration: reducedMotion() ? 0 : 220, easing: easeOut };
 	const hasQuiz = $derived(course?.chapters.some((c) => c.quiz.length) ?? false);
@@ -77,6 +98,17 @@
 			<span class="chip">≈{Math.round(minutes / 6) * 6 >= 60 ? `${Math.round(minutes / 60)} h` : `${minutes} min`}</span>
 		</div>
 
+		<button class="chip depth-button" onclick={() => { previewTier = choice.tier; chooser = true; }}>{scope?.tiers[scope.tier].name} · Change depth</button>
+		<p class="muted scope-count">{scope?.learned}/{scope?.total} learned · {scope?.perfected}/{scope?.total} perfected</p>
+		<div class="modes" aria-label="Training modes">
+			{#each [{mode:'learn', label:'Learn'}, {mode:'practice', label:'Practice'}, {mode:'drill', label:'Drill'}, {mode:'time', label:'Time'}, {mode:'puzzle', label:'Puzzles'}, {mode:'arena', label:'Arena'}] as item}
+				{@const mode = item.mode as CourseMode}
+				{@const data = mode === 'puzzle' ? ['caro-kann', 'jobava-london'].includes(course.id) : !isCustom(course.id)}
+				{@const gate = modeAvailability(mode, course.lines.filter(l => progress.has(l.key)).length, course.lines.length, data)}
+				{@const href = mode === 'learn' ? (scope?.next ? `/learn/${course.id}/${scope.next.id}` : `/course/${course.id}`) : mode === 'practice' ? `/practice/run?course=${course.id}` : mode === 'drill' || mode === 'time' ? `/drill/run?mode=${mode}&course=${course.id}` : `/${mode === 'puzzle' ? 'puzzles' : 'arena'}/${course.id}`}
+				{#if gate.kind === 'available'}<a class="option" {href}><b>{item.label}</b><small>Ready</small></a>{:else}<span class="option"><b>{item.label}</b><small>{gate.kind === 'locked' ? `Learn ${gate.remaining} more` : gate.reason}</small></span>{/if}
+			{/each}
+		</div>
 		<div class="bar">
 			<div class="progress"><i style:width="{(100 * stats.learned) / stats.total}%"></i></div>
 			<span>{Math.round((100 * stats.learned) / stats.total)}%</span>
@@ -127,10 +159,11 @@
 					<div class="card rows">
 						{#each chapter.lines as line (line.key)}
 							{@const st = lineStatus(progress, line.key, now)}
-							<a class="row-item" href={st.kind === 'new' ? `/learn/${course.id}/${line.id}` : `/practice/run?line=${encodeURIComponent(line.key)}`}>
+							<a class="row-item" onclick={async (event) => { if (scope?.beyond.some(l => l.key === line.key)) { event.preventDefault(); await pin(line.key); await goto(st.kind === 'new' ? `/learn/${course.id}/${line.id}` : `/practice/run?line=${encodeURIComponent(line.key)}`); } }} href={st.kind === 'new' ? `/learn/${course.id}/${line.id}` : `/practice/run?line=${encodeURIComponent(line.key)}`}>
 								<MiniBoard fen={lineEnd(line)} {orientation} size={52} />
 								<span class="t">
 									<b>{line.name}</b>
+									{#if scope?.beyond.some(l => l.key === line.key)}<small>Beyond selected depth</small>{/if}
 									<span class="mono">{lineTail(line, 4)}</span>
 								</span>
 								{#if st.kind === 'new'}
@@ -183,7 +216,31 @@
 	</main>
 {/if}
 
+{#if chooser && scope}
+	<div class="overlay" role="presentation">
+		<div class="card depth-sheet" role="dialog" aria-modal="true" aria-labelledby="depth-title">
+			<h2 class="h-title" id="depth-title">Choose your depth</h2>
+			<p class="muted">Choose how many lines to focus on. You can change this later.</p>
+			{#each scope.tiers as tier, i}
+				<button class="option tier" class:selected={previewTier === i} aria-pressed={previewTier === i} onclick={() => (previewTier = i)}><b>{tier.name}</b><span>{tier.count} lines</span></button>
+			{/each}
+			<button class="btn btn-primary block" onclick={() => closeChooser(true)}>Confirm depth</button>
+			<button class="btn btn-surface block" onclick={() => closeChooser(false)}>Not now</button>
+		</div>
+	</div>
+{/if}
+
 <style>
+	.depth-button { margin-top: 16px; }
+	.scope-count { margin-top: 8px; font-size: 13px; }
+	.modes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 16px; }
+	.modes .option { display: grid; padding: 12px; gap: 4px; }
+	.modes small { color: var(--text-3); }
+	.overlay { position: fixed; inset: 0; z-index: 100; background: #000b; display: grid; place-items: center; padding: 18px; }
+	.depth-sheet { width: min(100%, 480px); max-height: 90dvh; overflow: auto; padding: 22px; display: grid; gap: 12px; }
+	.tier { display: flex; justify-content: space-between; padding: 16px; text-align: left; }
+	.tier.selected { border-color: var(--accent); }
+
 	.top {
 		display: flex;
 		justify-content: space-between;

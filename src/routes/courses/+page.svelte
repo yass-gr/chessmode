@@ -69,7 +69,7 @@
 				<div class="foot">
 					<div class="progress"><i style:width="{(100 * s.learned) / s.total}%"></i></div>
 					<span class="count">{s.learned}/{s.total}</span>
-					<a class="btn sm {s.learned ? 'btn-surface' : 'btn-primary'}" href={s.next ? `/learn/${course.id}/${s.next.id}` : `/course/${course.id}`}>
+					<a class="btn sm {s.learned ? 'btn-surface' : 'btn-primary'}" href={`/course/${course.id}`}>
 						{s.learned === 0 ? 'Try the first line' : s.next ? 'Continue' : 'Open'}
 					</a>
 				</div>
