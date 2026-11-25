@@ -7,6 +7,7 @@
 	import ResultSheet from '#lib/components/train/ResultSheet.svelte';
 	import { db } from '#lib/db.ts';
 	import { finishPractice } from '#lib/srs.ts';
+	import { selectDue } from '#lib/train/session.ts';
 	import { logSession } from '#lib/progress.ts';
 	import { relativeTime } from '#lib/train/stats.ts';
 
@@ -31,7 +32,7 @@
 		const rows = (await db.progress.toArray())
 			.filter((p) => (!scope || p.courseId === scope) && (!only || p.key === only))
 			.sort((a, b) => +new Date(a.card.due) - +new Date(b.card.due));
-		const picked = only ? rows : ahead ? rows.slice(0, AHEAD_LIMIT) : rows.filter((p) => new Date(p.card.due).getTime() <= now);
+		const picked = only ? rows : ahead ? rows.slice(0, AHEAD_LIMIT) : selectDue(rows, now);
 		queue = picked.flatMap((p) => {
 			const course = courses.find((c) => c.id === p.courseId);
 			const line = course?.lines.find((l) => l.key === p.key);

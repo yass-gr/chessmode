@@ -11,6 +11,8 @@ export interface LineProgress {
 	learnedAt: number;
 	reviews: number;
 	lapses: number;
+	/** Set once a practice run finishes with no mistakes and no hints. */
+	clean?: boolean;
 }
 
 /** One finished training session, used for streaks, XP and personal bests. */

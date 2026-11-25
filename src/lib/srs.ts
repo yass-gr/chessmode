@@ -1,6 +1,5 @@
 import { createEmptyCard, fsrs, Rating, type Card } from 'ts-fsrs';
 import { db, type LineProgress } from '#lib/db.ts';
-import { selectDue } from '#lib/train/session.ts';
 import type { LineKey } from '#lib/courses/types.ts';
 
 const scheduler = fsrs();
@@ -20,11 +19,7 @@ export async function finishLearn(key: LineKey, courseId: string, now = new Date
 export async function finishPractice(key: LineKey, mistakes: number, hints: number, now = new Date()): Promise<LineProgress | undefined> {
 	const progress = await db.progress.get(key);
 	if (!progress) return undefined;
-	const updated = { ...progress, card: schedule(progress.card, practiceRating(mistakes, hints), now), reviews: progress.reviews + 1, lapses: progress.lapses + (mistakes > 0 ? 1 : 0) };
+	const updated = { ...progress, card: schedule(progress.card, practiceRating(mistakes, hints), now), reviews: progress.reviews + 1, lapses: progress.lapses + (mistakes > 0 ? 1 : 0), clean: progress.clean || (mistakes === 0 && hints === 0) };
 	await db.progress.put(updated);
 	return updated;
-}
-export async function dueQueue(courseId?: string, now = new Date()): Promise<LineProgress[]> {
-	const rows = courseId ? await db.progress.where('courseId').equals(courseId).toArray() : await db.progress.toArray();
-	return selectDue(rows, now.getTime());
 }
