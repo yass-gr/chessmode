@@ -7,16 +7,27 @@
 	import MiniBoard from '#lib/components/MiniBoard.svelte';
 	import { loadProgress, setActiveCourse } from '#lib/train/data.ts';
 	import { courseStats, lineEnd, lineStatus, lineTail, relativeTime } from '#lib/train/stats.ts';
+	import { courseCoverage, type Coverage } from '#lib/explorer/coverage.ts';
+	import { loadExplorer } from '#lib/explorer/types.ts';
 
 	const course = $derived(getCourse(page.params.id));
 	let progress = $state.raw(new Map<LineKey, LineProgress>());
 	let tab = $state<'lines' | 'ideas' | 'quiz'>('lines');
 	let open = $state<string | undefined>();
+	let coverage = $state.raw<Coverage>();
+	let gapsOpen = $state(false);
+	let sample = $state(0);
 	const now = Date.now();
 
 	onMount(async () => {
 		progress = await loadProgress();
-		if (course) await setActiveCourse(course.id);
+		if (!course) return;
+		await setActiveCourse(course.id);
+		const explorer = await loadExplorer(course.id);
+		if (explorer) {
+			coverage = courseCoverage(course, explorer);
+			sample = explorer.games;
+		}
 	});
 
 	const stats = $derived(course ? courseStats(course, progress, now) : undefined);
@@ -51,6 +62,30 @@
 			<div class="progress"><i style:width="{(100 * stats.learned) / stats.total}%"></i></div>
 			<span>{Math.round((100 * stats.learned) / stats.total)}%</span>
 		</div>
+
+		{#if coverage}
+			<section class="card coverage">
+				<button class="cov-head" onclick={() => (gapsOpen = !gapsOpen)} aria-expanded={gapsOpen}>
+					<span class="ring" style:--p={coverage.score}><b>{Math.round(coverage.score * 100)}%</b></span>
+					<span class="t">
+						<b>Coverage</b>
+						<small>Share of real opponents' replies the course answers, from {(sample / 1e6).toFixed(1)}M Lichess games.{coverage.gaps.length ? ` ${coverage.gaps.length} ${coverage.gaps.length === 1 ? 'gap' : 'gaps'}.` : ''}</small>
+					</span>
+					{#if coverage.gaps.length}<svg class:flip={gapsOpen} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6" /></svg>{/if}
+				</button>
+				{#if gapsOpen}
+					<ol class="gaps">
+						{#each coverage.gaps.slice(0, 8) as gap (gap.key + gap.uci)}
+							{@const n = gap.path.length}
+							<li>
+								<span class="mono path">{gap.path.map((san, i) => (i % 2 === 0 ? `${i / 2 + 1}.${san}` : san)).join(' ')}</span>
+								<span class="gap-move"><b class="mono">{n % 2 === 0 ? `${n / 2 + 1}.` : `${Math.ceil(n / 2)}…`}{gap.san}</b> {Math.round(gap.share * 100)}% of players · reached in {(gap.reach * 100).toFixed(1)}% of games</span>
+							</li>
+						{/each}
+					</ol>
+				{/if}
+			</section>
+		{/if}
 
 		<div class="seg" role="group" aria-label="Sections">
 			<button aria-pressed={tab === 'lines'} onclick={() => (tab = 'lines')}>Lines</button>
@@ -179,6 +214,71 @@
 	.bar span {
 		font: 600 13px var(--mono);
 		color: var(--text-2);
+	}
+	.coverage {
+		padding: 4px 14px;
+		margin-bottom: 18px;
+	}
+	.cov-head {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		width: 100%;
+		text-align: left;
+		padding: 10px 0;
+	}
+	.cov-head svg {
+		color: var(--text-3);
+		transition: transform 0.2s;
+	}
+	.cov-head svg.flip {
+		transform: rotate(180deg);
+	}
+	.ring {
+		--p: 0;
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		flex: 0 0 auto;
+		background: conic-gradient(var(--accent) calc(var(--p) * 360deg), var(--surface-3) 0);
+		position: relative;
+	}
+	.ring::before {
+		content: '';
+		position: absolute;
+		inset: 4px;
+		border-radius: 50%;
+		background: var(--surface-2);
+	}
+	.ring b {
+		position: relative;
+		font: 600 12px var(--mono);
+	}
+	.gaps {
+		list-style: none;
+		padding: 0 0 8px;
+		margin: 0;
+		display: grid;
+	}
+	.gaps li {
+		display: grid;
+		gap: 2px;
+		padding: 9px 0;
+		border-top: 1px solid var(--stroke);
+	}
+	.path {
+		font-size: 12px;
+		color: var(--text-3);
+		overflow-wrap: anywhere;
+	}
+	.gap-move {
+		font-size: 13px;
+		color: var(--text-2);
+	}
+	.gap-move b {
+		color: var(--accent-hi);
 	}
 	.chapter {
 		margin-top: 22px;
