@@ -81,13 +81,21 @@ const clean = (text: string) =>
 		.replace(/\s+/g, ' ')
 		.trim();
 
-/** Reads every game and variation in a PGN into one tree from the standard start position. */
-export function readPgnTree(pgn: string): TreeNode {
+const START = new Chess().fen().split(' ').slice(0, 4).join(' ');
+
+/** Studies mix in chapters from set-up positions or other variants; those cannot be part of an opening course. */
+const standard = (headers: Record<string, string>) =>
+	(!headers.Variant || /^(standard|from position)$/i.test(headers.Variant)) &&
+	(!headers.FEN || headers.FEN.trim().split(/\s+/).slice(0, 4).join(' ') === START);
+
+/** Reads every standard game and variation in a PGN into one tree; `skipped` counts games from other positions or variants. */
+export function readPgnTree(pgn: string): { tree: TreeNode; skipped: number } {
 	const root = node();
 	const list = games(pgn);
 	if (!list.length) throw new Error('The PGN has no moves.');
-	for (const { headers, movetext } of list) {
-		if (headers.FEN && headers.FEN !== new Chess().fen()) throw new Error('Every game must start from the normal starting position.');
+	const usable = list.filter((g) => standard(g.headers));
+	if (!usable.length) throw new Error('Every game starts from a set-up position or another variant. A course starts from the normal starting position.');
+	for (const { movetext } of usable) {
 		type Frame = { chess: Chess; at: TreeNode; last?: TreeEdge; before?: { chess: Chess; at: TreeNode } };
 		let frame: Frame = { chess: new Chess(), at: root };
 		const stack: Frame[] = [];
@@ -123,7 +131,7 @@ export function readPgnTree(pgn: string): TreeNode {
 		}
 	}
 	if (!root.children.size) throw new Error('The PGN has no moves.');
-	return root;
+	return { tree: root, skipped: list.length - usable.length };
 }
 
 export interface BuiltCourse {
@@ -137,17 +145,18 @@ export function buildCourse(tree: TreeNode, options: { id: string; name: string;
 	const lines: { id: string; name: string; pgn: string }[] = [];
 	const conflicts: string[] = [];
 
-	function walk(at: TreeNode, path: TreeEdge[], turn: Color) {
+	/** `split` is the ply where this branch last left its siblings; the line is named from there. */
+	function walk(at: TreeNode, path: TreeEdge[], turn: Color, split = -1) {
 		let edges = [...at.children.values()];
 		if (turn === options.side && edges.length > 1) {
 			conflicts.push(`${label(path)}: ${edges.map((e) => e.san).join(', ')}`);
 			edges = edges.slice(0, 1);
 		}
 		if (!edges.length) {
-			if (path.some((_, i) => (i % 2 === 0 ? 'w' : 'b') === options.side)) lines.push(line(path, lines.length));
+			if (path.some((_, i) => (i % 2 === 0 ? 'w' : 'b') === options.side)) lines.push(line(path, split, lines.length));
 			return;
 		}
-		for (const edge of edges) walk(edge.node, [...path, edge], turn === 'w' ? 'b' : 'w');
+		for (const edge of edges) walk(edge.node, [...path, edge], turn === 'w' ? 'b' : 'w', edges.length > 1 ? path.length : split);
 	}
 
 	/** Moves from ply `from` on, numbered as in the game: "3.Bf4 e6 4.Nb5" or "3…e6 4.Nb5". */
@@ -164,7 +173,7 @@ export function buildCourse(tree: TreeNode, options: { id: string; name: string;
 		);
 	}
 
-	function line(path: TreeEdge[], index: number) {
+	function line(path: TreeEdge[], split: number, index: number) {
 		const pgn = path
 			.map((e, i) => {
 				const number = i % 2 === 0 ? `${i / 2 + 1}. ` : '';
@@ -173,7 +182,8 @@ export function buildCourse(tree: TreeNode, options: { id: string; name: string;
 				return `${number}${e.san}${note}`;
 			})
 			.join(' ');
-		return { id: `line-${index + 1}`, name: label(path, Math.max(0, path.length - 4)), pgn };
+		const name = split < 0 ? 'Main line' : label(path.slice(0, split + 2), split);
+		return { id: `line-${index + 1}`, name, pgn };
 	}
 
 	walk(tree, [], 'w');
