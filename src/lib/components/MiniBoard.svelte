@@ -5,7 +5,7 @@
  import type { BoardTheme, PieceSet } from '#lib/settings/types.ts';
 
 	/** A static, non-interactive board thumbnail. Uses the same cburnett pieces as the main board. */
-	let { fen, orientation = 'white', size = 56, theme = 'default', pieces: pieceSet = 'default' }: { fen: string; orientation?: 'white' | 'black'; size?: number; theme?: BoardTheme; pieces?: PieceSet } = $props();
+	let { fen, orientation = 'white', size = 56, theme = 'default', pieces: pieceSet = 'cburnett' }: { fen: string; orientation?: 'white' | 'black'; size?: number; theme?: BoardTheme; pieces?: PieceSet } = $props();
 
 	const NAMES: Record<string, string> = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
 
@@ -31,7 +31,7 @@
 	});
 </script>
 
-<div class:piece-geometric={pieceSet === 'geometric'} class:piece-outline={pieceSet === 'outline'} class="mini cg-wrap" style:width="{size}px" style:height="{size}px" aria-hidden="true" style:--light={boardColors[theme][0]} style:--dark={boardColors[theme][1]}>
+<div class="mini cg-wrap piece-{pieceSet}" style:width="{size}px" style:height="{size}px" aria-hidden="true" style:--light={boardColors[theme][0]} style:--dark={boardColors[theme][1]}>
 	{#each pieces as p (p.x * 8 + p.y)}
 		<piece class={p.cls} style:left="{p.x * 12.5}%" style:top="{p.y * 12.5}%"></piece>
 	{/each}
