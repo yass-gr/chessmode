@@ -10,9 +10,10 @@
 	import type { LineKey } from '#lib/courses/types.ts';
 	import type { LineProgress } from '#lib/db.ts';
 	import MiniBoard from '#lib/components/MiniBoard.svelte';
+	import DepthChooser from '#lib/components/DepthChooser.svelte';
 	import { loadProgress, setActiveCourse, loadDepth, saveDepth, addToLibrary } from '#lib/train/data.ts';
 	import { courseScope, defaultDepth } from '#lib/courses/depth.ts';
-	import { modeAvailability, type CourseMode } from '#lib/courses/unlocks.ts';
+	import { modeAvailability, modeData, type CourseMode } from '#lib/courses/unlocks.ts';
 	import { courseStats, lineEnd, lineStatus, lineTail, relativeTime } from '#lib/train/stats.ts';
 	import { courseCoverage, type Coverage } from '#lib/explorer/coverage.ts';
 	import { loadExplorer } from '#lib/explorer/types.ts';
@@ -29,19 +30,27 @@
 	let sample = $state(0);
 	const now = Date.now();
 
-	onMount(async () => {
-		progress = await loadProgress();
-		if (!course) return;
-		await setActiveCourse(course.id);
-		await addToLibrary(course.id);
-		choice = await loadDepth(course.id);
-		previewTier = choice.tier;
-		chooser = !choice.seen && courseScope(course, choice, progress).tiers.length > 1;
-		const explorer = isCustom(course.id) ? undefined : await loadExplorer(course.id);
-		if (explorer) {
-			coverage = courseCoverage(course, explorer);
-			sample = explorer.games;
-		}
+	onMount(() => {
+		const onDepth = async (event: Event) => {
+			const id = (event as CustomEvent<string>).detail;
+			if (course && id === course.id) choice = await loadDepth(course.id);
+		};
+		window.addEventListener('depth-change', onDepth);
+		void (async () => {
+			progress = await loadProgress();
+			if (!course) return;
+			await setActiveCourse(course.id);
+			await addToLibrary(course.id);
+			choice = await loadDepth(course.id);
+			previewTier = choice.tier;
+			chooser = !choice.seen && courseScope(course, choice, progress).tiers.length > 1;
+			const explorer = isCustom(course.id) ? undefined : await loadExplorer(course.id);
+			if (explorer) {
+				coverage = courseCoverage(course, explorer);
+				sample = explorer.games;
+			}
+		})();
+		return () => window.removeEventListener('depth-change', onDepth);
 	});
 
 	const scope = $derived(course ? courseScope(course, choice, progress) : undefined);
@@ -51,11 +60,6 @@
 		choice = { ...choice, seen: true, tier: confirm ? previewTier : choice.tier };
 		await saveDepth(course.id, $state.snapshot(choice));
 		chooser = false;
-	}
-	async function pin(key: LineKey) {
-		if (!course || choice.pinned.includes(key)) return;
-		choice = { ...choice, pinned: [...choice.pinned, key] };
-		await saveDepth(course.id, $state.snapshot(choice));
 	}
 	const orientation = $derived(course?.side === 'w' ? 'white' : 'black');
 	const reveal = { duration: reducedMotion() ? 0 : 220, easing: easeOut };
@@ -85,17 +89,20 @@
 			{/if}
 		</header>
 
-		<div class="hero card">
-			<img src="/img/board-hero.webp" alt="" />
-		</div>
-
-		<h1 class="h-display title">{course.name}</h1>
-		<p class="tagline muted">{course.tagline}</p>
-		<div class="meta">
-			<span class="chip"><span class="side" class:black={course.side === 'b'}></span>{course.side === 'w' ? 'White' : 'Black'}</span>
-			<span class="chip">{course.lines.length} lines</span>
-			<span class="chip">{course.chapters.length} {course.chapters.length === 1 ? 'chapter' : 'chapters'}</span>
-			<span class="chip">≈{Math.round(minutes / 6) * 6 >= 60 ? `${Math.round(minutes / 60)} h` : `${minutes} min`}</span>
+		<div class="intro">
+			<div class="hero card">
+				<img src="/img/board-hero.webp" alt="" />
+			</div>
+			<div>
+				<h1 class="h-display title">{course.name}</h1>
+				<p class="tagline muted">{course.tagline}</p>
+				<div class="meta">
+					<span class="chip"><span class="side" class:black={course.side === 'b'}></span>{course.side === 'w' ? 'White' : 'Black'}</span>
+					<span class="chip">{course.lines.length} lines</span>
+					<span class="chip">{course.chapters.length} {course.chapters.length === 1 ? 'chapter' : 'chapters'}</span>
+					<span class="chip">≈{Math.round(minutes / 6) * 6 >= 60 ? `${Math.round(minutes / 60)} h` : `${minutes} min`}</span>
+				</div>
+			</div>
 		</div>
 
 		<button class="chip depth-button" onclick={() => { previewTier = choice.tier; chooser = true; }}>{scope?.tiers[scope.tier].name} · Change depth</button>
@@ -103,8 +110,8 @@
 		<div class="modes" aria-label="Training modes">
 			{#each [{mode:'learn', label:'Learn'}, {mode:'practice', label:'Practice'}, {mode:'drill', label:'Drill'}, {mode:'time', label:'Time'}, {mode:'puzzle', label:'Puzzles'}, {mode:'arena', label:'Arena'}] as item}
 				{@const mode = item.mode as CourseMode}
-				{@const data = mode === 'puzzle' ? ['caro-kann', 'jobava-london'].includes(course.id) : !isCustom(course.id)}
-				{@const gate = modeAvailability(mode, course.lines.filter(l => progress.has(l.key)).length, course.lines.length, data)}
+				{@const data = modeData(course.id)}
+				{@const gate = modeAvailability(mode, course.lines.filter((l) => progress.has(l.key)).length, course.lines.length, mode === 'puzzle' ? data.puzzle : mode === 'arena' ? data.arena : true)}
 				{@const href = mode === 'learn' ? (scope?.next ? `/learn/${course.id}/${scope.next.id}` : `/course/${course.id}`) : mode === 'practice' ? `/practice/run?course=${course.id}` : mode === 'drill' || mode === 'time' ? `/drill/run?mode=${mode}&course=${course.id}` : `/${mode === 'puzzle' ? 'puzzles' : 'arena'}/${course.id}`}
 				{#if gate.kind === 'available'}<a class="option" {href}><b>{item.label}</b><small>Ready</small></a>{:else}<span class="option"><b>{item.label}</b><small>{gate.kind === 'locked' ? `Learn ${gate.remaining} more` : gate.reason}</small></span>{/if}
 			{/each}
@@ -138,7 +145,7 @@
 			</section>
 		{/if}
 
-		<div class="seg" use:seg role="group" aria-label="Sections">
+		<div class="seg sections" use:seg role="group" aria-label="Sections">
 			<button aria-pressed={tab === 'lines'} onclick={() => (tab = 'lines')}>Lines</button>
 			<button aria-pressed={tab === 'ideas'} onclick={() => (tab = 'ideas')}>Ideas</button>
 			{#if hasQuiz}<button aria-pressed={tab === 'quiz'} onclick={() => (tab = 'quiz')}>Quiz</button>{/if}
@@ -159,7 +166,7 @@
 					<div class="card rows">
 						{#each chapter.lines as line (line.key)}
 							{@const st = lineStatus(progress, line.key, now)}
-							<a class="row-item" onclick={async (event) => { if (scope?.beyond.some(l => l.key === line.key)) { event.preventDefault(); await pin(line.key); await goto(st.kind === 'new' ? `/learn/${course.id}/${line.id}` : `/practice/run?line=${encodeURIComponent(line.key)}`); } }} href={st.kind === 'new' ? `/learn/${course.id}/${line.id}` : `/practice/run?line=${encodeURIComponent(line.key)}`}>
+							<a class="row-item" href={st.kind === 'new' ? `/learn/${course.id}/${line.id}` : `/practice/run?line=${encodeURIComponent(line.key)}`}>
 								<MiniBoard fen={lineEnd(line)} {orientation} size={52} />
 								<span class="t">
 									<b>{line.name}</b>
@@ -217,30 +224,40 @@
 {/if}
 
 {#if chooser && scope}
-	<div class="overlay" role="presentation">
-		<div class="card depth-sheet" role="dialog" aria-modal="true" aria-labelledby="depth-title">
-			<h2 class="h-title" id="depth-title">Choose your depth</h2>
-			<p class="muted">Choose how many lines to focus on. You can change this later.</p>
-			{#each scope.tiers as tier, i}
-				<button class="option tier" class:selected={previewTier === i} aria-pressed={previewTier === i} onclick={() => (previewTier = i)}><b>{tier.name}</b><span>{tier.count} lines</span></button>
-			{/each}
-			<button class="btn btn-primary block" onclick={() => closeChooser(true)}>Confirm depth</button>
-			<button class="btn btn-surface block" onclick={() => closeChooser(false)}>Not now</button>
-		</div>
-	</div>
+	<DepthChooser tiers={scope.tiers} preview={previewTier} onpreview={(tier) => (previewTier = tier)} onconfirm={() => closeChooser(true)} ondismiss={() => closeChooser(false)} />
 {/if}
 
 <style>
-	.depth-button { margin-top: 16px; }
-	.scope-count { margin-top: 8px; font-size: 13px; }
-	.modes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 16px; }
-	.modes .option { display: grid; padding: 12px; gap: 4px; }
-	.modes small { color: var(--text-3); }
-	.overlay { position: fixed; inset: 0; z-index: 100; background: #000b; display: grid; place-items: center; padding: 18px; }
-	.depth-sheet { width: min(100%, 480px); max-height: 90dvh; overflow: auto; padding: 22px; display: grid; gap: 12px; }
-	.tier { display: flex; justify-content: space-between; padding: 16px; text-align: left; }
-	.tier.selected { border-color: var(--accent); }
-
+	.depth-button {
+		margin-top: 16px;
+	}
+	.scope-count {
+		margin-top: 8px;
+		font-size: 13px;
+	}
+	.modes {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 8px;
+		margin-top: 16px;
+	}
+	.modes .option {
+		display: grid;
+		padding: 12px;
+		gap: 4px;
+	}
+	.modes small {
+		color: var(--text-3);
+	}
+	.sections {
+		position: relative;
+		z-index: 1;
+		margin-bottom: 8px;
+		background: var(--bg);
+	}
+	main.page {
+		padding-bottom: calc(var(--tabbar-h) + 132px + var(--safe-bottom));
+	}
 	.top {
 		display: flex;
 		justify-content: space-between;
@@ -471,5 +488,26 @@
 		bottom: calc(var(--tabbar-h) + 26px + var(--safe-bottom));
 		width: min(calc(100% - 36px), 520px);
 		z-index: 30;
+	}
+	/* At 1440×900 the section control sat in the tab bar. A shorter intro keeps it above that bar. */
+	@media (min-width: 1000px) {
+		main.page {
+			max-width: 880px;
+		}
+		.intro {
+			display: grid;
+			grid-template-columns: 240px 1fr;
+			gap: 22px;
+			align-items: center;
+		}
+		.hero {
+			height: 120px;
+		}
+		.title {
+			margin-top: 0;
+		}
+		.modes {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 </style>

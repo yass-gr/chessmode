@@ -3,7 +3,7 @@
 	import { courses } from '#lib/courses/index.ts';
 	import { isCustom } from '#lib/courses/custom.ts';
 	import { db, type LineProgress, type RatingRecord, type SessionLog } from '#lib/db.ts';
-	import { ARENA_START, ARENA_UNLOCK_LINES } from '#lib/explorer/arena.ts';
+	import { ARENA_START } from '#lib/explorer/arena.ts';
 	import { PUZZLE_START } from '#lib/ratings.ts';
 	import { TIME_MODE } from '#lib/train/session.ts';
 	import { best } from '#lib/train/stats.ts';
@@ -78,11 +78,11 @@
 				<ul class="per-course">
 					{#each ratedCourses as c (c.id)}
 						{@const r = ratingOf('arena', c.id)}
-						{@const open = learnedIn(c.id) >= ARENA_UNLOCK_LINES}
+						{@const arenaGate = modeAvailability('arena', learnedIn(c.id), c.lines.length, !isCustom(c.id))}
 						<li>
-							<span class="t"><b>{c.name}</b><small>{r ? `${r.wins}W ${r.draws}D ${r.losses}L` : open ? 'No games yet' : `Learn ${ARENA_UNLOCK_LINES} lines to unlock`}</small></span>
+							<span class="t"><b>{c.name}</b><small>{r ? `${r.wins}W ${r.draws}D ${r.losses}L` : arenaGate.kind === 'available' ? 'No games yet' : arenaGate.kind === 'locked' ? `Learn ${arenaGate.remaining} more` : arenaGate.reason}</small></span>
 							<span class="num">{r?.rating ?? ARENA_START}</span>
-							<a class="btn sm btn-primary" class:disabled={!open} href={open ? `/arena/${c.id}` : undefined} aria-disabled={!open}>Play</a>
+							<a class="btn sm btn-primary" class:disabled={arenaGate.kind !== 'available'} href={arenaGate.kind === 'available' ? `/arena/${c.id}` : undefined} aria-disabled={arenaGate.kind !== 'available'}>Play</a>
 						</li>
 					{/each}
 				</ul>

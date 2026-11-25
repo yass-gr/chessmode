@@ -280,13 +280,17 @@ p {
 	position: relative;
 	isolation: isolate;
 }
+.seg.has-thumb button {
+	position: relative;
+	z-index: 1;
+}
 .seg.has-thumb button[aria-pressed='true'] {
 	background: none;
 	box-shadow: none;
 }
 .seg-thumb {
 	position: absolute;
-	z-index: -1;
+	z-index: 0;
 	top: 4px;
 	bottom: 4px;
 	left: 0;
