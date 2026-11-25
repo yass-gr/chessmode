@@ -5,11 +5,14 @@
 	import { courses } from '#lib/courses/index.ts';
 	import type { Course, LineKey } from '#lib/courses/types.ts';
 	import { db, type LineProgress } from '#lib/db.ts';
-	import { activeCourse, loadProgress, setActiveCourse } from '#lib/train/data.ts';
+	import { activeCourse, loadProgress, setActiveCourse, loadDepth, loadLibrary, removeFromLibrary } from '#lib/train/data.ts';
+	import { courseScope, defaultDepth } from '#lib/courses/depth.ts';
 	import { courseStats, lineStatus } from '#lib/train/stats.ts';
 	import { streak } from '#lib/progress.ts';
 
 	let course = $state.raw<Course>();
+	let choice = $state(defaultDepth());
+	let library = $state<string[]>([]);
 	let progress = $state.raw(new Map<LineKey, LineProgress>());
 	let days = $state<string[]>([]);
 	let switcher = $state(false);
@@ -18,6 +21,8 @@
 
 	onMount(async () => {
 		[course, progress, days] = await Promise.all([activeCourse(), loadProgress(), db.sessions.toArray().then((s) => s.map((x) => x.day))]);
+		library = await loadLibrary();
+		if (course) choice = await loadDepth(course.id);
 		loaded = true;
 		await tick();
 		document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center' });
@@ -27,11 +32,14 @@
 		course = c;
 		switcher = false;
 		await setActiveCourse(c.id);
+		choice = await loadDepth(c.id);
 		await tick();
 		document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
 	}
 
-	const stats = $derived(course ? courseStats(course, progress, now) : undefined);
+	const scope = $derived(course ? courseScope(course, choice, progress) : undefined);
+	const stats = $derived(course && scope ? courseStats({ ...course, lines: scope.lines }, progress, now) : undefined);
+	async function removeLibrary(id: string) { await removeFromLibrary(id); library = await loadLibrary(); }
 	const streakDays = $derived(streak(days));
 	/** Horizontal position of the n-th node on the winding path, -1..1. */
 	const sway = (n: number) => Math.sin(n * 1.15);
@@ -67,7 +75,15 @@
 		{/if}
 	</header>
 
-	{#if course && loaded && stats}
+	{#if loaded}
+		<section class="library">
+			<div class="library-head"><h2 class="h-head">Your library</h2><a href="/courses">Browse courses</a></div>
+			{#each courses.filter(c => library.includes(c.id)) as c (c.id)}
+				<div class="card library-row"><a href="/course/{c.id}"><b>{c.name}</b><small>{c.side === 'w' ? 'White' : 'Black'} · {c.lines.filter(l => progress.has(l.key)).length} learned · {c.lines.filter(l => progress.get(l.key)?.clean).length} perfected</small></a><button class="chip" onclick={() => removeLibrary(c.id)} aria-label="Remove {c.name} from library">Remove</button></div>
+			{:else}<p class="muted">Open a course to add it here.</p>{/each}
+		</section>
+	{/if}
+	{#if course && loaded && stats && scope}
 		<a class="overview card" href="/course/{course.id}">
 			<div>
 				<p class="label">{course.side === 'w' ? 'White' : 'Black'} repertoire</p>
@@ -77,7 +93,7 @@
 			<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6" /></svg>
 		</a>
 
-		{#each course.chapters as chapter, ci (chapter.id)}
+		{#each course.chapters.filter(c => c.lines.some(l => scope.lines.includes(l))) as chapter, ci (chapter.id)}
 			{@const learned = chapter.lines.filter((l) => progress.has(l.key)).length}
 			<section class="chapter">
 				<div class="module">
@@ -92,7 +108,7 @@
 				</div>
 
 				<ol class="path">
-					{#each chapter.lines as line, li (line.key)}
+					{#each chapter.lines.filter(l => scope.lines.includes(l)) as line, li (line.key)}
 						{@const n = ci * 3 + li}
 						{@const st = lineStatus(progress, line.key, now)}
 						{@const active = stats.next?.key === line.key}
@@ -137,7 +153,7 @@
 			{#if stats.due}
 				<a class="btn btn-white block" href="/practice/run?course={course.id}">Practice {stats.due} due</a>
 			{:else if stats.next}
-				<a class="btn btn-white block" href="/learn/{course.id}/{stats.next.id}">{stats.learned ? 'Continue' : 'Start'} learning</a>
+				<a class="btn btn-white block" href={choice.seen ? `/learn/${course.id}/${stats.next.id}` : `/course/${course.id}`}>{stats.learned ? 'Continue' : 'Start'} learning</a>
 			{:else}
 				<a class="btn btn-white block" href="/drill">Go to Drill</a>
 			{/if}
@@ -146,6 +162,12 @@
 </main>
 
 <style>
+	.library { display: grid; gap: 8px; margin: 12px 0 20px; }
+	.library-head, .library-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+	.library-head a { color: var(--accent-hi); font-size: 13px; }
+	.library-row { padding: 12px; }
+	.library-row a { display: grid; flex: 1; }
+	.library-row small { color: var(--text-3); }
 	.home {
 		padding-bottom: calc(var(--tabbar-h) + 200px + var(--safe-bottom));
 	}

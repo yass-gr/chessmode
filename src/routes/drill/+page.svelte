@@ -7,6 +7,7 @@
 	import { PUZZLE_START } from '#lib/ratings.ts';
 	import { TIME_MODE } from '#lib/train/session.ts';
 	import { best } from '#lib/train/stats.ts';
+	import { modeAvailability } from '#lib/courses/unlocks.ts';
 
 	let scope = $state('');
 	let sessions = $state<SessionLog[]>([]);
@@ -25,6 +26,7 @@
 	const ratedCourses = $derived(scopedCourses.filter((c) => !isCustom(c.id)));
 	const ratingOf = (kind: 'arena' | 'puzzle', id: string) => ratings.find((r) => r.key === `${kind}/${id}`);
 	const learnedIn = (id: string) => learned.filter((p) => p.courseId === id).length;
+	const gate = $derived(scope ? modeAvailability('drill', count, courses.find(c => c.id === scope)?.lines.length ?? 0) : (count ? { kind: 'available' as const } : { kind: 'locked' as const, remaining: 1 }));
 	const href = (mode: 'drill' | 'time') => `/drill/run?${new URLSearchParams({ mode, ...(scope ? { course: scope } : {}) })}`;
 </script>
 
@@ -53,7 +55,7 @@
 					<p class="muted">Random lines, no hints. One wrong move ends the run.</p>
 					<p class="pb">Best <b>{best(scoped, 'drill')}</b> {best(scoped, 'drill') === 1 ? 'line' : 'lines'}</p>
 				</div>
-				<a class="btn btn-primary block" class:disabled={!count} href={count ? href('drill') : undefined} aria-disabled={!count}>Start drill</a>
+				<a class="btn btn-primary block" class:disabled={gate.kind !== 'available'} href={gate.kind === 'available' ? href('drill') : undefined} aria-disabled={gate.kind !== 'available'}>Start drill</a>
 			</article>
 
 			<article class="card mode">
@@ -64,7 +66,7 @@
 					<p class="muted">Clean lines win back {TIME_MODE.cleanMs / 1000} seconds, mistakes cost {TIME_MODE.mistakeMs / 1000}. The clock speeds up as you score.</p>
 					<p class="pb">Best <b>{best(scoped, 'time')}</b> {best(scoped, 'time') === 1 ? 'line' : 'lines'}</p>
 				</div>
-				<a class="btn btn-white block" class:disabled={!count} href={count ? href('time') : undefined} aria-disabled={!count}>Start the clock</a>
+				<a class="btn btn-white block" class:disabled={gate.kind !== 'available'} href={gate.kind === 'available' ? href('time') : undefined} aria-disabled={gate.kind !== 'available'}>Start the clock</a>
 			</article>
 
 			<article class="card mode wide">
@@ -95,16 +97,18 @@
 				<ul class="per-course">
 					{#each ratedCourses as c (c.id)}
 						{@const r = ratingOf('puzzle', c.id)}
+						{@const gate = modeAvailability('puzzle', learnedIn(c.id), c.lines.length, ['caro-kann', 'jobava-london'].includes(c.id))}
 						<li>
-							<span class="t"><b>{c.name}</b><small>{r ? `${r.wins} of ${r.games} solved` : 'Not started'}</small></span>
+							<span class="t"><b>{c.name}</b><small>{gate.kind === 'locked' ? `Learn ${gate.remaining} more lines` : gate.kind === 'unavailable' ? gate.reason : r ? `${r.wins} of ${r.games} solved` : 'Not started'}</small></span>
 							<span class="num">{r?.rating ?? PUZZLE_START}</span>
-							<a class="btn sm btn-surface" href="/puzzles/{c.id}">Solve</a>
+							<a class="btn sm btn-surface" class:disabled={gate.kind !== 'available'} href={gate.kind === 'available' ? `/puzzles/${c.id}` : undefined} aria-disabled={gate.kind !== 'available'}>Solve</a>
 						</li>
 					{/each}
 				</ul>
 			</article>
 		</div>
 
+		{#if gate.kind === 'locked'}<p class="avail muted">Learn {gate.remaining} more {gate.remaining === 1 ? 'line' : 'lines'} to unlock Drill and Time.</p>{/if}
 		<p class="avail muted">
 			{#if count}
 				{count} learned {count === 1 ? 'line' : 'lines'} in the pool.
