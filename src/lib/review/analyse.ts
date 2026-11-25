@@ -3,9 +3,9 @@ import { posKey, turnOf, type Color, type Fen, type Ply, type San } from '#lib/c
 import { db } from '#lib/db.ts';
 import { getEngine } from '#lib/engine/stockfish.ts';
 import { readPgn } from '#lib/import/pgn.ts';
-import { centipawnLoss, estimatedRating, gameAccuracy, lichessWinPercent, moveAccuracy } from '#lib/review/accuracy.ts';
+import { centipawnLoss, estimatedRating, gameAccuracy, lichessWinPercent, moveAccuracy, ratingContext } from '#lib/review/accuracy.ts';
 import { CLASSIFICATIONS, classify } from '#lib/review/classify.ts';
-import { explain } from '#lib/review/explain.ts';
+import { buildBranches, explain } from '#lib/review/explain.ts';
 import type { Classification, GameRecord, GameReview, MoveReview, PlayerSummary, PositionAnalysis, Score } from '#lib/review/types.ts';
 
 export const DEPTHS = [
@@ -80,7 +80,7 @@ function summarize(moves: MoveReview[], win: number[], color: Color): PlayerSumm
 	}
 	const acpl = count ? cpLoss / count : 0;
 	return {
-		counts, acpl, estimatedRating: count ? estimatedRating(acpl) : 0,
+		counts, acpl, ratingContext: ratingContext(count ? acpl : undefined, count), estimatedRating: count ? estimatedRating(acpl) : 0,
 		accuracy: gameAccuracy(win, moves.map(move => move.color), color)
 	};
 }
@@ -88,7 +88,7 @@ function summarize(moves: MoveReview[], win: number[], color: Color): PlayerSumm
 export async function reviewGame(game: GameRecord, opts: ReviewOptions = {}): Promise<GameReview> {
 	const { depth = DEFAULT_DEPTH, signal, onProgress } = opts;
 	signal?.throwIfAborted();
-	const key = game.id + ':' + depth;
+	const key = game.id + ':' + depth + ':v2';
 	const cached = await db.reviews.get(key);
 	signal?.throwIfAborted();
 	if (cached) {
@@ -141,7 +141,8 @@ export async function reviewGame(game: GameRecord, opts: ReviewOptions = {}): Pr
 		};
 		moves.push({
 			...reviewed,
-			explanation: explain(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name)
+			explanation: explain(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name),
+			branches: buildBranches(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name, !inBook && index > 0 && moves.at(-1)?.classification === 'book')
 		});
 		win.push(winAfter);
 		before = after;
