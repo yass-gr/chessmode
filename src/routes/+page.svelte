@@ -5,27 +5,45 @@
 	import { courses } from '#lib/courses/index.ts';
 	import type { Course, LineKey } from '#lib/courses/types.ts';
 	import { db, type LineProgress } from '#lib/db.ts';
+	import MiniBoard from '#lib/components/MiniBoard.svelte';
 	import { activeCourse, loadProgress, setActiveCourse, loadDepth, loadLibrary, removeFromLibrary } from '#lib/train/data.ts';
-	import { courseScope, defaultDepth } from '#lib/courses/depth.ts';
-	import { courseStats, lineStatus } from '#lib/train/stats.ts';
+	import { courseScope, defaultDepth, type DepthChoice } from '#lib/courses/depth.ts';
+	import { normalizeDepth, resumeHref } from '#lib/courses/scope.ts';
+	import { courseStats, lineEnd, lineStatus, lineTail } from '#lib/train/stats.ts';
 	import { streak } from '#lib/progress.ts';
 
 	let course = $state.raw<Course>();
 	let choice = $state(defaultDepth());
 	let library = $state<string[]>([]);
+	let depths = $state<Record<string, DepthChoice>>({});
 	let progress = $state.raw(new Map<LineKey, LineProgress>());
 	let days = $state<string[]>([]);
 	let switcher = $state(false);
 	let loaded = $state(false);
 	const now = Date.now();
 
-	onMount(async () => {
-		[course, progress, days] = await Promise.all([activeCourse(), loadProgress(), db.sessions.toArray().then((s) => s.map((x) => x.day))]);
-		library = await loadLibrary();
-		if (course) choice = await loadDepth(course.id);
-		loaded = true;
-		await tick();
-		document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center' });
+	onMount(() => {
+		const onDepth = async (event: Event) => {
+			const id = (event as CustomEvent<string>).detail;
+			const next = await loadDepth(id);
+			depths = { ...depths, [id]: next };
+			if (course?.id === id) choice = next;
+		};
+		window.addEventListener('depth-change', onDepth);
+		void (async () => {
+			[course, progress, days] = await Promise.all([activeCourse(), loadProgress(), db.sessions.toArray().then((s) => s.map((x) => x.day))]);
+			library = await loadLibrary();
+			const saved: Record<string, DepthChoice> = {};
+			for (const row of await db.settings.toArray()) {
+				if (row.key.startsWith('depth/')) saved[row.key.slice('depth/'.length)] = normalizeDepth(row.value as Partial<DepthChoice>);
+			}
+			depths = saved;
+			if (course) choice = depths[course.id] ?? (await loadDepth(course.id));
+			loaded = true;
+			await tick();
+			document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center' });
+		})();
+		return () => window.removeEventListener('depth-change', onDepth);
 	});
 
 	async function choose(c: Course) {
@@ -78,8 +96,20 @@
 	{#if loaded}
 		<section class="library">
 			<div class="library-head"><h2 class="h-head">Your library</h2><a href="/courses">Browse courses</a></div>
-			{#each courses.filter(c => library.includes(c.id)) as c (c.id)}
-				<div class="card library-row"><a href="/course/{c.id}"><b>{c.name}</b><small>{c.side === 'w' ? 'White' : 'Black'} · {c.lines.filter(l => progress.has(l.key)).length} learned · {c.lines.filter(l => progress.get(l.key)?.clean).length} perfected</small></a><button class="chip" onclick={() => removeLibrary(c.id)} aria-label="Remove {c.name} from library">Remove</button></div>
+			{#each courses.filter((c) => library.includes(c.id)) as c (c.id)}
+				{@const depth = depths[c.id] ?? defaultDepth()}
+				{@const scoped = courseScope(c, depth, progress)}
+				{@const sample = scoped.lines[0] ?? c.lines[0]}
+				<div class="card library-row">
+					<a href={resumeHref(c, depth, progress, now)}>
+						<MiniBoard fen={lineEnd(sample)} orientation={c.side === 'w' ? 'white' : 'black'} size={52} />
+						<span class="t">
+							<b>{c.name}</b>
+							<small>{c.side === 'w' ? 'White' : 'Black'} · {lineTail(sample, 3)} · {scoped.learned}/{scoped.total} learned · {scoped.perfected} perfected</small>
+						</span>
+					</a>
+					<button class="chip" onclick={() => removeLibrary(c.id)} aria-label="Remove {c.name} from library">Remove</button>
+				</div>
 			{:else}<p class="muted">Open a course to add it here.</p>{/each}
 		</section>
 	{/if}
@@ -153,7 +183,7 @@
 			{#if stats.due}
 				<a class="btn btn-white block" href="/practice/run?course={course.id}">Practice {stats.due} due</a>
 			{:else if stats.next}
-				<a class="btn btn-white block" href={choice.seen ? `/learn/${course.id}/${stats.next.id}` : `/course/${course.id}`}>{stats.learned ? 'Continue' : 'Start'} learning</a>
+				<a class="btn btn-white block" href={resumeHref(course, choice, progress, now)}>{stats.learned ? 'Continue' : 'Start'} learning</a>
 			{:else}
 				<a class="btn btn-white block" href="/drill">Go to Drill</a>
 			{/if}
@@ -166,7 +196,22 @@
 	.library-head, .library-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 	.library-head a { color: var(--accent-hi); font-size: 13px; }
 	.library-row { padding: 12px; }
-	.library-row a { display: grid; flex: 1; }
+	.library-row a {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		flex: 1;
+		min-width: 0;
+	}
+	.library-row .t {
+		display: grid;
+		min-width: 0;
+	}
+	.library-row .t small {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 	.library-row small { color: var(--text-3); }
 	.home {
 		padding-bottom: calc(var(--tabbar-h) + 200px + var(--safe-bottom));
