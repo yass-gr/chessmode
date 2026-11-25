@@ -1,0 +1,434 @@
+{
+	"id": "vienna-game",
+	"name": "Vienna Game",
+	"side": "w",
+	"level": "Club (800–2000)",
+	"tagline": "1.e4 e5 2.Nc3: an attacking answer to 1...e5 built around f4.",
+	"description": "A complete White repertoire against 1...e5 with 2.Nc3. Against 2...Nf6 you play the Vienna Gambit, 3.f4, and use the pawn on e5 and the half-open f-file to attack. Against 2...Nc6 you develop with 3.Bc4 and meet ...Bc5 with Qg4 against g7. The ideas repeat — fxe5 then d4 and Bd3, the queen on the d1-h5 diagonal, the fork trick Nxe5 and d4 — and many natural Black moves lose material on the spot.",
+	"chapters": [
+		{
+			"id": "gambit-main",
+			"name": "Vienna Gambit: 3...d5",
+			"moves": "2...Nf6 3.f4 d5 4.fxe5 Nxe4 5.Nf3",
+			"intro": "This is the main line of the Vienna Gambit. After 3...d5 4.fxe5 Nxe4 5.Nf3 our pawn on e5 gains space and keeps Black's pieces off f6, and the f-file is half-open for our rook. Black's knight on e4 looks strong, so we challenge it with d4 and Bd3, or with Qe2 when Black pins with ...Bg4. Then we castle and play on the f-file. If Black takes on c3, recapture and play d4 to build the centre. Watch the e4 knight: when it is attacked twice and defended once, Nxe4 and Bxe4 win a pawn.",
+			"lines": [
+				{
+					"id": "g-be7-f5",
+					"name": "5...Be7 6.d4 O-O 7.Bd3 f5",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nxe4 { The only good square: the knight jumps into the hole on e4. } 5. Nf3 { Develop and guard e5. Next d4 and Bd3 (or Qe2) to challenge the strong knight on e4. } 5... Be7 6. d4 { Builds a big centre and supports e5. Now Bd3 will hit the e4 knight. } 6... O-O 7. Bd3 { The e4 knight is now attacked twice and defended only by the d5 pawn. Black has to protect it, trade it or lose a pawn. } 7... f5 { Black supports the knight with a pawn. } 8. exf6 { Take en passant. The f-file opens for our rook as soon as we castle. } 8... Bxf6 9. O-O { Castled, with the rook already on the open f-file. The position is balanced and easy to play: Ne2, c3 and Qe1 or Bf4 follow, with pressure on e4 and d5. }"
+				},
+				{
+					"id": "g-be7-nc6",
+					"name": "5...Be7 ... 7...Nc6?",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nxe4 { The only good square: the knight jumps into the hole on e4. } 5. Nf3 { Develop and guard e5. Next d4 and Bd3 (or Qe2) to challenge the strong knight on e4. } 5... Be7 6. d4 { Builds a big centre and supports e5. Now Bd3 will hit the e4 knight. } 6... O-O 7. Bd3 { The e4 knight is now attacked twice and defended only by the d5 pawn. Black has to protect it, trade it or lose a pawn. } 7... Nc6 { Natural, but it does nothing for the e4 knight. } 8. Nxe4 { Trade knights first. After ...dxe4 the e4 pawn is attacked by our bishop and has no defender. } 8... dxe4 9. Bxe4 { A clean extra pawn, and the bishop stands well in the centre. } 9... f5 10. Bxc6 { Give the bishop for the knight: Black's queenside pawns are split and our e5 pawn is safe. } 10... bxc6 11. O-O { We are a pawn up with a healthy position. Next Qe1 or Bf4 and c3. }"
+				},
+				{
+					"id": "g-be7-bf5",
+					"name": "5...Be7 ... 7...Bf5",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nxe4 { The only good square: the knight jumps into the hole on e4. } 5. Nf3 { Develop and guard e5. Next d4 and Bd3 (or Qe2) to challenge the strong knight on e4. } 5... Be7 6. d4 { Builds a big centre and supports e5. Now Bd3 will hit the e4 knight. } 6... O-O 7. Bd3 { The e4 knight is now attacked twice and defended only by the d5 pawn. Black has to protect it, trade it or lose a pawn. } 7... Bf5 { The right way: the bishop defends the knight. } 8. O-O { Castle and keep the tension. If Black takes on d3 or c3, we recapture and the f-file is ready for our rook. } 8... Nc6 9. Be3 { Simple development: d4 is protected and the rooks are connected. Our e5 pawn gives us more space, and Ne2 or Qe1 come next. }"
+				},
+				{
+					"id": "g-bc5",
+					"name": "5...Bc5 6.d4 Bb4",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nxe4 { The only good square: the knight jumps into the hole on e4. } 5. Nf3 { Develop and guard e5. Next d4 and Bd3 (or Qe2) to challenge the strong knight on e4. } 5... Bc5 { Develops actively and eyes f2, hoping for ...Nf2 tricks. } 6. d4 { Gain time on the bishop and build the centre. } 6... Bb4 { Pins the c3 knight so it cannot take on e4. } 7. Bd2 { Breaks the pin. If ...Nxd2, Qxd2 recaptures and develops the queen. } 7... c5 8. Bd3 { Hit the e4 knight again. Black has to make a decision about it. } 8... Nxd2 9. Qxd2 cxd4 10. Nxd4 Nc6 11. Qf4 { The queen eyes f7 and supports the knight on d4. Black has an isolated pawn on d5 that our pieces can target after castling. }"
+				},
+				{
+					"id": "g-nc6-be7",
+					"name": "5...Nc6 6.Bb5 Be7",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nxe4 { The only good square: the knight jumps into the hole on e4. } 5. Nf3 { Develop and guard e5. Next d4 and Bd3 (or Qe2) to challenge the strong knight on e4. } 5... Nc6 { Develops, and the knight will try to pressure e5 and d4. } 6. Bb5 { Pins the knight. Bxc6 can damage Black's pawns later, and the bishop is out of the way for quick castling. } 6... Be7 7. O-O O-O 8. d4 { The ideal set-up: pawns on d4 and e5, king castled, rook on the f-file. } 8... f5 9. exf6 { Open the f-file. } 9... Bxf6 10. Be3 { Guard d4, which Black's pieces are aiming at, and connect the rooks. The position is balanced and our pieces are well placed. }"
+				},
+				{
+					"id": "g-nc6-nxc3",
+					"name": "5...Nc6 6.Bb5 Nxc3",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nxe4 { The only good square: the knight jumps into the hole on e4. } 5. Nf3 { Develop and guard e5. Next d4 and Bd3 (or Qe2) to challenge the strong knight on e4. } 5... Nc6 { Develops, and the knight will try to pressure e5 and d4. } 6. Bb5 { Pins the knight. Bxc6 can damage Black's pawns later, and the bishop is out of the way for quick castling. } 6... Nxc3 7. dxc3 { Recapture towards the centre: the c1 bishop and the queen are free at once. } 7... a6 8. Bd3 { Keep the bishop: on d3 it aims at Black's king. } 8... Bg4 9. Bf4 { Protects e5 and develops. Next Qe2 and castling, with h3 to question the g4 bishop. }"
+				},
+				{
+					"id": "g-bg4",
+					"name": "5...Bg4 6.Qe2",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nxe4 { The only good square: the knight jumps into the hole on e4. } 5. Nf3 { Develop and guard e5. Next d4 and Bd3 (or Qe2) to challenge the strong knight on e4. } 5... Bg4 { Pins the f3 knight, which guards e5. } 6. Qe2 { Hits the e4 knight a second time and takes the queen out of the pin. } 6... Nxc3 7. dxc3 { Recapture towards the centre. The c1 bishop is free and we can castle queenside quickly. } 7... c5 8. Bf4 { Guard e5 and develop. } 8... Nc6 9. h3 { Ask the bishop: it must take on f3 or step back. } 9... Bf5 10. O-O-O { With the king on c1 the rook lands on d1 against d5. Our pieces are fast and the e5 pawn cramps Black. }"
+				},
+				{
+					"id": "g-bg4-nc5",
+					"name": "5...Bg4 6.Qe2 Nc5?!",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nxe4 { The only good square: the knight jumps into the hole on e4. } 5. Nf3 { Develop and guard e5. Next d4 and Bd3 (or Qe2) to challenge the strong knight on e4. } 5... Bg4 { Pins the f3 knight, which guards e5. } 6. Qe2 { Hits the e4 knight a second time and takes the queen out of the pin. } 6... Nc5 { Saves the knight, but d4 will kick it again. } 7. d4 { Gain time on the knight. } 7... Ne6 8. Qb5+ { Check, and the queen also attacks b7. Black cannot cover both. } 8... c6 9. Qxb7 { A clean pawn up, and Black's queenside is in a mess. }"
+				},
+				{
+					"id": "g-nxc3",
+					"name": "5...Nxc3 6.bxc3",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nxe4 { The only good square: the knight jumps into the hole on e4. } 5. Nf3 { Develop and guard e5. Next d4 and Bd3 (or Qe2) to challenge the strong knight on e4. } 5... Nxc3 { Black trades knights at once. } 6. bxc3 { Take with the b-pawn: c3 supports d4, our centre gets stronger, and the b-file opens for a rook. } 6... Be7 7. d4 O-O 8. Bd3 { The bishop aims at h7. } 8... c5 9. O-O { Castled. Plans: Qe1 and Qh4 or Qg3 against the king, and Rb1 against b7. }"
+				},
+				{
+					"id": "g-bb4",
+					"name": "5...Bb4 6.Qe2",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nxe4 { The only good square: the knight jumps into the hole on e4. } 5. Nf3 { Develop and guard e5. Next d4 and Bd3 (or Qe2) to challenge the strong knight on e4. } 5... Bb4 { Pins the c3 knight, which attacks e4. } 6. Qe2 { Hits the e4 knight again, so Black has to deal with it now. } 6... Bxc3 7. bxc3 O-O 8. c4 { Attack d5, the only support of the e4 knight. We have the bishop pair, which counts in the long run. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. Nf3",
+					"question": "What is White's main plan in this position?",
+					"options": [
+						"d4 and Bd3 to challenge the e4 knight, then castle and use the f-file",
+						"Qh5 and a quick attack on f7",
+						"Nxe4 at once, winning a pawn",
+						"g4 and g5 to attack the king"
+					],
+					"answer": 0,
+					"explanation": "The e4 knight is Black's best piece. d4 builds the centre and supports e5, Bd3 attacks the knight, and after castling our rook is already on the half-open f-file."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. Nf3 Be7 6. d4 O-O 7. Bd3",
+					"question": "What must Black take care of now?",
+					"options": [
+						"The e4 knight: it is attacked twice and defended only once",
+						"The f7 pawn",
+						"The b7 pawn",
+						"Nothing, Black can play any developing move"
+					],
+					"answer": 0,
+					"explanation": "Our knight and bishop both hit e4 and only the d5 pawn defends it. A move like ...Nc6 loses a pawn to Nxe4 dxe4 Bxe4; ...f5 or ...Bf5 keeps it protected."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. Nf3 Bg4 6. Qe2 Nc5 7. d4 Ne6",
+					"question": "What is White's strongest move?",
+					"options": [
+						"8.Qb5+, checking and hitting b7",
+						"8.h3, asking the bishop",
+						"8.Be3",
+						"8.Qf2"
+					],
+					"answer": 0,
+					"explanation": "The queen gives check on the e8-a4 diagonal and attacks b7 at the same time. After ...c6, Qxb7 wins a pawn."
+				}
+			]
+		},
+		{
+			"id": "gambit-accepted",
+			"name": "Vienna Gambit: 3...exf4",
+			"moves": "2...Nf6 3.f4 exf4 4.e5",
+			"intro": "Taking the pawn is natural but risky. 4.e5 kicks the f6 knight, and only ...Ng8 is good: ...Nh5 and ...Ng4 hang the knight to our queen on the d1-h5 diagonal, and ...Ne4 simply drops it to Nxe4. After 4...Ng8 we play Nf3, d4 and win the f4 pawn back with Bxf4, often with Qe2 to put pressure on the e-file. We end up with a big centre and a lead in development while Black's knight is back on g8.",
+			"lines": [
+				{
+					"id": "a-d6",
+					"name": "4...Ng8 5.Nf3 d6 6.d4 dxe5",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... exf4 { Black grabs the pawn. Natural, but the knight on f6 is about to be kicked. } 4. e5 { Gain space with tempo. The f6 knight has only one good square: back to g8. } 4... Ng8 { The only good retreat. Black has used two moves to put the knight back home. } 5. Nf3 { Develop, guard h4 against ...Qh4+, and get ready for d4 and Bxf4. } 5... d6 { Black hits e5 at once. } 6. d4 { Support e5 and open the c1 bishop, which will win back f4. } 6... dxe5 7. Qe2 { Pressure on e5 and on the e-file towards Black's king. We will win the pawn back with Qxe5+ or Nxe5. } 7... Be7 8. Qxe5 { One pawn back, and the queen stands strongly in the centre. } 8... Nf6 9. Bxf4 { And the second one. Material is level and our pieces are far more active. } 9... c6 10. O-O-O { Castle long: the rook goes straight to the d-file while Black's king is still in the centre. }"
+				},
+				{
+					"id": "a-d6-g5",
+					"name": "4...Ng8 5.Nf3 d6 6.d4 g5?!",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... exf4 { Black grabs the pawn. Natural, but the knight on f6 is about to be kicked. } 4. e5 { Gain space with tempo. The f6 knight has only one good square: back to g8. } 4... Ng8 { The only good retreat. Black has used two moves to put the knight back home. } 5. Nf3 { Develop, guard h4 against ...Qh4+, and get ready for d4 and Bxf4. } 5... d6 { Black hits e5 at once. } 6. d4 { Support e5 and open the c1 bishop, which will win back f4. } 6... g5 { Black tries to hold on to the extra pawn. } 7. h4 { Strike at g5 straight away, before Black can play ...h6. } 7... g4 8. Ng5 { The knight is not lost: it jumps into f7 if Black chases it. } 8... h6 9. Nxf7 { A piece sacrifice: Black's king is dragged into the open. } 9... Kxf7 10. Bc4+ { Check, and Bxf4 and castling follow with the f-file opening. White's attack is worth much more than the piece. }"
+				},
+				{
+					"id": "a-nc6",
+					"name": "4...Ng8 5.Nf3 Nc6",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... exf4 { Black grabs the pawn. Natural, but the knight on f6 is about to be kicked. } 4. e5 { Gain space with tempo. The f6 knight has only one good square: back to g8. } 4... Ng8 { The only good retreat. Black has used two moves to put the knight back home. } 5. Nf3 { Develop, guard h4 against ...Qh4+, and get ready for d4 and Bxf4. } 5... Nc6 6. d4 { Take the centre; the f4 pawn will fall soon. } 6... d5 7. Bxf4 { The pawn is back and the bishop is active. } 7... Nge7 8. Qd2 { Connect the pieces and prepare long castling. } 8... Bf5 9. Bd3 { Challenge Black's best bishop. We have more space thanks to e5, and O-O or O-O-O comes next. }"
+				},
+				{
+					"id": "a-g5",
+					"name": "4...Ng8 5.Nf3 g5",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... exf4 { Black grabs the pawn. Natural, but the knight on f6 is about to be kicked. } 4. e5 { Gain space with tempo. The f6 knight has only one good square: back to g8. } 4... Ng8 { The only good retreat. Black has used two moves to put the knight back home. } 5. Nf3 { Develop, guard h4 against ...Qh4+, and get ready for d4 and Bxf4. } 5... g5 { Black guards the f4 pawn. } 6. d4 { Build the centre first; f4 and g5 will become targets. } 6... d5 7. exd6 { Take en passant, opening the e-file towards Black's king. } 7... Bxd6 8. Qe2+ { Check on the open file. Black has to block, which costs time. } 8... Ne7 9. Nxg5 { Win the g5 pawn. Black's kingside is full of holes and our pieces are ready to use them. }"
+				},
+				{
+					"id": "a-be7",
+					"name": "4...Ng8 5.Nf3 Be7",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... exf4 { Black grabs the pawn. Natural, but the knight on f6 is about to be kicked. } 4. e5 { Gain space with tempo. The f6 knight has only one good square: back to g8. } 4... Ng8 { The only good retreat. Black has used two moves to put the knight back home. } 5. Nf3 { Develop, guard h4 against ...Qh4+, and get ready for d4 and Bxf4. } 5... Be7 6. d4 d5 7. Bxf4 { Win the pawn back. Our pawn on e5 gives us a big space advantage. } 7... Be6 8. Bd3 { Natural development: Qd2 or Qe2 and castling follow. Black's knight is still on g8. }"
+				},
+				{
+					"id": "a-nh5",
+					"name": "4...Nh5?",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... exf4 { Black grabs the pawn. Natural, but the knight on f6 is about to be kicked. } 4. e5 { Gain space with tempo. The f6 knight has only one good square: back to g8. } 4... Nh5 { Looks active, but the knight stands on the d1-h5 diagonal with no defender. } 5. Qxh5 { A free piece. } 5... Nc6 6. Nf3 { Develop and keep the extra knight. d4 and Bxf4 come next. }"
+				},
+				{
+					"id": "a-ng4",
+					"name": "4...Ng4?",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... exf4 { Black grabs the pawn. Natural, but the knight on f6 is about to be kicked. } 4. e5 { Gain space with tempo. The f6 knight has only one good square: back to g8. } 4... Ng4 { The same mistake: the knight on g4 has no defender. } 5. Qxg4 { A free piece. } 5... d6 6. Qxf4 { Take back the pawn and step off the c8-h3 diagonal, which ...d6 just opened. White is a piece up. }"
+				},
+				{
+					"id": "a-qe7",
+					"name": "4...Qe7",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... exf4 { Black grabs the pawn. Natural, but the knight on f6 is about to be kicked. } 4. e5 { Gain space with tempo. The f6 knight has only one good square: back to g8. } 4... Qe7 { Pins the e5 pawn against our king, so exf6 is not possible yet. } 5. Qe2 { Breaks the pin. Now exf6 is a real threat, so the knight must go back. } 5... Ng8 6. d4 { Take the centre. Black's queen blocks the f8 bishop and the knight is back home. } 6... Nc6 7. Nf3 { Bxf4 is next. We lead in development and have a huge centre. }"
+				},
+				{
+					"id": "a-ne4",
+					"name": "4...Ne4?",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... exf4 { Black grabs the pawn. Natural, but the knight on f6 is about to be kicked. } 4. e5 { Gain space with tempo. The f6 knight has only one good square: back to g8. } 4... Ne4 { The knight looks active on e4, but nothing defends it. } 5. Nxe4 { Just take it. } 5... Qh4+ { The check Black was counting on. } 6. Nf2 { Block with the knight. The f2 square holds and we keep the extra piece. } 6... d6 7. Nf3 { Develop with tempo on the queen. We are a knight up. }"
+				},
+				{
+					"id": "a-nc6-exf6",
+					"name": "4...Nc6?",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... exf4 { Black grabs the pawn. Natural, but the knight on f6 is about to be kicked. } 4. e5 { Gain space with tempo. The f6 knight has only one good square: back to g8. } 4... Nc6 { Develops, but leaves the f6 knight to its fate. } 5. exf6 { Take the knight. } 5... Qxf6 6. Nf3 { We have a piece for a pawn. Develop, then d4 and Bd3 to win back f4 as well. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nc3 Nf6 3. f4 exf4 4. e5",
+					"question": "Where should the attacked knight on f6 go?",
+					"options": [
+						"...Nh5",
+						"...Ng4",
+						"...Ng8",
+						"...Ne4"
+					],
+					"answer": 2,
+					"explanation": "On h5 and g4 the knight is taken by our queen along the d1-h5 diagonal, and on e4 it falls to Nxe4. Only ...Ng8 is safe, even though it costs time."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nc3 Nf6 3. f4 exf4 4. e5 Ng8 5. Nf3 d6 6. d4 dxe5",
+					"question": "How does White win back the material?",
+					"options": [
+						"7.Qe2, with pressure on e5 and the e-file",
+						"7.Bc4, aiming at f7",
+						"7.h4, attacking the kingside",
+						"7.g3, opening the f-file"
+					],
+					"answer": 0,
+					"explanation": "The queen lines up against e5 and Black's king. Qxe5+ wins the pawn back, and Bxf4 regains the gambit pawn too."
+				}
+			]
+		},
+		{
+			"id": "gambit-sidelines",
+			"name": "Vienna Gambit Sidelines",
+			"moves": "3...d6, 3...Nc6, 3...Bc5, 3...Bb4, 3...d5 4.fxe5 others",
+			"intro": "Not every player answers 3.f4 with ...d5 or ...exf4. Against 3...d6 we develop with Nf3 and play d4; Black is solid but passive. Against moves that leave e5 to its fate — 3...Nc6, 3...Bc5, 3...Bb4 — we take with fxe5 and the f6 knight has to run. After 3...d5 4.fxe5 the only good move is ...Nxe4. Other knight moves let us grab the centre with d4 or win material outright.",
+			"lines": [
+				{
+					"id": "s-d6-nc6",
+					"name": "3...d6 4.Nf3 Nc6",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d6 { Black keeps e5 protected with a pawn. } 4. Nf3 { Develop and add pressure on e5. } 4... Nc6 5. Bb5 { Pins the knight that defends e5. } 5... exf4 6. d4 { Take the centre first; we will win back f4 later. } 6... a6 7. Be2 { Keep the bishop. Next Bxf4 and castling, with a strong pawn centre. }"
+				},
+				{
+					"id": "s-d6-exf4",
+					"name": "3...d6 4.Nf3 exf4",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d6 { Black keeps e5 protected with a pawn. } 4. Nf3 { Develop and add pressure on e5. } 4... exf4 5. d4 { Build the big centre. Our bishop will win back f4. } 5... Be7 6. Bxf4 O-O 7. Bd3 { Development is almost complete. Castle next and use the extra centre pawn. }"
+				},
+				{
+					"id": "s-nc6",
+					"name": "3...Nc6 4.fxe5",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... Nc6 { Develops, but e5 is not protected well enough. } 4. fxe5 { Take, and the f6 knight is attacked. } 4... Nxe5 5. d4 { Gain time on the knight and take the centre. } 5... Ng6 6. e5 { Now the other knight is kicked too. } 6... Ng8 7. Nf3 { Both Black knights went backwards. We have a big centre and a big lead in development. }"
+				},
+				{
+					"id": "s-bc5",
+					"name": "3...Bc5? 4.fxe5",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... Bc5 { Develops, but ignores the threat to e5. } 4. fxe5 { The f6 knight is attacked. } 4... Nxe4 { Black hopes for tricks against f2. } 5. Nxe4 { Take it. Black's queen check does not work. } 5... Qh4+ 6. Ng3 { Block with the knight. Black has no follow-up and we are a piece up. }"
+				},
+				{
+					"id": "s-bb4",
+					"name": "3...Bb4 4.fxe5",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... Bb4 { Pins the knight, but e5 is still undefended. } 4. fxe5 Bxc3 5. bxc3 Nxe4 6. Qg4 { Attacks the e4 knight and the g7 pawn at once. } 6... Ng5 7. d4 { Open the c1 bishop to hit the g5 knight. We are a piece for a pawn up. }"
+				},
+				{
+					"id": "s-ng4",
+					"name": "3...d5 4.fxe5 Ng4?",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Ng4 { The knight goes to g4 instead of e4, where it has little to do. } 5. d4 { Take the centre. The g4 knight is offside, and ...dxe4 runs into Nxe4. } 5... dxe4 6. Nxe4 { Our centre is huge and the g4 knight has few safe squares. Next Nf3 or h3, and Black is in trouble. }"
+				},
+				{
+					"id": "s-nfd7",
+					"name": "3...d5 4.fxe5 Nfd7?",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... Nfd7 { Retreats, but now e5 is safe and Black is cramped. } 5. d4 { Grab the centre: e5 is rock solid. } 5... dxe4 6. Nxe4 c5 7. Nf3 { Develop and protect d4. Black's pieces have no good squares, and we have a big space advantage. }"
+				},
+				{
+					"id": "s-d4",
+					"name": "3...d5 4.fxe5 d4?",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nf6 { The most common reply: Black develops and attacks e4. } 3. f4 { The Vienna Gambit. White hits e5 and plans fxe5, which gains space and opens the f-file. } 3... d5 { The best answer: Black strikes back in the centre instead of grabbing the pawn. } 4. fxe5 { Take with the f-pawn. The pawn on e5 takes f6 away from Black's pieces, and our rook will use the half-open f-file. } 4... d4 { Attacks our knight, but forgets the f6 knight is attacked too. } 5. exf6 { Take the knight first. } 5... dxc3 6. bxc3 { And recapture. We come out a pawn up with a strong centre. } 6... Qxf6 7. Nf3 { Develop. d4 and Bd3 next, and we are a healthy pawn up. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nc3 Nf6 3. f4 Bc5",
+					"question": "What is the strongest reply?",
+					"options": [
+						"4.fxe5",
+						"4.Nf3",
+						"4.Bc4",
+						"4.Qf3"
+					],
+					"answer": 0,
+					"explanation": "The f6 knight is attacked. If Black tries ...Nxe4, Nxe4 wins the piece, and the ...Qh4+ check is easily blocked with Ng3."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Ng4",
+					"question": "Black put the knight on g4 instead of e4. What should White do?",
+					"options": [
+						"5.d4, taking the centre",
+						"5.Qxg4",
+						"5.exd5",
+						"5.Bc4"
+					],
+					"answer": 0,
+					"explanation": "With ...d5 played, the c8 bishop defends g4, so Qxg4 loses the queen. d4 takes the centre, and the knight on g4 is offside."
+				}
+			]
+		},
+		{
+			"id": "two-knights-bc4",
+			"name": "2...Nc6 3.Bc4",
+			"moves": "2...Nc6 3.Bc4",
+			"intro": "Against 2...Nc6 we play 3.Bc4, aiming at f7. If Black plays ...Nf6 we protect e4 with d3 and keep f4 as our main plan; the play is calm and our pieces point at Black's king. Watch for ...d5: with our bishop on c4 and knight on c3, a black knight on d5 is attacked twice and often lost. If Black plays 3...Bc5, the queen jumps to g4 to attack g7, and Black has to find an awkward defence.",
+			"lines": [
+				{
+					"id": "c-bc5-f4",
+					"name": "3...Nf6 4.d3 Bc5 5.f4",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nc6 { Develops and guards e5. Black keeps ...Nf6 or ...Bc5 in reserve. } 3. Bc4 { The bishop aims at f7, the weakest point in Black's camp. } 3... Nf6 { Develops and attacks e4. } 4. d3 { Protect e4 with a pawn. The f-pawn is still free, so f4 stays our main plan. } 4... Bc5 { Develops actively and aims at f2. } 5. f4 { The Vienna plan: hit e5 and prepare to open the f-file. } 5... d6 6. Nf3 O-O 7. f5 { Gain space and shut in the c8 bishop. Next Bg5 and Qe2, or a kingside pawn storm. }"
+				},
+				{
+					"id": "c-na5",
+					"name": "3...Nf6 4.d3 Na5",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nc6 { Develops and guards e5. Black keeps ...Nf6 or ...Bc5 in reserve. } 3. Bc4 { The bishop aims at f7, the weakest point in Black's camp. } 3... Nf6 { Develops and attacks e4. } 4. d3 { Protect e4 with a pawn. The f-pawn is still free, so f4 stays our main plan. } 4... Na5 { Goes after our bishop. } 5. Nge2 { Let Black take it: after ...Nxc4 dxc4 our pawns control d5 and the d-file opens. } 5... Nxc4 6. dxc4 Bc5 7. O-O O-O 8. Ng3 { The knight heads for f5. Next Qf3 or Bg5, and f4 when the time is right. }"
+				},
+				{
+					"id": "c-bb4",
+					"name": "3...Nf6 4.d3 Bb4",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nc6 { Develops and guards e5. Black keeps ...Nf6 or ...Bc5 in reserve. } 3. Bc4 { The bishop aims at f7, the weakest point in Black's camp. } 3... Nf6 { Develops and attacks e4. } 4. d3 { Protect e4 with a pawn. The f-pawn is still free, so f4 stays our main plan. } 4... Bb4 { Pins the c3 knight. } 5. Ne2 { The other knight supports c3, so ...Bxc3+ can be met by Nxc3 with no doubled pawns. } 5... d5 6. exd5 Nxd5 7. O-O Be6 8. Bb3 { Keep the bishop on the a2-g8 diagonal. The position is balanced; next a3 to question the b4 bishop. }"
+				},
+				{
+					"id": "c-d5",
+					"name": "3...Nf6 4.d3 d5?",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nc6 { Develops and guards e5. Black keeps ...Nf6 or ...Bc5 in reserve. } 3. Bc4 { The bishop aims at f7, the weakest point in Black's camp. } 3... Nf6 { Develops and attacks e4. } 4. d3 { Protect e4 with a pawn. The f-pawn is still free, so f4 stays our main plan. } 4... d5 { Black opens the centre, but it costs material. } 5. exd5 Nxd5 { The natural recapture is a mistake. } 6. Nxd5 { The d5 knight was attacked twice and defended only by the queen. } 6... Be6 7. Ne3 { Step back and protect the c4 bishop. White is a clean piece up. }"
+				},
+				{
+					"id": "c-be7",
+					"name": "3...Nf6 4.d3 Be7",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nc6 { Develops and guards e5. Black keeps ...Nf6 or ...Bc5 in reserve. } 3. Bc4 { The bishop aims at f7, the weakest point in Black's camp. } 3... Nf6 { Develops and attacks e4. } 4. d3 { Protect e4 with a pawn. The f-pawn is still free, so f4 stays our main plan. } 4... Be7 5. f4 { The same Vienna plan against a quiet set-up. } 5... d6 6. Nf3 O-O 7. O-O { Castled. Now choose between f5 for space and fxe5 to play on the f-file. }"
+				},
+				{
+					"id": "c-qf6",
+					"name": "3...Bc5 4.Qg4 Qf6",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nc6 { Develops and guards e5. Black keeps ...Nf6 or ...Bc5 in reserve. } 3. Bc4 { The bishop aims at f7, the weakest point in Black's camp. } 3... Bc5 { Develops and eyes f2. But the bishop has left g7 without its natural defender. } 4. Qg4 { Hits g7. Black must defend it, and every defence has a drawback. } 4... Qf6 { Defends g7 and attacks f2. } 5. Nd5 { Hits the queen and threatens Nxc7+, forking king and rook. } 5... Qxf2+ 6. Kd1 { The king steps aside. Black's queen is deep in our camp but alone, and c7 is still attacked. } 6... Kf8 7. Nh3 { Attack the queen again; Rf1 comes next with more tempo. Black is short of good squares. }"
+				},
+				{
+					"id": "c-g6",
+					"name": "3...Bc5 4.Qg4 g6",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nc6 { Develops and guards e5. Black keeps ...Nf6 or ...Bc5 in reserve. } 3. Bc4 { The bishop aims at f7, the weakest point in Black's camp. } 3... Bc5 { Develops and eyes f2. But the bishop has left g7 without its natural defender. } 4. Qg4 { Hits g7. Black must defend it, and every defence has a drawback. } 4... g6 { Protects g7 with the pawn, but weakens the dark squares. } 5. Qg3 { The queen hits e5 and stays close to Black's weakened kingside. } 5... Nf6 6. Nge2 d6 7. d3 { Simple development. Bg5, Na4 or Bh6 are ideas, and Black's king will feel the holes on f6 and h6. }"
+				},
+				{
+					"id": "c-kf8",
+					"name": "3...Bc5 4.Qg4 Kf8",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nc6 { Develops and guards e5. Black keeps ...Nf6 or ...Bc5 in reserve. } 3. Bc4 { The bishop aims at f7, the weakest point in Black's camp. } 3... Bc5 { Develops and eyes f2. But the bishop has left g7 without its natural defender. } 4. Qg4 { Hits g7. Black must defend it, and every defence has a drawback. } 4... Kf8 { Guards g7 with the king, but Black gives up castling. } 5. Qf3 { The queen drops back and keeps an eye on f7. } 5... Nf6 6. Nge2 d6 7. d3 { Easy development. Black's king is awkward on f8 and the h8 rook is stuck. }"
+				},
+				{
+					"id": "c-nf6",
+					"name": "3...Bc5 4.Qg4 Nf6??",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Nc6 { Develops and guards e5. Black keeps ...Nf6 or ...Bc5 in reserve. } 3. Bc4 { The bishop aims at f7, the weakest point in Black's camp. } 3... Bc5 { Develops and eyes f2. But the bishop has left g7 without its natural defender. } 4. Qg4 { Hits g7. Black must defend it, and every defence has a drawback. } 4... Nf6 { Develops with tempo on the queen, but leaves g7 undefended. } 5. Qxg7 { Takes the pawn and attacks the h8 rook. } 5... Rg8 6. Qxf7# { Mate: the bishop on c4 supports the queen. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nc3 Nc6 3. Bc4 Bc5 4. Qg4",
+					"question": "What does 4.Qg4 attack?",
+					"options": [
+						"The g7 pawn, which the f8 bishop used to protect",
+						"The c5 bishop",
+						"The e5 pawn",
+						"Nothing; it prepares Qe2"
+					],
+					"answer": 0,
+					"explanation": "Once the bishop leaves f8, g7 has no defender. Black must defend with ...Qf6, ...g6 or ...Kf8, and each has a drawback."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nc3 Nc6 3. Bc4 Bc5 4. Qg4 Nf6 5. Qxg7 Rg8",
+					"question": "Find White's move.",
+					"options": [
+						"6.Qxf7#",
+						"6.Qh6",
+						"6.Qxf6",
+						"6.Nf3"
+					],
+					"answer": 0,
+					"explanation": "The queen takes on f7 with the c4 bishop behind it. The king has no square and nothing can take the queen: mate."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nc3 Nc6 3. Bc4 Nf6 4. d3 d5 5. exd5 Nxd5",
+					"question": "Why is 5...Nxd5 a mistake?",
+					"options": [
+						"The d5 knight is attacked by our knight and bishop and defended only by the queen",
+						"It blocks the d-file",
+						"It allows Qh5",
+						"It is not a mistake"
+					],
+					"answer": 0,
+					"explanation": "After Nxd5 Black cannot recapture: ...Qxd5 drops the queen to Bxd5. White is simply a piece up."
+				}
+			]
+		},
+		{
+			"id": "second-moves",
+			"name": "Other Second Moves",
+			"moves": "2...Bc5, 2...Bb4, 2...d6, 2...c6",
+			"intro": "Black's other second moves are less common, but you will meet them. Against 2...Bc5 and 2...Bb4 we play Nf3 and attack e5. If Black defends it with ...d6 we play d4 or Nd5; if Black develops with ...Nc6 or ...Nf6 instead, Nxe5 wins a pawn, and against ...Nc6 the fork trick Nxe5 and d4 wins back the piece. Against 2...d6 and 2...c6 we take the centre with d4, develop quickly, and use our extra space.",
+			"lines": [
+				{
+					"id": "o-bc5-d6",
+					"name": "2...Bc5 3.Nf3 d6",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Bc5 { Develops the bishop to its most active square. } 3. Nf3 { Develop and attack e5. } 3... d6 { The right way to protect e5. } 4. d4 { Hit the centre and open lines for our pieces. } 4... exd4 5. Nxd4 Nf6 6. Bg5 { Pins the knight. Next Qd2 and long castling, with more space in the centre. }"
+				},
+				{
+					"id": "o-bc5-nc6",
+					"name": "2...Bc5 3.Nf3 Nc6",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Bc5 { Develops the bishop to its most active square. } 3. Nf3 { Develop and attack e5. } 3... Nc6 4. Nxe5 { The fork trick. If Black takes back, d4 forks the bishop and the knight. } 4... Nxe5 5. d4 { The fork: Black must give a piece back. } 5... Bd6 6. dxe5 Bxe5 7. Bd3 { Material is level, but we have the e4 pawn in the centre and f4 will chase the bishop with tempo. }"
+				},
+				{
+					"id": "o-bc5-bxf2",
+					"name": "2...Bc5 3.Nf3 Nc6 4.Nxe5 Bxf2+",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Bc5 { Develops the bishop to its most active square. } 3. Nf3 { Develop and attack e5. } 3... Nc6 4. Nxe5 { The fork trick. If Black takes back, d4 forks the bishop and the knight. } 4... Bxf2+ { Black gives the bishop to win a pawn with check. } 5. Kxf2 Nxe5 6. d4 { Gain time on the knight and take the centre. The king will be safe and we have the bishop pair. }"
+				},
+				{
+					"id": "o-bc5-nf6",
+					"name": "2...Bc5 3.Nf3 Nf6",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Bc5 { Develops the bishop to its most active square. } 3. Nf3 { Develop and attack e5. } 3... Nf6 { Develops, but leaves e5 without a defender. } 4. Nxe5 { Take the free pawn. } 4... O-O 5. d4 { Hit the bishop and build the centre. We are a pawn up. }"
+				},
+				{
+					"id": "o-bb4-d6",
+					"name": "2...Bb4 3.Nf3 d6",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Bb4 { Pins the knight, but it does nothing for e5. } 3. Nf3 { Develop and attack e5. } 3... d6 4. Nd5 { Hit the bishop: it has no comfortable square. } 4... Ba5 5. b4 { Chase it again. After ...Bb6, Nxb6 gives us the bishop pair; if Black kicks our knight with ...c6, bxa5 wins a piece. }"
+				},
+				{
+					"id": "o-bb4-nf6",
+					"name": "2...Bb4 3.Nf3 Nf6",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... Bb4 { Pins the knight, but it does nothing for e5. } 3. Nf3 { Develop and attack e5. } 3... Nf6 4. Nxe5 { e5 has no defender, so we take it. } 4... O-O 5. Be2 Re8 6. Nd3 { Hit the bishop and cover e5. If Black wins the pawn back with ...Bxc3 and ...Nxe4, we keep the bishop pair. }"
+				},
+				{
+					"id": "o-d6-exd4",
+					"name": "2...d6 3.d4 exd4",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... d6 { A solid but passive move. } 3. d4 { Take the centre at once. } 3... exd4 4. Qxd4 { The queen is safe in the centre. } 4... Nc6 5. Bb5 { Pins the knight against the king, so it cannot take our queen. } 5... Bd7 6. Bxc6 Bxc6 7. Nf3 { Simple development with a strong centre. Castle next; Black has given up the centre for nothing. }"
+				},
+				{
+					"id": "o-d6-nf6",
+					"name": "2...d6 3.d4 Nf6",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... d6 { A solid but passive move. } 3. d4 { Take the centre at once. } 3... Nf6 4. Nf3 Nbd7 { A Philidor set-up. } 5. Bc4 { Aim at f7. } 5... Be7 6. O-O O-O 7. Re1 { Support e4. } 7... c6 8. a4 { Stop ...b5, which would kick the bishop. We have more space and an easy game. }"
+				},
+				{
+					"id": "o-c6",
+					"name": "2...c6 3.d4",
+					"pgn": "1. e4 e5 { Black claims the centre with a pawn of their own. } 2. Nc3 { The Vienna. The knight guards e4 and leaves the f-pawn free, so f4 can come next, like a King's Gambit with an extra piece out. } 2... c6 { Prepares ...d5, but it does nothing for e5 and costs time. } 3. d4 { Take the centre. } 3... d6 4. Nf3 Nd7 5. Bc4 { Develop with an eye on f7. Castle next; we have more space and faster development. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nc3 Bc5 3. Nf3 Nc6",
+					"question": "What is the fork trick here?",
+					"options": [
+						"4.Nxe5 Nxe5 5.d4, forking bishop and knight",
+						"4.Bb5, pinning the knight",
+						"4.d3, protecting e4",
+						"4.Na4, hitting the bishop"
+					],
+					"answer": 0,
+					"explanation": "We give the knight for the e5 pawn, then d4 attacks both the c5 bishop and the e5 knight. One of them falls, so we win the piece back and keep a strong centre."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nc3 d6 3. d4 exd4 4. Qxd4 Nc6",
+					"question": "What is White's most active answer?",
+					"options": [
+						"5.Bb5, pinning the knight",
+						"5.Qd1",
+						"5.Qa4",
+						"5.Qd3"
+					],
+					"answer": 0,
+					"explanation": "The pinned knight cannot take the queen, so the queen stays in the centre and we develop with tempo."
+				}
+			]
+		}
+	]
+}
