@@ -76,3 +76,83 @@ export function preserveLineIds(previous: CourseFile, next: CourseFile): CourseF
 export function copyCourse(file: CourseFile, id = newCustomId()): CourseFile {
 	return { ...structuredClone(file), id, name: `${file.name} copy` };
 }
+
+export interface ReimportLine {
+	id: string;
+	name: string;
+	chapter: string;
+}
+
+export interface ReimportReport {
+	added: ReimportLine[];
+	changed: (ReimportLine & { previousName: string })[];
+	removed: ReimportLine[];
+	kept: ReimportLine[];
+	/** Learned lines whose move sequence still maps to the same progress row. */
+	progressKept: number;
+	progressTotal: number;
+}
+
+/** Says which lines a reimport adds, changes or removes, and how many learned lines keep their progress. */
+export function diffReimport(previous: CourseFile, next: CourseFile, progressKeys: string[]): ReimportReport {
+	const aligned = preserveLineIds(previous, next);
+	const before = describe(previous);
+	const after = describe(aligned);
+	const previousById = new Map(before.map((line) => [line.id, line]));
+	const kept: ReimportLine[] = [];
+	const consumed = new Set<string>();
+	const pending: typeof after = [];
+	for (const line of after) {
+		const prior = previousById.get(line.id);
+		if (prior && prior.signature === line.signature) {
+			kept.push(present(line));
+			consumed.add(prior.id);
+		} else pending.push(line);
+	}
+	const removedPool = before.filter((line) => !consumed.has(line.id));
+	const pairs = removedPool.flatMap((prior) => pending.map((line) => ({ prior, line, score: sharedPrefix(prior.ucis, line.ucis) })))
+		.filter((pair) => pair.score > 0)
+		.sort((a, b) => b.score - a.score || Number(b.prior.name === b.line.name) - Number(a.prior.name === a.line.name));
+	const usedOld = new Set<string>();
+	const usedNew = new Set<string>();
+	const changed: ReimportReport['changed'] = [];
+	for (const pair of pairs) {
+		if (usedOld.has(pair.prior.id) || usedNew.has(pair.line.id)) continue;
+		usedOld.add(pair.prior.id);
+		usedNew.add(pair.line.id);
+		changed.push({ ...present(pair.line), previousName: pair.prior.name });
+	}
+	const courseId = previous.id;
+	const owned = progressKeys.filter((key) => key.startsWith(`${courseId}/`));
+	const keptKeys = new Set(kept.map((line) => `${courseId}/${line.id}`));
+	return {
+		added: pending.filter((line) => !usedNew.has(line.id)).map(present),
+		changed,
+		removed: removedPool.filter((line) => !usedOld.has(line.id)).map(present),
+		kept,
+		progressKept: owned.filter((key) => keptKeys.has(key)).length,
+		progressTotal: owned.length
+	};
+}
+
+function present(line: { id: string; name: string; chapter: string }): ReimportLine {
+	return { id: line.id, name: line.name, chapter: line.chapter };
+}
+
+function sharedPrefix(left: string[], right: string[]) {
+	let count = 0;
+	while (count < left.length && count < right.length && left[count] === right[count]) count++;
+	return count;
+}
+
+function describe(file: CourseFile) {
+	const course = parseCourse(file);
+	const chapterName = new Map(course.chapters.map((chapter) => [chapter.id, chapter.name]));
+	return course.lines.map((line) => ({
+		id: line.id,
+		name: line.name,
+		chapter: chapterName.get(line.chapterId) ?? line.chapterId,
+		signature: line.plies.map((ply) => ply.uci).join(' '),
+		ucis: line.plies.map((ply) => ply.uci)
+	}));
+}
