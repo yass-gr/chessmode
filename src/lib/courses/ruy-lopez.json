@@ -1,0 +1,492 @@
+{
+	"id": "ruy-lopez",
+	"name": "Ruy Lopez",
+	"side": "w",
+	"level": "Club (800–2000)",
+	"tagline": "3.Bb5: slow pressure on e5 and a long-term grip on the centre.",
+	"description": "A complete White repertoire after 1.e4 e5 2.Nf3 Nc6 3.Bb5. You play the classical Closed Ruy: castle, Re1, c3 and h3, then d4 with a big, safe centre and a knight tour to g3. Against the Berlin you choose the quiet 4.d3, and against the Schliemann the calm 4.d3 as well, so you avoid the sharpest theory. The plans repeat across lines — c3 and d4, the Nbd2-f1-g3 manoeuvre, Bxc6 and Nxe5 when e5 is loose — and every common sideline comes with the trap that club players fall into.",
+	"chapters": [
+		{
+			"id": "closed",
+			"name": "Closed Main Line",
+			"moves": "3...a6 4.Ba4 Nf6 5.O-O Be7 6.Re1 b5 7.Bb3 d6 8.c3 O-O 9.h3",
+			"intro": "The heart of the Ruy Lopez. White castles, protects e4 with Re1 and builds the c3–d4 centre. The quiet 9.h3 stops ...Bg4, so the f3-knight keeps defending d4. Black chooses a plan: ...Na5 and ...c5 (Chigorin), the knight tour ...Nb8-d7 (Breyer), or ...Bb7 and ...Re8 (Zaitsev). Our plan barely changes: d4, Nbd2-f1-g3, and a4 or d5 when the moment is right. Remember the bishop on b3 or c2 is our best piece, and the d5 push closes the centre so we can play on the side where we have more space.",
+			"lines": [
+				{
+					"id": "chigorin-qc7",
+					"name": "Chigorin: 9...Na5 11...Qc7",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... d6 8. c3 { Prepares d4 and gives the bishop a retreat on c2 if Black plays ...Na5. } 8... O-O 9. h3 { A key quiet move: it stops ...Bg4, so the knight on f3 can keep supporting d4. } 9... Na5 { The Chigorin. The knight attacks our good bishop and clears the way for ...c5. } 10. Bc2 { Keep the bishop. From c2 it still aims at Black's king and supports e4. } 10... c5 11. d4 { Now we take the centre. Black must decide whether to keep the tension or exchange on d4. } 11... Qc7 { Adds a defender to e5 and lines up on the c-file. } 12. Nbd2 { The knight heads for f1 and g3, or b3 if the c-file opens. } 12... cxd4 13. cxd4 Nc6 { The knight returns to the centre and hits d4. } 14. Nb3 { Covers d4 again and eyes c5 and a5. } 14... a5 15. Be3 { Another defender for d4. Black's queenside pawns look active, but they can become targets. } 15... a4 16. Nbd2 { The knight goes back, and from d2 it can still reach f1-g3. Next Rc1 to fight for the c-file. }"
+				},
+				{
+					"id": "chigorin-bd7",
+					"name": "Chigorin: 12...Bd7",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... d6 8. c3 { Prepares d4 and gives the bishop a retreat on c2 if Black plays ...Na5. } 8... O-O 9. h3 { A key quiet move: it stops ...Bg4, so the knight on f3 can keep supporting d4. } 9... Na5 { The Chigorin. The knight attacks our good bishop and clears the way for ...c5. } 10. Bc2 { Keep the bishop. From c2 it still aims at Black's king and supports e4. } 10... c5 11. d4 { Now we take the centre. Black must decide whether to keep the tension or exchange on d4. } 11... Qc7 { Adds a defender to e5 and lines up on the c-file. } 12. Nbd2 { The knight heads for f1 and g3, or b3 if the c-file opens. } 12... Bd7 { Black keeps the tension and develops. } 13. Nf1 { The classic knight tour: Nf1, then Ng3 or Ne3, aiming at f5 and d5. Our pieces stay flexible while Black waits. } 13... Rfe8 14. Ne3 { From e3 the knight eyes d5 and f5 and keeps e4 safe. Plan: d5 to gain space, then play on the kingside. }"
+				},
+				{
+					"id": "chigorin-nd7",
+					"name": "Chigorin: 11...Nd7",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... d6 8. c3 { Prepares d4 and gives the bishop a retreat on c2 if Black plays ...Na5. } 8... O-O 9. h3 { A key quiet move: it stops ...Bg4, so the knight on f3 can keep supporting d4. } 9... Na5 { The Chigorin. The knight attacks our good bishop and clears the way for ...c5. } 10. Bc2 { Keep the bishop. From c2 it still aims at Black's king and supports e4. } 10... c5 11. d4 { Now we take the centre. Black must decide whether to keep the tension or exchange on d4. } 11... Nd7 { Keres' idea: the knight supports e5 and may jump to b6. } 12. Nbd2 { Same plan as before: develop and keep the centre. } 12... cxd4 13. cxd4 Nc6 14. Nb3 { Covers d4 and keeps the knights out of c4. If Black plays ...a5, Be3 keeps everything protected. }"
+				},
+				{
+					"id": "breyer",
+					"name": "Breyer: 9...Nb8",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... d6 8. c3 { Prepares d4 and gives the bishop a retreat on c2 if Black plays ...Na5. } 8... O-O 9. h3 { A key quiet move: it stops ...Bg4, so the knight on f3 can keep supporting d4. } 9... Nb8 { The Breyer. The knight goes back to come again via d7, where it supports e5 and lets the c-pawn move. } 10. d4 { Take the centre at once while Black regroups. } 10... Nbd7 11. Nbd2 Bb7 12. Bc2 { Protects e4 a second time, freeing the knight on d2 to move. } 12... Re8 13. Nf1 Bf8 14. Ng3 { The knight eyes f5 and h5, close to Black's king. } 14... g6 15. a4 { Open a second front on the queenside, where b5 is a target. } 15... c5 16. d5 { Close the centre and gain space. Black's pieces have less room; we can play on both wings. }"
+				},
+				{
+					"id": "zaitsev",
+					"name": "Zaitsev: 9...Bb7",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... d6 8. c3 { Prepares d4 and gives the bishop a retreat on c2 if Black plays ...Na5. } 8... O-O 9. h3 { A key quiet move: it stops ...Bg4, so the knight on f3 can keep supporting d4. } 9... Bb7 { The Zaitsev: the bishop hits e4 and Black prepares ...Re8 and ...Bf8. } 10. d4 Re8 { More pressure on e4. } 11. Nbd2 { Protects e4 with a piece. } 11... Bf8 12. a4 { Make Black worry about b5 before the knight tour. } 12... h6 13. Bc2 exd4 14. cxd4 Nb4 15. Bb1 { The bishop stays on the b1-h7 diagonal, aiming at Black's king. } 15... c5 16. d5 { Close the centre: the bishop on b7 bites on granite, and the knight on b4 can get stuck. }"
+				},
+				{
+					"id": "smyslov-h6",
+					"name": "9...h6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... d6 8. c3 { Prepares d4 and gives the bishop a retreat on c2 if Black plays ...Na5. } 8... O-O 9. h3 { A key quiet move: it stops ...Bg4, so the knight on f3 can keep supporting d4. } 9... h6 { Stops Ng5 and Bg5 and prepares ...Re8 and ...Bf8. } 10. d4 Re8 11. Nbd2 Bf8 12. Nf1 Bd7 13. Ng3 { The knight is on its ideal square. Next Bc2, then Nf5 or d5 depending on how Black reacts. }"
+				},
+				{
+					"id": "be6",
+					"name": "9...Be6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... d6 8. c3 { Prepares d4 and gives the bishop a retreat on c2 if Black plays ...Na5. } 8... O-O 9. h3 { A key quiet move: it stops ...Bg4, so the knight on f3 can keep supporting d4. } 9... Be6 { A natural-looking move: Black offers to trade our best bishop. } 10. d4 { Let Black take: the trade opens the a-file for our rook. } 10... Bxb3 11. axb3 { Recapture towards the centre. Our rook on a1 hits a6, and Nbd2-f1-g3 follows. Black has given up a good bishop for nothing special. }"
+				},
+				{
+					"id": "anti-marshall",
+					"name": "Anti-Marshall: 7...O-O 8.h3",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... O-O { Black castles first and keeps ...d5 in mind: the Marshall Attack after 8.c3 d5 is a dangerous pawn sacrifice. } 8. h3 { The Anti-Marshall. We skip c3 for now, so ...d5 does not come with enough force. If Black plays ...d6, c3 brings us back to the main line. } 8... Bb7 9. d3 { A quieter centre: we keep e4 solid and avoid all gambits. } 9... d6 10. a3 { Keeps a retreat for the bishop on a2, so ...Na5 does not win it. } 10... Na5 11. Ba2 c5 12. Nc3 { The knight heads for d5, an ideal square that Black cannot easily cover. }"
+				},
+				{
+					"id": "chigorin-early-na5",
+					"name": "8...Na5: early Chigorin",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... d6 8. c3 { Prepares d4 and gives the bishop a retreat on c2 if Black plays ...Na5. } 8... Na5 { The Chigorin plan before castling. } 9. Bc2 c5 10. d4 Qc7 11. h3 { The same quiet move as always: no ...Bg4. } 11... O-O { Now we are back in the Chigorin main line, reached in a different order. } 12. Nbd2 { The knight heads for f1 and g3, or b3 if the c-file opens. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3",
+					"question": "Why does White play 9.h3 before d4?",
+					"options": [
+						"To prepare g4 and a kingside attack",
+						"To stop ...Bg4, so the f3-knight can keep supporting d4",
+						"To give the king an escape square",
+						"To prepare Nh2-g4"
+					],
+					"answer": 1,
+					"explanation": "If Black could pin the knight with ...Bg4, the d4 pawn would lose a key defender. h3 makes d4 safe and keeps our centre solid."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8 10. d4 Nbd7 11. Nbd2 Bb7 12. Bc2 Re8 13. Nf1",
+					"question": "Where is the knight on f1 heading?",
+					"options": [
+						"Back to d2",
+						"g3, eyeing f5 and h5",
+						"h2 and g4",
+						"It stays on f1 to defend the king"
+					],
+					"answer": 1,
+					"explanation": "Nbd2-f1-g3 is the standard Ruy Lopez manoeuvre. It frees the c1-bishop and brings the knight next to Black’s king, with Nf5 a typical idea."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 O-O",
+					"question": "Why does White play 8.h3 here instead of 8.c3?",
+					"options": [
+						"To avoid the Marshall Attack, 8.c3 d5",
+						"Because c3 is a mistake in every Ruy Lopez",
+						"To prepare g4",
+						"To win a pawn on e5"
+					],
+					"answer": 0,
+					"explanation": "After 8.c3 Black can sacrifice a pawn with ...d5, the Marshall, and get a fast attack. 8.h3 sidesteps it; if Black plays ...d6, c3 comes next and we are back in the main line."
+				}
+			]
+		},
+		{
+			"id": "closed-sidelines",
+			"name": "Fifth- and Sixth-Move Alternatives",
+			"moves": "5...Bc5, 5...b5, 5...d6, 6...O-O, 6...d6",
+			"intro": "Before the main line, Black has several sound alternatives. Against an early ...Bc5 (Møller and Arkhangelsk) we play c3 and d4 to hit the bishop with pawns, then Be3 to trade it. Against ...d6 lines we keep the same c3-d4 centre. The most important trap is 6...O-O?: with Re1 protecting e4, Bxc6 and Nxe5 wins a clean pawn. Many of these lines transpose back into the main line, so recognise the familiar positions.",
+			"lines": [
+				{
+					"id": "moller",
+					"name": "Møller: 5...Bc5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Bc5 { The bishop takes the active diagonal towards f2. } 6. c3 { Prepares d4 to hit the bishop with tempo. } 6... b5 7. Bb3 d6 8. d4 { Take the centre. The bishop has to go back. } 8... Bb6 { The same position as the Møller line, reached by a different move order. } 9. Be3 { Challenge the strong b6 bishop. If Black takes on d4 or trades on e3, we keep a big centre. } 9... O-O 10. Nbd2 { Simple development: Re1, h3 and a4 are next. }"
+				},
+				{
+					"id": "arkhangelsk-modern",
+					"name": "Modern Arkhangelsk: 5...b5 6.Bb3 Bc5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... b5 6. Bb3 Bc5 7. c3 { The same answer as against the Møller: c3 and d4. } 7... d6 8. d4 { Take the centre. The bishop has to go back. } 8... Bb6 { The same position as the Møller line, reached by a different move order. } 9. Be3 { Challenge the strong b6 bishop. If Black takes on d4 or trades on e3, we keep a big centre. } 9... O-O 10. Nbd2 { Simple development: Re1, h3 and a4 are next. }"
+				},
+				{
+					"id": "arkhangelsk",
+					"name": "Arkhangelsk: 6...Bb7",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... b5 6. Bb3 Bb7 { The Arkhangelsk: the bishop hits e4 and Black plans ...Bc5. } 7. Re1 { Protects e4 first. } 7... Bc5 8. c3 d6 9. d4 Bb6 10. Be3 { Same idea as the Møller: trade off the strong b6 bishop. } 10... O-O 11. Nbd2 { We have a solid centre and easy development; Black's bishops point at a rock-solid d4. }"
+				},
+				{
+					"id": "sixth-castles-trap",
+					"name": "6...O-O? 7.Bxc6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... O-O { Natural, but it ignores the threat. } 7. Bxc6 { Remove the defender of e5. } 7... dxc6 8. Nxe5 { We win a clean pawn. Unlike move 4, the rook on e1 protects e4, so ...Qd4 no longer wins it back. } 8... Qd4 9. Nf3 Qxe4 { A blunder: the queen walks into the rook's file. } 10. Rxe4 Nxe4 11. d3 { The knight on e4 must retreat. We are a queen for a rook up. }"
+				},
+				{
+					"id": "sixth-castles-qd8",
+					"name": "6...O-O? 7.Bxc6 with 9...Qd8",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... O-O { Natural, but it ignores the threat. } 7. Bxc6 { Remove the defender of e5. } 7... dxc6 8. Nxe5 { We win a clean pawn. Unlike move 4, the rook on e1 protects e4, so ...Qd4 no longer wins it back. } 8... Qd4 9. Nf3 Qd8 { Black accepts being a pawn down. } 10. d3 { Simple: protect e4, then Nc3, h3 and Bf4. Black has the bishop pair, but we have a healthy extra pawn. }"
+				},
+				{
+					"id": "sixth-d6",
+					"name": "6...d6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... d6 { Protects e5 so Bxc6 is no longer a threat. } 7. c3 { Our usual plan: prepare d4 and give the bishop a home on c2. } 7... O-O 8. h3 { Stop ...Bg4 before playing d4. If Black now plays ...b5, Bb3 reaches the main line. } 8... Bd7 9. d4 Re8 10. Nbd2 { Then Nf1-g3. Black is solid but cramped. }"
+				},
+				{
+					"id": "fifth-d6-bd7",
+					"name": "5...d6 6.Re1 Bd7",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... d6 { A Steinitz-style set-up with the knight already on f6. } 6. Re1 { Protects e4. If Black plays ...b5 and ...Be7, Bb3 and c3 bring us into the main line. } 6... Bd7 7. c3 g6 8. d4 { The usual centre. } 8... Bg7 9. Nbd2 { Next Nf1-g3 or Bc2. Our centre gives us more space. }"
+				},
+				{
+					"id": "seventh-d6-bg4-bxf3",
+					"name": "8...Bg4 9.h3 Bxf3",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... d6 8. c3 { Prepares d4 and gives the bishop a retreat on c2 if Black plays ...Na5. } 8... Bg4 { The pin, before White has played h3. } 9. h3 { Ask the question at once. } 9... Bxf3 10. Qxf3 { We have the bishop pair. } 10... Na5 11. Bc2 c5 12. d3 { Keep the centre closed while our pieces regroup with Nd2-f1-g3. } 12... O-O 13. Nd2 { Next Nf1-e3 towards d5 and f5. Our two bishops are a long-term trump. }"
+				},
+				{
+					"id": "seventh-d6-bg4-bh5",
+					"name": "8...Bg4 9.h3 Bh5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Be7 6. Re1 { Defends e4. Now Bxc6 followed by Nxe5 really is a threat, which is why Black's next move is almost forced. } 6... b5 7. Bb3 { The bishop retreats to its best diagonal, aiming at f7 and d5. } 7... d6 8. c3 { Prepares d4 and gives the bishop a retreat on c2 if Black plays ...Na5. } 8... Bg4 { The pin, before White has played h3. } 9. h3 { Ask the question at once. } 9... Bh5 { Black keeps the pin. } 10. d3 { Quiet and solid: we stop worrying about d4 and play Nbd2-f1-g3, which breaks the pin. } 10... Na5 11. Bc2 c5 12. Nbd2 { The knight is ready for f1 and g3, chasing the h5 bishop. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 O-O",
+					"question": "What should White play here?",
+					"options": [
+						"7.c3, as usual",
+						"7.Bxc6, winning the e5 pawn",
+						"7.d4, attacking e5",
+						"7.h3, stopping ...Bg4"
+					],
+					"answer": 1,
+					"explanation": "After 7.Bxc6 dxc6 8.Nxe5 we win a pawn. With Re1 protecting e4, Black’s usual ...Qd4 trick no longer works. That is why Black normally plays 6...b5 first."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Bc5 6. c3 b5 7. Bb3 d6 8. d4 Bb6",
+					"question": "What is White’s plan against the bishop on b6?",
+					"options": [
+						"Ignore it and play g4",
+						"Be3, to trade it off",
+						"Bg5 at once",
+						"a4-a5 to trap it"
+					],
+					"answer": 1,
+					"explanation": "The b6 bishop is Black’s best piece, pressing on d4 and f2. Be3 offers to trade it; Black usually keeps it, but either way our centre stays strong."
+				}
+			]
+		},
+		{
+			"id": "open",
+			"name": "Open Ruy Lopez",
+			"moves": "5...Nxe4 6.d4",
+			"intro": "In the Open Ruy, Black takes on e4 and gets free development. We answer with 6.d4 to open lines while Black’s king is in the centre. After ...b5, ...d5 and ...Be6 we push dxe5, put pawns on c3, and fight for the d4 square with Nbd2-b3 or Nd4. The knight on e4 is Black’s pride, but it can also become a target. Watch for the Tarrasch trap: after ...Qd7, Nxe6 and Rxe4 win material.",
+			"lines": [
+				{
+					"id": "open-tarrasch-trap",
+					"name": "9...Be7 11.Nd4 Qd7?? trap",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Nxe4 { The Open Ruy: Black grabs the pawn and activates the knight. } 6. d4 { Open the centre at once. Black's king is still on e8, and the e4 knight is short of squares. } 6... b5 7. Bb3 d5 { Gives the knight support and frees the c8-bishop. } 8. dxe5 { Gain space and keep a strong pawn on e5. } 8... Be6 9. c3 { Gives the bishop a retreat on c2 and controls d4. } 9... Be7 10. Re1 { Pressure on the knight on e4. } 10... O-O 11. Nd4 { Trade off a defender and aim the knight at e6 and c6. } 11... Qd7 { A famous mistake. } 12. Nxe6 fxe6 13. Rxe4 { If ...dxe4, the d-file opens and our queen takes Black's queen on d7. } 13... dxe4 14. Qxd7 { We have won the queen for a rook. }"
+				},
+				{
+					"id": "open-be7-nxd4",
+					"name": "9...Be7 11...Nxd4",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Nxe4 { The Open Ruy: Black grabs the pawn and activates the knight. } 6. d4 { Open the centre at once. Black's king is still on e8, and the e4 knight is short of squares. } 6... b5 7. Bb3 d5 { Gives the knight support and frees the c8-bishop. } 8. dxe5 { Gain space and keep a strong pawn on e5. } 8... Be6 9. c3 { Gives the bishop a retreat on c2 and controls d4. } 9... Be7 10. Re1 { Pressure on the knight on e4. } 10... O-O 11. Nd4 { Trade off a defender and aim the knight at e6 and c6. } 11... Nxd4 { Black trades knights at once. } 12. cxd4 { Our pawns on d4 and e5 take space, and f3 can kick the e4 knight. Plan: Nc3, Be3, and pressure on d5. }"
+				},
+				{
+					"id": "open-be7-na5",
+					"name": "9...Be7 11...Na5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Nxe4 { The Open Ruy: Black grabs the pawn and activates the knight. } 6. d4 { Open the centre at once. Black's king is still on e8, and the e4 knight is short of squares. } 6... b5 7. Bb3 d5 { Gives the knight support and frees the c8-bishop. } 8. dxe5 { Gain space and keep a strong pawn on e5. } 8... Be6 9. c3 { Gives the bishop a retreat on c2 and controls d4. } 9... Be7 10. Re1 { Pressure on the knight on e4. } 10... O-O 11. Nd4 { Trade off a defender and aim the knight at e6 and c6. } 11... Na5 { Attacks our bishop. } 12. Bc2 { Keep the bishop: now it hits the e4 knight. } 12... Bd7 13. Nd2 { Challenge the e4 knight. Black's queenside pieces are scattered. }"
+				},
+				{
+					"id": "open-bc5-f5",
+					"name": "9...Bc5 11...f5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Nxe4 { The Open Ruy: Black grabs the pawn and activates the knight. } 6. d4 { Open the centre at once. Black's king is still on e8, and the e4 knight is short of squares. } 6... b5 7. Bb3 d5 { Gives the knight support and frees the c8-bishop. } 8. dxe5 { Gain space and keep a strong pawn on e5. } 8... Be6 9. c3 { Gives the bishop a retreat on c2 and controls d4. } 9... Bc5 { The most active square: the bishop eyes f2. } 10. Nbd2 { Hit the e4 knight. } 10... O-O 11. Bc2 { Another attacker on e4. } 11... f5 12. Nb3 { Kick the c5 bishop. } 12... Bb6 13. Nfd4 { The knight on d4 is superb, and our structure is better. Black's f5 and e4 pawns can become loose. }"
+				},
+				{
+					"id": "open-dilworth",
+					"name": "Dilworth: 11...Nxf2",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Nxe4 { The Open Ruy: Black grabs the pawn and activates the knight. } 6. d4 { Open the centre at once. Black's king is still on e8, and the e4 knight is short of squares. } 6... b5 7. Bb3 d5 { Gives the knight support and frees the c8-bishop. } 8. dxe5 { Gain space and keep a strong pawn on e5. } 8... Be6 9. c3 { Gives the bishop a retreat on c2 and controls d4. } 9... Bc5 { The most active square: the bishop eyes f2. } 10. Nbd2 { Hit the e4 knight. } 10... O-O 11. Bc2 { Another attacker on e4. } 11... Nxf2 { The Dilworth: Black gives a knight for a pawn and an attack. } 12. Rxf2 f6 13. exf6 Bxf2+ 14. Kxf2 Qxf6 15. Nf1 { Defend calmly. We have two pieces for a rook; with Kg1, Be3 and Qd2, our pieces should win the long game. }"
+				},
+				{
+					"id": "open-nc5",
+					"name": "9...Nc5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Nxe4 { The Open Ruy: Black grabs the pawn and activates the knight. } 6. d4 { Open the centre at once. Black's king is still on e8, and the e4 knight is short of squares. } 6... b5 7. Bb3 d5 { Gives the knight support and frees the c8-bishop. } 8. dxe5 { Gain space and keep a strong pawn on e5. } 8... Be6 9. c3 { Gives the bishop a retreat on c2 and controls d4. } 9... Nc5 { The knight retreats and eyes our b3 bishop. } 10. Bc2 { Keep the bishop. From c2 it aims at Black's kingside. } 10... Bg4 11. Re1 { Protect e5 and prepare Nbd2-f1-g3. Black is still not castled. }"
+				},
+				{
+					"id": "open-riga",
+					"name": "Riga: 6...exd4",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nf6 5. O-O { Castle first. If Black takes on e4, we have tactics in the centre with d4 and Re1. } 5... Nxe4 { The Open Ruy: Black grabs the pawn and activates the knight. } 6. d4 { Open the centre at once. Black's king is still on e8, and the e4 knight is short of squares. } 6... exd4 { The Riga Variation: Black keeps the extra pawn for now. } 7. Re1 { Pin the knight against the king. } 7... d5 8. Nxd4 { Regain the pawn and hit the c6 knight. } 8... Bd6 9. Nxc6 Bxh2+ { The point of Black's play: a bishop sacrifice. } 10. Kh1 { Not Kxh2: ...Qh4+ and ...Qxf2+ gives Black at least a perpetual check. } 10... Qh4 11. Rxe4+ dxe4 12. Qd8+ Qxd8 13. Nxd8+ Kxd8 14. Kxh2 { The queens are gone and we are better in the endgame: we will win the e4 pawn. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Nxe4 6. d4 b5 7. Bb3 d5 8. dxe5 Be6 9. c3 Be7 10. Re1 O-O 11. Nd4 Qd7",
+					"question": "Black just played 11...Qd7. How does White win material?",
+					"options": [
+						"12.Nxc6, trading knights",
+						"12.Nxe6 fxe6 13.Rxe4",
+						"12.f3, trapping the knight",
+						"12.Bc2, hitting e4"
+					],
+					"answer": 1,
+					"explanation": "After 12.Nxe6 fxe6 13.Rxe4 Black is a piece down, and 13...dxe4 opens the d-file so 14.Qxd7 wins the queen."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Nxe4 6. d4 exd4 7. Re1 d5 8. Nxd4 Bd6 9. Nxc6 Bxh2+",
+					"question": "How should White answer the bishop sacrifice on h2?",
+					"options": [
+						"10.Kxh2",
+						"10.Kh1",
+						"10.Kf1"
+					],
+					"answer": 1,
+					"explanation": "10.Kxh2 Qh4+ lets Black give perpetual check. After 10.Kh1 Qh4 11.Rxe4+ dxe4 12.Qd8+ Qxd8 13.Nxd8+ Kxd8 14.Kxh2 we reach a better endgame."
+				}
+			]
+		},
+		{
+			"id": "berlin",
+			"name": "Berlin Defence: 4.d3",
+			"moves": "3...Nf6 4.d3",
+			"intro": "Against the Berlin we avoid the famous endgame with the quiet 4.d3. We protect e4 with a pawn, play c3, castle, Re1 and h3, then route the knight Nbd2-f1-g3, the same plan as in the Closed Ruy. The bishop drops back to a4 and c2 if attacked. Black often plays ...Bc5; keep a retreat ready for our bishop and the d4 push in reserve. Punish loose moves: ...a6 too early lets Bxc6 and Nxe5 win a pawn.",
+			"lines": [
+				{
+					"id": "berlin-bc5-d6",
+					"name": "4...Bc5 5.c3 O-O 6.O-O d6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Nf6 { The Berlin: Black attacks e4 at once. } 4. d3 { Protect e4 with a pawn and keep things simple. No endgame, no early theory. } 4... Bc5 5. c3 { Prepare d4 and give the bishop a retreat on a4 and c2. } 5... O-O 6. O-O d6 7. h3 { Stop ...Bg4 and keep the knight on f3. } 7... a6 8. Ba4 Ba7 9. Re1 { The Closed Ruy plan: Nbd2-f1-g3 and d4 at the right moment. }"
+				},
+				{
+					"id": "berlin-bc5-d5",
+					"name": "4...Bc5 6...d5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Nf6 { The Berlin: Black attacks e4 at once. } 4. d3 { Protect e4 with a pawn and keep things simple. No endgame, no early theory. } 4... Bc5 5. c3 { Prepare d4 and give the bishop a retreat on a4 and c2. } 5... O-O 6. O-O d5 { Black opens the centre. } 7. Nbd2 { Protect e4 with a piece; we don't need to take on d5. } 7... dxe4 8. dxe4 Qe7 9. Qe2 { Protects e4 and prepares Nc4 or Nb3 to chase the c5 bishop. }"
+				},
+				{
+					"id": "berlin-ng4",
+					"name": "4...Bc5 5.c3 Ng4?!",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Nf6 { The Berlin: Black attacks e4 at once. } 4. d3 { Protect e4 with a pawn and keep things simple. No endgame, no early theory. } 4... Bc5 5. c3 { Prepare d4 and give the bishop a retreat on a4 and c2. } 5... Ng4 { Aims at f2, but one knight alone cannot attack. } 6. O-O { Just castle: the rook now guards f2. } 6... O-O 7. h3 { Kick the knight back. } 7... Nf6 8. Bxc6 { Remove the defender of e5. } 8... dxc6 9. Nxe5 { Black lost two moves with the knight and now a pawn as well. }"
+				},
+				{
+					"id": "berlin-d6-g6",
+					"name": "4...d6 with ...g6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Nf6 { The Berlin: Black attacks e4 at once. } 4. d3 { Protect e4 with a pawn and keep things simple. No endgame, no early theory. } 4... d6 5. c3 { Keep a retreat for the bishop and prepare d4. } 5... g6 6. O-O Bg7 7. Re1 O-O 8. Nbd2 { Nf1 and Ng3 next. Against a ...g6 set-up, d4 or Bg5 with Qd2 are both good plans. }"
+				},
+				{
+					"id": "berlin-be7-trap",
+					"name": "4...Be7? 5.Bxc6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Nf6 { The Berlin: Black attacks e4 at once. } 4. d3 { Protect e4 with a pawn and keep things simple. No endgame, no early theory. } 4... Be7 { Natural, but nothing defends e5 any more. } 5. Bxc6 { With d3 protecting e4, Nxe5 now really wins a pawn. } 5... dxc6 6. Nxe5 { A clean extra pawn. If ...Qd4, Nf3 keeps everything safe. }"
+				},
+				{
+					"id": "berlin-nd4",
+					"name": "4...Nd4 5.Nxd4 exd4 6.e5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Nf6 { The Berlin: Black attacks e4 at once. } 4. d3 { Protect e4 with a pawn and keep things simple. No endgame, no early theory. } 4... Nd4 { Black wants to trade knights. } 5. Nxd4 exd4 6. e5 { Kick the f6 knight while the d4 pawn is cut off. } 6... Nd5 7. O-O { Next Re1, Bc4 and c3 or Qf3: the d4 pawn and the d5 knight are targets. }"
+				},
+				{
+					"id": "berlin-a6",
+					"name": "4...a6? 5.Bxc6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Nf6 { The Berlin: Black attacks e4 at once. } 4. d3 { Protect e4 with a pawn and keep things simple. No endgame, no early theory. } 4... a6 { Looks natural, but it allows a trick. } 5. Bxc6 { Unlike the main Ruy, our e4 pawn is protected by d3, so Nxe5 really wins a pawn. } 5... dxc6 6. Nxe5 { A clean extra pawn. If ...Qd4, Nf3 keeps everything safe. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d3",
+					"question": "Why does White play 4.d3 against the Berlin?",
+					"options": [
+						"To set up a quick attack with f4",
+						"To protect e4 with a pawn and keep a quiet Closed Ruy type of game",
+						"To prepare Bxc6 and win the e5 pawn by force",
+						"Because 4.O-O loses a pawn"
+					],
+					"answer": 1,
+					"explanation": "4.d3 avoids the Berlin endgame and keeps the pieces on. The plan is the same as in the Closed Ruy: c3, castle, Re1, h3 and Nbd2-f1-g3."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d3 a6",
+					"question": "What does White play against 4...a6?",
+					"options": [
+						"5.Ba4",
+						"5.Bxc6, then Nxe5",
+						"5.Bc4",
+						"5.O-O"
+					],
+					"answer": 1,
+					"explanation": "With d3 protecting e4, 5.Bxc6 dxc6 6.Nxe5 simply wins a pawn. Black should not play ...a6 before e5 is protected."
+				}
+			]
+		},
+		{
+			"id": "fourth-moves",
+			"name": "Fourth-Move Sidelines",
+			"moves": "3...a6 4.Ba4 d6, b5, Bc5, Nge7",
+			"intro": "After 4.Ba4 Black does not have to play ...Nf6. The Steinitz Deferred (4...d6) protects e5 first; we answer with c3 and d4 for a big centre, then castle. Against the Siesta (...f5) we take on f5 and develop fast. Against an early ...b5 and ...Na5, we let Black take the bishop and use the open a-file. Several lines transpose to the earlier chapters, so look for familiar positions.",
+			"lines": [
+				{
+					"id": "steinitz-deferred",
+					"name": "Steinitz Deferred: 4...d6 5.c3 Bd7",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... d6 { The Steinitz Deferred: e5 is protected by a pawn. } 5. c3 { Prepare d4 and keep a retreat for the bishop. } 5... Bd7 6. d4 { Take the centre. } 6... Nf6 7. O-O Be7 8. Re1 { Protect e4. If Black takes on d4 we recapture with the pawn; otherwise Nbd2-f1-g3. } 8... O-O 9. Nbd2 { A classic Ruy Lopez position with more space for us. }"
+				},
+				{
+					"id": "steinitz-deferred-nxe4",
+					"name": "4...d6 5.c3 Nf6 6.d4 Nxe4?",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... d6 { The Steinitz Deferred: e5 is protected by a pawn. } 5. c3 { Prepare d4 and keep a retreat for the bishop. } 5... Nf6 6. d4 Nxe4 { Grabs a pawn, but the knight on c6 is pinned. } 7. d5 { Attack the pinned knight. Black will lose a piece. } 7... b5 8. Bc2 { Do not take on c6 yet: the bishop steps away and now both Black knights are attacked. } 8... Nxf2 9. Kxf2 { Black has two pawns for the piece, and the c6 knight is still attacked. We are winning. }"
+				},
+				{
+					"id": "siesta",
+					"name": "Siesta: 4...d6 5.c3 f5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... d6 { The Steinitz Deferred: e5 is protected by a pawn. } 5. c3 { Prepare d4 and keep a retreat for the bishop. } 5... f5 { The Siesta: Black hits e4 at once. } 6. exf5 { Take it; the f-file opens, but so do the light squares around Black's king. } 6... Bxf5 7. O-O Bd3 { Annoying: the bishop stops our kingside development. } 8. Re1 { Hit e5 and get ready to trade the d3 bishop. } 8... Be7 9. Bc2 { Trade off Black's best piece. } 9... Bxc2 10. Qxc2 Nf6 11. d4 { We are ahead in development and Black's e6 square is weak. }"
+				},
+				{
+					"id": "early-b5-na5",
+					"name": "4...b5 5.Bb3 Na5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... b5 5. Bb3 Na5 { Black hunts the bishop at once. } 6. O-O { Let Black take: we open the a-file and gain time. } 6... d6 7. d4 Nxb3 8. axb3 { Our rook on a1 is active, and the d4 pawn pressures e5. Black has spent many moves with the knight. }"
+				},
+				{
+					"id": "fourth-bc5",
+					"name": "4...Bc5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Bc5 { The bishop aims at f2. } 5. O-O { Castle and watch for ...Nf6, which reaches the Møller line. } 5... b5 6. Bb3 Nf6 { This is the Møller position from the previous chapter. } 7. c3 { The same answer as against the Møller: c3 and d4. }"
+				},
+				{
+					"id": "fourth-nge7",
+					"name": "4...Nge7",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... a6 { The Morphy Defence, Black's most common reply: it asks the bishop to decide at once. } 4. Ba4 { Keep the pin. Bxc6 is not a threat yet, because after ...dxc6 Nxe5 Black wins the pawn back with ...Qd4. } 4... Nge7 { A Cozio set-up with ...a6 thrown in. } 5. c3 { Prepare d4 at once. } 5... g6 6. d4 exd4 7. cxd4 b5 8. Bb3 Bg7 9. O-O { A big centre, and Black's king is still in the middle. Next d5, Nc3 or Bg5. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 d6 5. c3 Nf6 6. d4 Nxe4",
+					"question": "How does White punish 6...Nxe4?",
+					"options": [
+						"7.Qe2, attacking the knight",
+						"7.d5, hitting the pinned c6 knight",
+						"7.dxe5, opening the d-file",
+						"7.O-O"
+					],
+					"answer": 1,
+					"explanation": "The c6 knight is pinned to the king by our a4 bishop. 7.d5 attacks it and Black loses a piece."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 d6",
+					"question": "What is White’s plan against the Steinitz Deferred?",
+					"options": [
+						"c3 and d4 to build a big centre",
+						"Bxc6+ and Qd5",
+						"h4 and Ng5",
+						"Nc3 and Nd5"
+					],
+					"answer": 0,
+					"explanation": "With ...d6 Black has protected e5 but given us time. c3 and d4 take the centre while the bishop on a4 keeps a safe retreat on c2."
+				}
+			]
+		},
+		{
+			"id": "third-moves",
+			"name": "Third-Move Sidelines",
+			"moves": "3...Bc5, 3...f5, 3...d6, 3...Nd4, 3...Nge7, 3...g6",
+			"intro": "Black has many alternatives on move three. Against the Classical (3...Bc5) we castle and play c3 and d4 to hit the bishop with pawns. Against the Schliemann (3...f5) we play the calm 4.d3: after ...fxe4 dxe4 our pieces develop easily and e6 is a weak spot. Against the Steinitz (3...d6) we take the centre with d4. Against the Bird (3...Nd4) we trade and attack the lone d4 pawn. In every line, keep an eye on Bxc6 and Nxe5 when e5 runs out of defenders.",
+			"lines": [
+				{
+					"id": "classical-nf6",
+					"name": "Classical: 3...Bc5 4.O-O Nf6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Bc5 { The Classical: the bishop takes its best diagonal. } 4. O-O { Castle first, so c3 and d4 come with tempo later. } 4... Nf6 5. c3 { Prepare d4 to hit the bishop. } 5... O-O 6. d4 Bb6 7. Bg5 { Pin the knight and increase the pressure on e5. } 7... h6 8. Bh4 d6 9. a4 { Threatens a5 to trap or push back the bishop on b6. }"
+				},
+				{
+					"id": "classical-nxe4",
+					"name": "3...Bc5 4.O-O Nf6 5.c3 Nxe4",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Bc5 { The Classical: the bishop takes its best diagonal. } 4. O-O { Castle first, so c3 and d4 come with tempo later. } 4... Nf6 5. c3 { Prepare d4 to hit the bishop. } 5... Nxe4 { Grabs the pawn. } 6. Qe2 { Hit the knight and pin the e-file. } 6... Nf6 7. d4 { The bishop is attacked, and e5 will fall with a big lead in development. } 7... Be7 8. dxe5 Nd5 9. c4 { Chase the knight further. Black is in a mess on the e-file. }"
+				},
+				{
+					"id": "classical-nd4",
+					"name": "3...Bc5 4.O-O Nd4",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Bc5 { The Classical: the bishop takes its best diagonal. } 4. O-O { Castle first, so c3 and d4 come with tempo later. } 4... Nd4 { The knight jumps forward to trade. } 5. Nxd4 Bxd4 6. c3 { Kick the bishop and gain time. } 6... Bb6 7. d4 { A big centre. } 7... c6 8. Ba4 d6 9. Bc2 { The bishop is safe and points at Black's king. Next Nd2-c4 or f4. }"
+				},
+				{
+					"id": "classical-d6",
+					"name": "3...Bc5 4.O-O d6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Bc5 { The Classical: the bishop takes its best diagonal. } 4. O-O { Castle first, so c3 and d4 come with tempo later. } 4... d6 5. c3 Bd7 6. d4 Bb6 7. a4 { Again the a-pawn threatens a5. Black must give the bishop room with ...a6 or ...a5. }"
+				},
+				{
+					"id": "schliemann-bc5",
+					"name": "Schliemann: 3...f5 4.d3 fxe4 5.dxe4 Nf6 6.O-O Bc5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... f5 { The Schliemann: a sharp gambit-style move. } 4. d3 { Calm and strong. We keep e4 covered and avoid all the theory. } 4... fxe4 5. dxe4 Nf6 6. O-O { Castle quickly: the f-file is open, but our king is safer than Black's. } 6... Bc5 7. Nc3 O-O 8. Bg5 { Pin the knight; Nd5 comes next. } 8... d6 9. Nd5 { A dream square: the knight hits f6 and c7, and the light squares around Black's king are weak. }"
+				},
+				{
+					"id": "schliemann-d6",
+					"name": "Schliemann: 6...d6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... f5 { The Schliemann: a sharp gambit-style move. } 4. d3 { Calm and strong. We keep e4 covered and avoid all the theory. } 4... fxe4 5. dxe4 Nf6 6. O-O { Castle quickly: the f-file is open, but our king is safer than Black's. } 6... d6 7. Bc4 { Aim at g8 so Black cannot castle comfortably. } 7... Bg4 8. h3 Bh5 9. Nc3 { Develop; Black's king is stuck and Ng5 ideas are in the air. }"
+				},
+				{
+					"id": "schliemann-nxe4",
+					"name": "Schliemann: 6...Nxe4?",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... f5 { The Schliemann: a sharp gambit-style move. } 4. d3 { Calm and strong. We keep e4 covered and avoid all the theory. } 4... fxe4 5. dxe4 Nf6 6. O-O { Castle quickly: the f-file is open, but our king is safer than Black's. } 6... Nxe4 { Greedy: the e-file opens against Black's own king. } 7. Re1 { Hit the knight and pin the e-file. } 7... Nf6 8. Bxc6 dxc6 9. Rxe5+ { Check first: Black must block, and our queen joins with Qe2. } 9... Be7 10. Qe2 { The pin on the e-file wins time. We are close to winning: Black's king is stuck and Re1 or Bg5 follow. }"
+				},
+				{
+					"id": "steinitz-trap",
+					"name": "Steinitz: 3...d6 Tarrasch Trap",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... d6 { The old Steinitz Defence: solid but passive. } 4. d4 { Take the centre and attack e5 a second time. } 4... Bd7 5. Nc3 Nf6 6. O-O Be7 7. Re1 { e5 is attacked three times. Black must take on d4. } 7... O-O { A famous mistake. } 8. Bxc6 Bxc6 9. dxe5 dxe5 10. Qxd8 Raxd8 11. Nxe5 Bxe4 12. Nxe4 Nxe4 13. Nd3 { Threatens f3, trapping the knight on e4. Black cannot save everything and loses material. }"
+				},
+				{
+					"id": "steinitz-exd4",
+					"name": "Steinitz: 4...exd4",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... d6 { The old Steinitz Defence: solid but passive. } 4. d4 { Take the centre and attack e5 a second time. } 4... exd4 5. Nxd4 Bd7 6. Nc3 Nf6 7. O-O Be7 8. Nxc6 { Trade knights so Black's bishop has to recapture. } 8... Bxc6 9. Bxc6+ bxc6 10. f4 { Space on the kingside: e5 and f5 are next, and Black's split pawns on c6 and c7 are long-term targets. }"
+				},
+				{
+					"id": "bird-c6",
+					"name": "Bird: 3...Nd4",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Nd4 { The Bird: Black offers a knight trade. } 4. Nxd4 exd4 { The d4 pawn cramps us, but it is cut off. } 5. O-O { Castle and attack d4 later with c3. } 5... c6 6. Bc4 Nf6 7. Re1 d6 8. c3 { Hit the d4 pawn. We have a lead in development. }"
+				},
+				{
+					"id": "bird-bc5",
+					"name": "Bird: 5...Bc5",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Nd4 { The Bird: Black offers a knight trade. } 4. Nxd4 exd4 { The d4 pawn cramps us, but it is cut off. } 5. O-O { Castle and attack d4 later with c3. } 5... Bc5 6. Bc4 d6 7. d3 { Keep things solid: c3, Bf4 or f4 next, and Black's d4 pawn needs constant protection. }"
+				},
+				{
+					"id": "cozio",
+					"name": "Cozio: 3...Nge7",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... Nge7 { The Cozio: the knight protects c6 so Bxc6 is not a threat. } 4. O-O g6 5. c3 Bg7 6. d4 exd4 7. cxd4 d5 8. exd5 Nxd5 9. Re1+ Be6 10. Bg5 { Hit the queen. Black's king is still in the centre and the e6 bishop is pinned. }"
+				},
+				{
+					"id": "smyslov",
+					"name": "Smyslov: 3...g6",
+					"pgn": "1. e4 e5 2. Nf3 { Develops with an attack on e5. } 2... Nc6 3. Bb5 { The Ruy Lopez. The bishop attacks the knight that defends e5. Nothing is threatened yet, but the pressure lasts the whole game. } 3... g6 { Black plans ...Bg7. } 4. d4 { Hit the centre before the bishop arrives. } 4... exd4 5. Bg5 { Annoying: the bishop hits the queen and stops ...Bg7 for now. } 5... Be7 6. Bxe7 Qxe7 7. Bxc6 dxc6 8. Qxd4 { We win back the pawn and Black's dark squares on f6 and h6 are weak. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 d6 4. d4 Bd7 5. Nc3 Nf6 6. O-O Be7 7. Re1 O-O",
+					"question": "Black castled. How does White win material?",
+					"options": [
+						"8.Bxc6 Bxc6 9.dxe5",
+						"8.Bg5",
+						"8.d5",
+						"8.Qd3"
+					],
+					"answer": 0,
+					"explanation": "The Tarrasch Trap. After 8.Bxc6 Bxc6 9.dxe5 dxe5 10.Qxd8 Raxd8 11.Nxe5 Bxe4 12.Nxe4 Nxe4 13.Nd3, the e4 knight is short of squares and Black loses material."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 f5 4. d3 fxe4 5. dxe4 Nf6 6. O-O Bc5 7. Nc3 O-O 8. Bg5 d6",
+					"question": "Where does White’s knight belong in this Schliemann line?",
+					"options": [
+						"a4, hitting the bishop",
+						"d5, hitting f6 and c7",
+						"e2, heading for g3",
+						"b1, back home"
+					],
+					"answer": 1,
+					"explanation": "After ...f5 and ...fxe4 the light squares are weak. Nd5 doubles the pressure on the pinned f6 knight and also eyes c7."
+				},
+				{
+					"pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 Bc5 4. O-O Nf6 5. c3 O-O 6. d4 Bb6 7. Bg5 h6 8. Bh4 d6",
+					"question": "What does 9.a4 threaten?",
+					"options": [
+						"a5, attacking the bishop on b6",
+						"Ra3 and a rook lift",
+						"Nothing; it is a waiting move",
+						"b4-b5"
+					],
+					"answer": 0,
+					"explanation": "With the bishop on b6, a4-a5 gains space and drives it back. Black has to spend a move on ...a6 or ...a5."
+				}
+			]
+		}
+	]
+}
