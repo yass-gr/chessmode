@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { seg } from '#lib/components/seg.ts';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { finishLearn } from '#lib/srs.ts';
+	import { parseCourse } from '#lib/courses/parse.ts';
+	import { db } from '#lib/db.ts';
+	import type { CourseFile } from '#lib/courses/types.ts';
 	import type { Color } from '#lib/chess/types.ts';
-	import { newCustomId, saveCustomCourse } from '#lib/courses/custom.ts';
-	import { buildCourse, readPgnTree, type BuiltCourse } from '#lib/courses/pgn-tree.ts';
+	import { copyCourse, newCustomId, saveCustomCourse } from '#lib/courses/custom.ts';
+	import { buildCourse, exportCoursePgn, readPgnTree, type BuiltCourse } from '#lib/courses/pgn-tree.ts';
 
 	let source = $state<'pgn' | 'study'>('study');
 	let pgn = $state('');
@@ -13,7 +18,22 @@
 	let fetching = $state(false);
 	let fetchError = $state('');
 	let saving = $state(false);
-	const id = newCustomId();
+	let id = $state(newCustomId());
+	let previous = $state<CourseFile | undefined>();
+	let loadError = $state('');
+	onMount(async () => {
+		const edit = new URLSearchParams(location.search).get('edit');
+		if (!edit) return;
+		const row = await db.customCourses.get(edit);
+		if (!row) { loadError = 'Course not found on this device.'; return; }
+		previous = row.file; id = row.id; name = row.file.name; side = row.file.side; pgn = exportCoursePgn(row.file); source = 'pgn';
+	});
+	async function readFile(file: File | undefined) { if (file) adopt(await file.text()); }
+	function download() {
+		if (!built || !('ok' in built)) return;
+		const url = URL.createObjectURL(new Blob([exportCoursePgn(built.ok.file)], { type: 'application/x-chess-pgn' }));
+		const link = document.createElement('a'); link.href = url; link.download = 'repertoire.pgn'; link.click(); URL.revokeObjectURL(url);
+	}
 
 	const built = $derived.by((): { ok: BuiltCourse; skipped: number } | { error: string } | undefined => {
 		if (!pgn.trim()) return undefined;
@@ -51,6 +71,18 @@
 		}
 	}
 
+	async function copy() {
+		if (!previous) return;
+		const file = copyCourse(previous);
+		await saveCustomCourse(file);
+		await goto(`/create?edit=${file.id}`, { invalidateAll: true });
+		location.reload();
+	}
+	async function markLearned() {
+		if (!previous || !confirm('Mark every saved line as learned?')) return;
+		for (const line of parseCourse(previous).lines) await finishLearn(line.key, previous.id);
+		loadError = 'All saved lines are marked learned.';
+	}
 	async function create() {
 		if (!built || !('ok' in built)) return;
 		saving = true;
@@ -66,9 +98,11 @@
 		<a class="icon-btn" href="/courses" aria-label="Back">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
 		</a>
-		<h1 class="h-title">Create a course</h1>
+		<h1 class="h-title">{previous ? 'Edit course' : 'Create a course'}</h1>
 	</header>
 
+	{#if loadError}<p class="error">{loadError}</p>{/if}
+	{#if previous}<p class="muted">Saving replaces this course. Unchanged move sequences keep their progress; changed or removed lines lose it.</p><div class="actions"><button class="btn btn-surface" onclick={copy}>Copy saved course</button><button class="btn btn-surface" onclick={markLearned}>Mark saved lines learned</button></div>{/if}
 	<p class="muted lead">Turn your own repertoire into a course. Every branch becomes a line you learn, practice and drill like any other.</p>
 
 	<div class="seg" use:seg role="group" aria-label="Source">
@@ -86,10 +120,11 @@
 		{#if fetchError}<p class="error">{fetchError}</p>{:else if url && !studyId}<p class="hint muted">Paste a public study link, for example lichess.org/study/abcd1234.</p>{/if}
 		{#if pgn && source === 'study'}<p class="hint muted">Loaded {pgn.match(/^\[Event /gm)?.length ?? 1} chapters.</p>{/if}
 	{:else}
-		<label class="field area">
+		<label class="field area" ondragover={(event) => event.preventDefault()} ondrop={(event) => { event.preventDefault(); void readFile(event.dataTransfer?.files[0]); }}>
 			<textarea rows="8" placeholder={'1. e4 c6 2. d4 d5 (2... g6) 3. e5 Bf5 *'} bind:value={pgn} aria-label="PGN" spellcheck={false}></textarea>
 		</label>
-		<p class="hint muted">Variations become separate lines. Comments on your moves are kept as notes.</p>
+		<label>Choose a PGN file <input type="file" accept=".pgn,text/plain" onchange={(event) => readFile(event.currentTarget.files?.[0])} /></label>
+		<p class="hint muted">Paste or drop PGN. Variations become separate lines and comments become notes.</p>
 	{/if}
 
 	<label class="field">
@@ -120,12 +155,13 @@
 					{#each built.ok.conflicts.slice(0, 4) as c (c)}<li>{c}</li>{/each}
 				</ul>
 			{/if}
+		<button class="btn btn-surface" onclick={download}>Export preview as PGN</button>
 		</section>
 	{/if}
 </main>
 
 <div class="cta">
-	<button class="btn btn-primary block" disabled={!built || !('ok' in built) || saving} onclick={create}>Create course</button>
+	<button class="btn btn-primary block" disabled={!built || !('ok' in built) || saving} onclick={create}>{previous ? 'Save changes' : 'Create course'}</button>
 </div>
 
 <style>
@@ -145,6 +181,7 @@
 		align-content: start;
 		padding-bottom: 140px;
 	}
+	.actions { display:flex; flex-wrap:wrap; gap:8px; }
 	.study {
 		display: flex;
 		gap: 8px;
