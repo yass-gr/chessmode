@@ -21,7 +21,7 @@ export interface SessionLog {
 	at: number;
 	/** Local calendar day, `YYYY-MM-DD`. */
 	day: string;
-	mode: 'learn' | 'practice' | 'drill' | 'time' | 'quiz' | 'review';
+	mode: 'learn' | 'practice' | 'drill' | 'time' | 'quiz' | 'review' | 'arena' | 'puzzles';
 	courseId?: string;
 	lines: number;
 	mistakes: number;
@@ -35,12 +35,28 @@ export interface Setting {
 	value: unknown;
 }
 
+/** A rating kept per course for Arena and for Puzzles. */
+export interface RatingRecord {
+	key: `${'arena' | 'puzzle'}/${string}`;
+	kind: 'arena' | 'puzzle';
+	courseId: string;
+	rating: number;
+	games: number;
+	wins: number;
+	draws: number;
+	losses: number;
+	history: { at: number; rating: number }[];
+	/** Puzzle ids already played, so the next pick is fresh. */
+	seen: string[];
+}
+
 export class ChessmodeDB extends Dexie {
 	progress!: EntityTable<LineProgress, 'key'>;
 	sessions!: EntityTable<SessionLog, 'id'>;
 	games!: EntityTable<GameRecord, 'id'>;
 	reviews!: EntityTable<GameReview & { key: string }, 'key'>;
 	settings!: EntityTable<Setting, 'key'>;
+	ratings!: EntityTable<RatingRecord, 'key'>;
 
 	constructor() {
 		super('chessmode');
@@ -51,6 +67,7 @@ export class ChessmodeDB extends Dexie {
 			reviews: 'key, gameId',
 			settings: 'key'
 		});
+		this.version(2).stores({ ratings: 'key, kind, courseId' });
 	}
 }
 
