@@ -219,6 +219,10 @@
 		background: var(--surface-3);
 		box-shadow: var(--d-raised);
 		transform-origin: top left;
+		max-height: min(440px, calc(100dvh - 200px));
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		z-index: 20;
 	}
 	.menu button {
 		display: flex;
