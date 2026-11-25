@@ -29,8 +29,20 @@ function walk(course: Course, plies: Ply[]): Deviation | undefined {
 	return line ? { kind: 'complete', course, ply: plies.length - 1, line } : undefined;
 }
 
-/** The course the game followed longest for the player's side; both sides are tried when the side is unknown. */
-export function findDeviation(courses: Course[], plies: Ply[], userColor?: Color): Deviation | undefined {
+/**
+ * The course the game followed longest for the player's side; both sides are tried when the side is unknown.
+ * Courses in `started` are compared first, so a game is judged against the repertoire the player studies,
+ * and the rest of the catalog only answers when none of those fit.
+ */
+export function findDeviation(courses: Course[], plies: Ply[], userColor?: Color, started?: ReadonlySet<string>): Deviation | undefined {
+	if (started?.size) {
+		const own = longest(courses.filter((c) => started.has(c.id)), plies, userColor);
+		if (own) return own;
+	}
+	return longest(courses, plies, userColor);
+}
+
+function longest(courses: Course[], plies: Ply[], userColor?: Color): Deviation | undefined {
 	let best: Deviation | undefined;
 	for (const course of courses) {
 		if (userColor && course.side !== userColor) continue;
