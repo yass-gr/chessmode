@@ -6,7 +6,7 @@
 	let { children } = $props();
 
 	/** Full-screen flows (a lesson, a review) hide the tab bar. */
-	const immersive = $derived(/^\/(learn|practice\/run|drill\/run|quiz|review)\b/.test(page.url.pathname));
+	const immersive = $derived(/^\/(learn|practice\/run|drill\/run|quiz|review|arena|puzzles)\b/.test(page.url.pathname));
 </script>
 
 <svelte:head>
