@@ -6,6 +6,8 @@ export interface DepthChoice {
  tier: number;
  seen: boolean;
  pinned: LineKey[];
+ /** Sheets already shown: unlocks, the five-line celebration, and per-tier learned/perfected milestones. */
+ acked?: string[];
 }
 export interface DepthTier { name: string; count: number }
 export interface CourseScope {
