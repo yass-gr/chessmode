@@ -1,0 +1,436 @@
+{
+	"id": "queens-gambit",
+	"name": "Queen's Gambit",
+	"side": "w",
+	"level": "Club (800–2000)",
+	"tagline": "1.d4 d5 2.c4: classical pressure on d5 with clear, repeatable plans.",
+	"description": "A complete White repertoire after 1.d4 d5 2.c4. Against the Queen's Gambit Declined and the Slav you exchange on d5 and play for the same long-term plans every time: control of e4 and f5, the minority attack with b4-b5, and pressure on the c-file. Against the Queen's Gambit Accepted you take the whole centre with 3.e4, and every sideline — the Albin, the Chigorin, the Baltic, the Tarrasch — comes with a simple answer and the traps club players actually fall into.",
+	"chapters": [
+		{
+			"id": "qgd-exchange",
+			"name": "QGD Exchange: 5.Bg5",
+			"moves": "1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.cxd5 exd5 5.Bg5",
+			"intro": "Against the Queen's Gambit Declined we take on d5 at once and fix the pawn structure: Black has pawns on d5 and c6 (or c7), we have d4 and e3. Our pieces go to the same squares every time: Bg5 pins the knight that guards d5, Bd3 and Qc2 control f5 and h7 so Black's light-squared bishop has no good diagonal, and the king castles short. The long-term plan is the minority attack: Rb1, b4 and b5, two pawns against three, to leave Black with a weak pawn on c6 or d5. Watch for early ...Bf5 and ...h6: both loosen d5, and Bxf6 often wins a pawn or wrecks Black's kingside.",
+			"lines": [
+				{
+					"id": "exch-main-ng6",
+					"name": "Minority attack: 11...Ng6 12.b4",
+					"pgn": "1. d4 { Takes the centre and opens the c1 bishop. The queen protects d4, so the pawn is safe from the start. } 1... d5 2. c4 { The Queen's Gambit. We offer the c-pawn to pull Black's d-pawn away from the centre. It is not a real gambit: if Black takes, we win the pawn back or take the centre with e4. } 2... e6 { The Queen's Gambit Declined. Black holds d5 firmly, but shuts in the c8 bishop. } 3. Nc3 { A second attacker on d5. } 3... Nf6 4. cxd5 { The Exchange Variation: we fix the structure now. Black must recapture with the e-pawn, and both sides' plans are clear for the rest of the game. } 4... exd5 5. Bg5 { Pins the knight that defends d5. If Black ever moves the queen off the d-file, Bxf6 can win the d5 pawn. } 5... c6 { The most solid move: d5 is now protected by a pawn and the queen gets b6 or c7. } 6. e3 { Opens the f1 bishop and keeps d4 solid. } 6... Be7 7. Bd3 { The bishop's best square: it hits h7 and covers f5, so Black's light-squared bishop cannot come out comfortably. } 7... Nbd7 8. Qc2 { The queen joins the bishop on the b1-h7 diagonal. Now ...Bf5 simply loses a pawn on f5 or h7, and Black's c8 bishop stays passive. } 8... O-O 9. Nf3 Re8 10. O-O Nf8 { Black regroups the knight to defend h7 and prepare ...Ng6 or ...Be6. } 11. Rab1 { Prepares b4-b5, the minority attack: our two queenside pawns against Black's three, to leave a weak pawn on c6 or d5. } 11... Ng6 12. b4 { The minority attack begins. Next a4 and b5; after bxc6 Black is left with a backward c-pawn or an isolated d-pawn, and our rooks attack it on the c-file. }"
+				},
+				{
+					"id": "exch-main-ne4",
+					"name": "Minority attack: 11...Ne4",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 c6 6. e3 Be7 7. Bd3 Nbd7 8. Qc2 O-O 9. Nf3 Re8 10. O-O Nf8 11. Rab1 Ne4 { Black's typical freeing move: the knight jumps in and offers trades. } 12. Bxe7 { Trade the bishops first, so the knight on e4 cannot win the bishop pair by taking on g5. } 12... Qxe7 13. b4 { Carry on with the plan. Trades do not stop the minority attack; they only make Black's weak pawn easier to win. } 13... Nxc3 14. Qxc3 { The queen recaptures and supports b4-b5. Black's queenside pawns are about to be fixed. }"
+				},
+				{
+					"id": "exch-main-h6",
+					"name": "Main line: 9...h6 10.Bh4",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 c6 6. e3 Be7 7. Bd3 Nbd7 8. Qc2 O-O 9. Nf3 h6 { Black asks the bishop late, once ...Qxf6 no longer drops d5 so easily. } 10. Bh4 { Keep the pin. Our bishop stays active and Black's ...h6 is a small weakness. } 10... Re8 11. O-O Nf8 12. Rab1 { Same plan as always: b4 and b5. }"
+				},
+				{
+					"id": "exch-h6",
+					"name": "5...h6 6.Bxf6",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 h6 { Asks the bishop to decide, but spends time and loosens the kingside. } 6. Bxf6 { Take now. If ...Qxf6, Nxd5 wins a pawn because the queen no longer guards d5. So Black has to wreck the kingside pawns. } 6... gxf6 7. e3 c6 8. Bd3 { Our bishop eyes the weakened light squares around Black's king. } 8... Be6 9. Nge2 { The knight heads for f4, where it hits e6 and d5 and cannot be chased by a pawn. Black's doubled f-pawns are a long-term weakness. }"
+				},
+				{
+					"id": "exch-bf5",
+					"name": "5...Bf5? 6.Bxf6",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 Bf5 { A natural developing move, but it leaves b7 and d5 short of defenders. } 6. Bxf6 { Removes the knight that guards d5. ...Qxf6 loses the d5 pawn to Nxd5. } 6... gxf6 7. Qb3 { A double attack on b7 and d5. Black cannot hold both. } 7... c6 8. Qxb7 { Grab the pawn. Black's best is to offer a queen trade. } 8... Qb6 9. Qxb6 axb6 10. e3 { A clean pawn up, and Black's pawns are doubled on both wings. Develop calmly; every endgame is good for us. }"
+				},
+				{
+					"id": "exch-c6-bf5",
+					"name": "5...c6 6.e3 Bf5 7.Qf3",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 c6 6. e3 Bf5 { Black gets the bishop out before we play Bd3. } 7. Qf3 { Hits the bishop, and the pin on f6 means ...Bxb1 or ...Bg4 do not work. Black must retreat or allow doubled pawns. } 7... Bg6 8. Bxf6 Qxf6 9. Qxf6 gxf6 { An endgame where Black's f-pawns are doubled. } 10. Nf3 Nd7 11. Nh4 { The knight hunts the g6 bishop. After Nxg6 Black's pawns are even worse, and we keep the minority attack for later. }"
+				},
+				{
+					"id": "exch-be7",
+					"name": "5...Be7: same plan",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 Be7 6. e3 O-O 7. Bd3 Nbd7 8. Qc2 { Same set-up whatever order Black chooses: Bd3 and Qc2 control f5 and h7. } 8... Re8 9. Nf3 Nf8 10. O-O c6 11. Rab1"
+				},
+				{
+					"id": "exch-bb4",
+					"name": "5...Bb4",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 Bb4 { Pins our knight in return. } 6. e3 O-O 7. Bd3 c5 { Black hits d4 and accepts an isolated pawn if we take. } 8. Ne2 { The knight goes to e2, so if Black takes on c3 we recapture with a piece and keep our pawns healthy. } 8... cxd4 9. Nxd4 { Black's d5 pawn is now isolated. Plan: castle, keep pieces on d4 and f4, and attack the pawn. }"
+				},
+				{
+					"id": "exch-c5",
+					"name": "5...c5?! 6.Bxf6",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 c5 { Active, but it gives up the solid support of d5. } 6. Bxf6 { The usual trick: the knight was d5's main guard. } 6... Qxf6 7. Nxd5 { The pawn falls, and the knight is safe on d5. } 7... Qd8 8. e4 { We are a pawn up with a big centre. Next Nf3, Bb5+ or Bc4, and castle. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 c6 6. e3 Be7 7. Bd3 Nbd7 8. Qc2 O-O 9. Nf3 Re8 10. O-O Nf8 11. Rab1",
+					"question": "What is White preparing with 11.Rab1?",
+					"options": [
+						"A kingside attack with g4",
+						"The minority attack: b4 and b5 to create a weak pawn on c6 or d5",
+						"Doubling rooks on the e-file",
+						"Moving the rook to b3 and then to h3"
+					],
+					"answer": 1,
+					"explanation": "The rook supports b4-b5. When the b-pawn meets c6, Black is left with a weak c-pawn or an isolated d-pawn that our rooks can attack on the c-file."
+				},
+				{
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 h6 6. Bxf6",
+					"question": "Why can't Black recapture with 6...Qxf6?",
+					"options": [
+						"It loses the d5 pawn to Nxd5",
+						"It walks into a knight fork on d5",
+						"Qb3 traps the queen",
+						"It is fine; both recaptures are equal"
+					],
+					"answer": 0,
+					"explanation": "The queen on d8 was guarding d5. Once it goes to f6, Nxd5 wins a pawn, so Black has to take with the g-pawn and damage the kingside."
+				},
+				{
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 c6 6. e3 Be7 7. Bd3 Nbd7",
+					"question": "Why is 8.Qc2 a good move here?",
+					"options": [
+						"It prepares long castling",
+						"With Bd3 it controls f5 and h7, so Black's light-squared bishop has no good square",
+						"It attacks c6",
+						"It defends the g5 bishop"
+					],
+					"answer": 1,
+					"explanation": "The bishop and queen line up on the b1-h7 diagonal. ...Bf5 now drops a pawn, so Black's c8 bishop stays passive."
+				}
+			]
+		},
+		{
+			"id": "qgd-third",
+			"name": "QGD: Third-Move Alternatives",
+			"moves": "1.d4 d5 2.c4 e6 3.Nc3",
+			"intro": "After 3.Nc3 Black has several ways to avoid the main line. Against 3...Be7 and 3...c6 we still exchange on d5, but the bishop goes to f4 instead of g5, because the pin on f6 is not available. When Black's bishop comes to f5, the g4 push is a strong way to chase it and gain space. Against 3...Nf6 followed by ...Nxd5 we grab the whole centre with e4. Against 3...Bb4 we exchange, play Bf4 and e3, and aim for an isolated d5 pawn. The ideas are the same as the main chapter: a fixed structure, active pieces, and pressure on d5.",
+			"lines": [
+				{
+					"id": "be7-bf5-g4",
+					"name": "3...Be7 4.cxd5 exd5 5.Bf4 c6 6.e3 Bf5 7.g4",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Be7 { A clever move order: Black wants to meet Bg5 with ...Bxg5, so we change plans. } 4. cxd5 exd5 5. Bf4 { With no knight on f6 to pin, the bishop goes to f4. It controls b8 and c7 and supports e3. } 5... c6 6. e3 Bf5 { Black gets the bishop out before we can play Bd3. } 7. g4 { Chase the bishop and gain space on the kingside. It looks loose, but Black has no way to hit back in the centre quickly. } 7... Be6 8. h4 { More space. The g4 and h4 pawns cramp Black's kingside, and the e6 bishop blocks Black's own e-file. } 8... Nd7 9. Be2 { Simple development. Next h5, Nf3 or Qc2, and castle long if needed. }"
+				},
+				{
+					"id": "be7-nf6-bd3",
+					"name": "3...Be7 4.cxd5 exd5 5.Bf4 Nf6",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Be7 4. cxd5 exd5 5. Bf4 Nf6 6. e3 O-O 7. Bd3 { The same set-up as against 5.Bg5: the bishop covers f5 and h7. } 7... c6 8. Qc2 { Black's c8 bishop has no good square. } 8... Nbd7 9. Nf3 Re8 10. O-O { Castled and flexible. The minority attack with Rab1 and b4 is the plan again. }"
+				},
+				{
+					"id": "c6-exd5",
+					"name": "3...c6 4.cxd5 exd5 5.Bf4",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 c6 { Black heads for a Semi-Slav set-up. } 4. cxd5 { Exchange again: it takes the fight out of Black's plans with ...dxc4 and ...b5. } 4... exd5 5. Bf4 { Black has not played ...Nf6, so the pin is not available. On f4 the bishop controls d6 and b8. } 5... Bd6 6. Bxd6 Qxd6 7. e3 Nf6 8. Bd3 O-O 9. Nge2 { From e2 the knight can go to f4 or g3 and supports f3 and e4 later. } 9... Re8 10. O-O { Same plans as in the Exchange: minority attack with b4-b5, or f3 and e4 in the centre. }"
+				},
+				{
+					"id": "c6-cxd5",
+					"name": "3...c6 4.cxd5 cxd5",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 c6 4. cxd5 cxd5 { A symmetrical structure, but Black's light-squared bishop is shut in behind e6. } 5. Bf4 { Our bishop is outside the pawn chain; Black's is not. That is the long-term edge. } 5... Nc6 6. e3 Nf6 7. Nf3 { Quiet development. Next Bd3 or Bb5, castle, and use the c-file with Rc1. } 7... Bd6 8. Bg3 { Keep the bishop. If ...Bxg3, hxg3 gives our rook the h-file. } 8... O-O 9. Bd3 { All pieces out. Rc1 and Ne5 are the next ideas. }"
+				},
+				{
+					"id": "nf6-nxd5",
+					"name": "3...Nf6 4.cxd5 Nxd5 5.e4",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 Nxd5 { Black recaptures with the knight to keep the e-pawn on e6. } 5. e4 { Grab the whole centre with tempo on the knight. } 5... Nxc3 6. bxc3 c5 { Black attacks the centre at once. } 7. Nf3 cxd4 8. cxd4 Bb4+ 9. Bd2 Bxd2+ 10. Qxd2 O-O 11. Bc4 { Ideal development: two centre pawns, the bishop aimed at f7, and d4-d5 or a kingside attack to come. } 11... Nc6 12. O-O { Plan: Rad1 or Rfe1 and the d5 push, which opens lines while Black's pieces are passive. }"
+				},
+				{
+					"id": "bb4",
+					"name": "3...Bb4 4.cxd5 exd5 5.Bf4",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Bb4 { A Nimzo-style pin. } 4. cxd5 exd5 5. Bf4 { Develop and control c7. ...Bxc3+ would give us the bishop pair. } 5... Nf6 6. e3 c5 { Black accepts an isolated pawn to free the game. } 7. dxc5 { Take it: Black has to spend time getting the pawn back, and d5 stays isolated. } 7... O-O 8. Bd3 { Develop and castle. Our target is the isolated d5 pawn. }"
+				},
+				{
+					"id": "dxc4-e4",
+					"name": "3...dxc4 4.e4 (transposes)",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 dxc4 { Black gives up the centre. } 4. e4 { Take the centre, exactly as in the Queen's Gambit Accepted. } 4... c5 5. d5 { Gain space before Black can take on d4. After ...Nf6, Bxc4 and ...exd5 exd5 we are in the 3...c5 line of the QGA chapter. } 5... Nf6 6. Bxc4 exd5 7. exd5"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Be7 4. cxd5 exd5 5. Bf4 c6 6. e3 Bf5",
+					"question": "What is White's most direct answer to the bishop on f5?",
+					"options": [
+						"7.g4, chasing the bishop and gaining space",
+						"7.Bd3, offering a trade",
+						"7.f3, preparing e4",
+						"7.Qa4, pinning c6"
+					],
+					"answer": 0,
+					"explanation": "Black cannot easily hit back in the centre, so g4 and h4 gain a lot of space with tempo on the bishop."
+				},
+				{
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 Nxd5",
+					"question": "Black recaptured with the knight. What is White's best plan?",
+					"options": [
+						"5.e4, taking the whole centre with tempo",
+						"5.Bg5, pinning",
+						"5.g3, a fianchetto",
+						"5.Qb3, hitting b7"
+					],
+					"answer": 0,
+					"explanation": "With the e-pawn no longer blocked by a pawn on d5, e4 kicks the knight and gives us two strong centre pawns."
+				}
+			]
+		},
+		{
+			"id": "tarrasch",
+			"name": "Tarrasch Defence",
+			"moves": "1.d4 d5 2.c4 e6 3.Nc3 c5",
+			"intro": "With 3...c5 Black plays for active pieces and accepts an isolated pawn on d5. We take on d5, develop with Nf3, g3 and Bg2, and castle. The fianchetto bishop presses on d5 from a distance, and every trade makes the isolated pawn weaker. After ...cxd4 Nxd4 we keep a knight on d4, the square in front of the pawn. If Black instead pushes ...c4 to gain space, the e4 break blows open the centre. Against the early ...cxd4 gambit, Qa4+ and Qxd4 keep it simple and a pawn up.",
+			"lines": [
+				{
+					"id": "tarrasch-main",
+					"name": "Main line: 9.Bg5 cxd4",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 c5 { The Tarrasch: Black hits the centre at once and is ready to accept an isolated pawn. } 4. cxd5 exd5 5. Nf3 Nc6 6. g3 { The key idea: the bishop goes to g2 and presses on d5 from long range. } 6... Nf6 7. Bg2 Be7 8. O-O O-O 9. Bg5 { Hits the knight that defends d5. Every trade on f6 weakens the isolated pawn further. } 9... cxd4 10. Nxd4 { The knight stands in front of the isolated pawn: the best blockading square. } 10... h6 11. Be3 Re8 12. Rc1 { Rooks to the open c-file. The d5 pawn is fixed and attacked by Bg2, Nc3 and Nd4; we can win it later. }"
+				},
+				{
+					"id": "tarrasch-c4",
+					"name": "Main line: 9.Bg5 c4",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 Nf6 7. Bg2 Be7 8. O-O O-O 9. Bg5 c4 { Black gains space on the queenside and closes the c-file. } 10. Ne5 { The knight takes e5, attacks c4 and c6, and opens the g2 bishop's diagonal against d5. } 10... Be6 11. b3 { Undermines the c4 pawn. If Black takes on b3, d5 loses its support. }"
+				},
+				{
+					"id": "tarrasch-swedish",
+					"name": "Swedish: 6...c4",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 c4 { Black gains space early, but the centre is not secure. } 7. Bg2 Bb4 8. O-O Nge7 9. e4 { The thematic break: open the centre before Black castles. The c4 pawn no longer guards d5. } 9... dxe4 10. Nxe4 { Our pieces are all active and Black's king is still in the middle. Next Re1, Bg5 and d5. }"
+				},
+				{
+					"id": "tarrasch-cxd4",
+					"name": "4...cxd4 5.Qa4+",
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 cxd4 { A gambit: Black gives a pawn for quick development. } 5. Qa4+ { Check first, so the queen can take on d4 with tempo. } 5... Bd7 6. Qxd4 exd5 7. Qxd5 { We are a pawn up. Black will gain time on our queen, so we bring her home next. } 7... Nc6 8. Nf3 Nf6 9. Qd1 { The queen goes back to safety. Next e3, Be2 and castle; the extra pawn decides in the long run. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3",
+					"question": "Why does White play g3 and Bg2 against the Tarrasch?",
+					"options": [
+						"To prepare a kingside pawn storm",
+						"The bishop presses on the isolated d5 pawn from long range",
+						"To defend the e4 square only",
+						"To stop ...Bg4"
+					],
+					"answer": 1,
+					"explanation": "On g2 the bishop hits d5 along the long diagonal, adding to the pressure from Nc3 and later Nd4. The isolated pawn becomes a target."
+				},
+				{
+					"pgn": "1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 c4 7. Bg2 Bb4 8. O-O Nge7",
+					"question": "What is White's strongest plan?",
+					"options": [
+						"9.e4, opening the centre while Black's king is uncastled",
+						"9.b3, attacking c4",
+						"9.a3, asking the bishop",
+						"9.Bf4, developing"
+					],
+					"answer": 0,
+					"explanation": "With ...c4 played, nothing guards d5 from the side. e4 opens lines while Black's king is still on e8."
+				}
+			]
+		},
+		{
+			"id": "qga",
+			"name": "Queen's Gambit Accepted: 3.e4",
+			"moves": "1.d4 d5 2.c4 dxc4 3.e4",
+			"intro": "When Black takes the pawn, we take the centre with 3.e4. The c4 pawn cannot be held, so we win it back with Bxc4 and enjoy two central pawns and a bishop aimed at f7. Black's main tries are counter-strikes: ...e5, ...Nf6, ...c5 and ...Nc6. Against ...e5 we play Nf3 and Bxc4, and meet ...Be6 with a trade and Qb3 against the weak b7 and e6. Against ...Nf6 we push e5 and chase the knight. Against ...c5 and ...Nc6 we push d5 and gain space. If Black tries to keep the pawn with ...b5, a4 and Qf3 win material.",
+			"lines": [
+				{
+					"id": "qga-e5-be6",
+					"name": "3...e5 4.Nf3 exd4 5.Bxc4 Nc6 6.O-O Be6",
+					"pgn": "1. d4 d5 2. c4 dxc4 { The Queen's Gambit Accepted. Black gives up the centre for now and plans to hit back. } 3. e4 { Take the whole centre. The c4 pawn will fall to our bishop. } 3... e5 { The sharpest answer: Black hits d4 straight away. } 4. Nf3 { Develop and defend d4. If ...exd4, we take back on c4 first and the d4 pawn comes later. } 4... exd4 5. Bxc4 { The pawn is back and the bishop aims at f7. } 5... Nc6 6. O-O { Castle first. The d4 pawn is not running away, and the e-file may open. } 6... Be6 { Offers to trade our strong bishop. } 7. Bxe6 fxe6 8. Qb3 { A double attack on b7 and e6. Black's pawns are weak after the trade. } 8... Qd7 9. Qxb7 Rb8 10. Qa6 { The queen is safe on a6 and we are a pawn up for the moment. Next Nbd2 and Nb3 to win back material on d4. }"
+				},
+				{
+					"id": "qga-e5-bb4",
+					"name": "3...e5 4.Nf3 exd4 5.Bxc4 Bb4+",
+					"pgn": "1. d4 d5 2. c4 dxc4 3. e4 e5 4. Nf3 exd4 5. Bxc4 Bb4+ 6. Nbd2 { Block with the knight: it will go to b3 to win back the d4 pawn. } 6... Nc6 7. O-O Nf6 8. e5 { Kick the knight before it settles. } 8... Nd5 9. Nb3 { The knight hits d4. Black's pieces are loose and the d4 pawn will fall. }"
+				},
+				{
+					"id": "qga-e5-bb4-early",
+					"name": "3...e5 4.Nf3 Bb4+",
+					"pgn": "1. d4 d5 2. c4 dxc4 3. e4 e5 4. Nf3 Bb4+ 5. Bd2 { Offer the bishop trade, which takes away Black's best attacking piece. } 5... Bxd2+ 6. Nbxd2 { Recapture with the knight: it eyes c4 and b3. } 6... exd4 7. Bxc4 { Material is level for now, and d4 will fall. } 7... Nc6 8. O-O { Next Nb3 to win back the d4 pawn, with the better centre and development. }"
+				},
+				{
+					"id": "qga-nf6-e5",
+					"name": "3...Nf6 4.e5",
+					"pgn": "1. d4 d5 2. c4 dxc4 3. e4 Nf6 { Attacks e4 at once. } 4. e5 { Gain space with tempo. The knight has to move again. } 4... Nd5 5. Bxc4 Nb6 6. Bb3 { Keep the bishop on the a2-g8 diagonal, where it aims at f7. } 6... Nc6 7. Ne2 { The knight goes to e2 so it does not block the f-pawn and can support d4 from c3 or f4. } 7... Bf5 8. Nbc3 e6 9. O-O { Castled, with space and a solid centre. Next a3, Be3 and the f4-f5 push. }"
+				},
+				{
+					"id": "qga-c5",
+					"name": "3...c5 4.d5",
+					"pgn": "1. d4 d5 2. c4 dxc4 3. e4 c5 { Strikes at d4. } 4. d5 { Gain space. Our d-pawn cramps Black's knights. } 4... Nf6 5. Nc3 e6 6. Bxc4 exd5 7. exd5 { A passed d-pawn supported by our pieces. } 7... Bd6 { Natural, but it lets us check on the e-file before Black castles. } 8. Qe2+ { Black cannot castle out of it. ...Qe7 runs into Nb5, hitting the d6 bishop. } 8... Be7 9. Bb5+ { Another check: the king has to move, because blocking with ...Bd7 or ...Nbd7 loses time and leaves d6 weak. } 9... Kf8 10. Nf3 { Black has lost the right to castle. Next O-O, Bf4 and Rfe1, with the passed d-pawn ready to advance. }"
+				},
+				{
+					"id": "qga-nc6",
+					"name": "3...Nc6 4.Nf3 Bg4 5.d5",
+					"pgn": "1. d4 d5 2. c4 dxc4 3. e4 Nc6 { Pressure on d4. } 4. Nf3 Bg4 5. d5 { Gain space with tempo on the knight. } 5... Ne5 6. Bf4 { Hits the knight; it has no good square. } 6... Ng6 7. Be3 e5 8. Bxc4 { We have the pawn back, more space and a bishop aimed at f7. }"
+				},
+				{
+					"id": "qga-b5",
+					"name": "3...b5?! 4.a4",
+					"pgn": "1. d4 d5 2. c4 dxc4 3. e4 b5 { Tries to keep the extra pawn. } 4. a4 { Attack the pawn that supports c4. } 4... c6 5. axb5 cxb5 6. Nc3 { Hits b5 at once. Careful: Qf3 does not work here, because our own e4 pawn blocks the diagonal to a8. } 6... Bd7 7. d5 { Grab space. Black's queenside pawns are loose, and Nf3, Be2 and b3 will win back the c4 pawn with a big centre. }"
+				},
+				{
+					"id": "qga-e6",
+					"name": "3...e6 4.Bxc4 (transposes)",
+					"pgn": "1. d4 d5 2. c4 dxc4 3. e4 e6 { Too passive: Black does nothing against our centre. } 4. Bxc4 { The pawn is back and we have two centre pawns. } 4... c5 5. d5 { Gain space before Black can take on d4. After ...Nf6, Nc3 and ...exd5 exd5 we are in the 3...c5 line with a strong passed pawn. } 5... Nf6 6. Nc3 exd5 7. exd5"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 d5 2. c4 dxc4 3. e4 b5 4. a4 c6 5. axb5 cxb5",
+					"question": "Black is trying to keep the extra pawn. What is White's best move?",
+					"options": [
+						"6.Nc3, hitting b5",
+						"6.Qf3, hitting the rook on a8",
+						"6.b3",
+						"6.Bxb5+"
+					],
+					"answer": 0,
+					"explanation": "Qf3 looks tempting, but our own e4 pawn blocks the diagonal to a8. Nc3 attacks b5, and Black's queenside pawns soon fall apart."
+				},
+				{
+					"pgn": "1. d4 d5 2. c4 dxc4 3. e4 e5 4. Nf3 exd4 5. Bxc4 Nc6 6. O-O Be6 7. Bxe6 fxe6",
+					"question": "What is White's best move?",
+					"options": [
+						"8.Qb3, hitting b7 and e6",
+						"8.Bg5",
+						"8.Qd3",
+						"8.e5"
+					],
+					"answer": 0,
+					"explanation": "After the trade on e6 Black's pawns are weak. Qb3 attacks both b7 and e6, and Black cannot defend everything comfortably."
+				}
+			]
+		},
+		{
+			"id": "slav",
+			"name": "Slav: Exchange Variation",
+			"moves": "1.d4 d5 2.c4 c6 3.cxd5 cxd5 4.Nc3 Nf6 5.Bf4",
+			"intro": "Against the Slav we exchange on d5. The position is symmetrical, but it is our move and the c-file belongs to whoever gets there first. The bishop goes to f4 before e3 so it is not shut in, then Nf3 and a bishop to d3 or b5. When Black develops the bishop to f5 before the knight comes to c6, Qb3 hits b7 straight away. Typical plans: Rc1 and pressure down the c-file, Ne5 to occupy a central outpost, and Bb5 to pin the c6 knight. Black's most common mistake is to leave b7 or c6 loose.",
+			"lines": [
+				{
+					"id": "slav-nc6-bf5",
+					"name": "5...Nc6 6.e3 Bf5 7.Nf3 e6 8.Bb5",
+					"pgn": "1. d4 d5 2. c4 c6 { The Slav: Black supports d5 with a pawn that keeps the c8 bishop free. } 3. cxd5 { The Exchange Slav. The structure is symmetrical, but the c-file opens and we have the first move there. } 3... cxd5 4. Nc3 { Pressure on d5 and control of e4. } 4... Nf6 5. Bf4 { The bishop comes out before e3 so it is not locked in. It controls b8 and the c7 square. } 5... Nc6 6. e3 Bf5 7. Nf3 e6 8. Bb5 { Pins the knight. If we take on c6, Black is left with a weak pawn on the c-file. } 8... Nd7 9. Qa4 { Adds pressure on c6. Black must keep defending it. } 9... Rc8 10. O-O { Castled. Rc1 and Ne5 put more pressure on c6. }"
+				},
+				{
+					"id": "slav-nc6-a6",
+					"name": "5...Nc6 6.e3 a6",
+					"pgn": "1. d4 d5 2. c4 c6 3. cxd5 cxd5 4. Nc3 Nf6 5. Bf4 Nc6 6. e3 a6 { Stops Bb5 and Nb5. } 7. Nf3 Bg4 8. Be2 e6 9. O-O { Calm development. Next Rc1 and Ne5, or h3 to ask the bishop. } 9... Be7 10. Rc1 { The rook takes the open c-file. Black has to watch c6 and c7. }"
+				},
+				{
+					"id": "slav-nc6-bg4",
+					"name": "5...Nc6 6.e3 Bg4 7.Qb3",
+					"pgn": "1. d4 d5 2. c4 c6 3. cxd5 cxd5 4. Nc3 Nf6 5. Bf4 Nc6 6. e3 Bg4 { The bishop leaves the queenside, so b7 has one defender less. } 7. Qb3 { Hits b7 and d5. Black has to deal with both. } 7... Na5 8. Qa4+ Bd7 9. Qc2 { The queen goes back to the c-file. Black's knight on a5 is offside and our development is smoother. }"
+				},
+				{
+					"id": "slav-bf5-qb3",
+					"name": "5...Bf5 6.e3 e6 7.Qb3",
+					"pgn": "1. d4 d5 2. c4 c6 3. cxd5 cxd5 4. Nc3 Nf6 5. Bf4 Bf5 { Black copies us, but the knight is not yet on c6. } 6. e3 e6 7. Qb3 { Hits b7. With no knight on c6, Black has no easy way to defend it. } 7... Qb6 8. Qxb6 axb6 { Black avoids losing a pawn but gets doubled b-pawns. } 9. Bb5+ { Check first: Black has to block with the knight, and the doubled b-pawns stay a long-term target. } 9... Nc6 10. f3 { Takes e4 away from Black's knight and gives our king f2. Next Nge2, Kf2 and the g4 push against the f5 bishop. }"
+				},
+				{
+					"id": "slav-e6",
+					"name": "5...e6 6.e3",
+					"pgn": "1. d4 d5 2. c4 c6 3. cxd5 cxd5 4. Nc3 Nf6 5. Bf4 e6 { Solid, but Black's light-squared bishop is shut in for good. } 6. e3 Nc6 { The same position as 3...c6 in the QGD chapter. } 7. Nf3 Bd6 8. Bg3 O-O 9. Bd3"
+				},
+				{
+					"id": "slav-a6",
+					"name": "5...a6 6.e3",
+					"pgn": "1. d4 d5 2. c4 c6 3. cxd5 cxd5 4. Nc3 Nf6 5. Bf4 a6 { Takes b5 away. } 6. e3 Nc6 7. Nf3 Bf5 8. Ne5 { Occupy the central outpost and threaten Nxc6 to leave Black with a weak c-pawn. } 8... e6 9. g4 { Hunt the bishop. Black's pieces have to give ground. } 9... Bg6 10. Qa4 { Pins the c6 knight. Nxc6 is the threat, and h4-h5 against the g6 bishop is still to come. }"
+				},
+				{
+					"id": "slav-nc6-early",
+					"name": "4...Nc6 5.Bf4",
+					"pgn": "1. d4 d5 2. c4 c6 3. cxd5 cxd5 4. Nc3 Nc6 5. Bf4 { Same development: the bishop comes out before e3. } 5... Bf5 6. e3 e6 7. Nf3 { Black's Nf6 is not on the board yet, so we play our normal set-up. } 7... Nf6 8. Bb5"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 d5 2. c4 c6 3. cxd5 cxd5 4. Nc3 Nf6 5. Bf4 Bf5 6. e3 e6",
+					"question": "What is White's strongest move?",
+					"options": [
+						"7.Qb3, attacking b7",
+						"7.Nf3",
+						"7.Bd3",
+						"7.Rc1"
+					],
+					"answer": 0,
+					"explanation": "With the c8 bishop gone and no knight on c6, b7 is weak. Qb3 forces Black to make a concession, such as doubled b-pawns after ...Qb6."
+				},
+				{
+					"pgn": "1. d4 d5 2. c4 c6 3. cxd5 cxd5 4. Nc3 Nf6 5. Bf4 Nc6 6. e3 Bf5 7. Nf3 e6 8. Bb5",
+					"question": "What is the idea behind 8.Bb5?",
+					"options": [
+						"To trade bishops and draw",
+						"To pin the c6 knight and put pressure on c6 down the c-file",
+						"To attack e8",
+						"To prepare Ba4 and Bb3"
+					],
+					"answer": 1,
+					"explanation": "The pin ties Black down. With Qa4, Rc1 and Ne5 we keep piling on c6."
+				}
+			]
+		},
+		{
+			"id": "others",
+			"name": "Albin, Chigorin and Other Second Moves",
+			"moves": "1.d4 d5 2.c4 ...",
+			"intro": "Black has several ways to avoid the main defences on move two. Against the Albin Counter-Gambit (2...e5) we take the pawn, play Nf3 and g3, and give the extra pawn back only on our terms; never play an early e3, which walks into tricks. Against the Chigorin (2...Nc6) we play Nf3 and meet ...Bg4 with cxd5, taking the bishop pair. Against the Baltic (2...Bf5) and the Marshall (2...Nf6) we take on d5 and use our extra central control. Against 2...c5 we take on d5 and develop quickly while Black's queen is in the centre.",
+			"lines": [
+				{
+					"id": "albin-bg4",
+					"name": "Albin: 5...Bg4",
+					"pgn": "1. d4 d5 2. c4 e5 { The Albin Counter-Gambit: Black gives a pawn to get a cramping pawn on d4. } 3. dxe5 d4 { The d4 pawn is the point. Our e-pawn is now blocked from moving to e3 safely. } 4. Nf3 { The best development. Do not play e3, which runs into ...Bb4+ and tricks on the e1-a5 diagonal. } 4... Nc6 5. g3 { The bishop goes to g2, where it attacks along the long diagonal and supports the queenside. } 5... Bg4 6. Bg2 Qd7 7. O-O O-O-O 8. Nbd2 { The knight goes to b3 or e4. Next Qa4 and b4-b5 attack Black's king, while we keep the extra pawn on e5. }"
+				},
+				{
+					"id": "albin-nge7",
+					"name": "Albin: 5...Nge7",
+					"pgn": "1. d4 d5 2. c4 e5 3. dxe5 d4 4. Nf3 Nc6 5. g3 Nge7 { Black wants to win back the e5 pawn with ...Ng6. } 6. Bg2 Ng6 7. O-O Ngxe5 8. Nxe5 Nxe5 9. Qa4+ { Check first: it forces a concession on the queenside and gets the queen to an active square. } 9... c6 10. Rd1 { The d4 pawn is cut off and attacked by the rook. The g2 bishop and our queen make Black's queenside uncomfortable. }"
+				},
+				{
+					"id": "albin-be6",
+					"name": "Albin: 5...Be6",
+					"pgn": "1. d4 d5 2. c4 e5 3. dxe5 d4 4. Nf3 Nc6 5. g3 Be6 { Black targets c4. } 6. Nbd2 { Defends c4 and prepares Bg2 and O-O. } 6... Qd7 7. Bg2 Bh3 8. O-O Bxg2 9. Kxg2 { We are a pawn up and our king is safe. Next Qa4, a3 and b4. }"
+				},
+				{
+					"id": "chigorin",
+					"name": "Chigorin: 2...Nc6 3.Nf3 Bg4",
+					"pgn": "1. d4 d5 2. c4 Nc6 { The Chigorin: pieces before pawns, and pressure on d4. } 3. Nf3 { Defend d4. } 3... Bg4 4. cxd5 { Take on d5 first. If ...Qxd5, the queen is exposed after Nc3. } 4... Bxf3 5. gxf3 { Recapture with the pawn: we have the bishop pair and our centre stays solid. } 5... Qxd5 6. e3 e5 7. Nc3 Bb4 8. Bd2 Bxc3 9. bxc3 { Two bishops, an open g-file and a strong centre. Next Rg1, Rb1 and c4. }"
+				},
+				{
+					"id": "baltic",
+					"name": "Baltic: 2...Bf5 3.cxd5",
+					"pgn": "1. d4 d5 2. c4 Bf5 { The Baltic Defence: Black develops the bishop before ...e6. } 3. cxd5 { Take the pawn. Black has to spend time getting it back. } 3... Bxb1 4. Rxb1 { Recapture with the rook: we keep the bishop pair. } 4... Qxd5 5. Nf3 { Develop and threaten Nc3 with tempo on the queen. Black has no central pawns and we have both bishops. } 5... Nf6 6. a3 { Keep the queen off b4 and a5. Next e3, Nc3 and b4. }"
+				},
+				{
+					"id": "marshall-def",
+					"name": "Marshall: 2...Nf6 3.cxd5",
+					"pgn": "1. d4 d5 2. c4 Nf6 { The Marshall Defence: Black develops but leaves d5 short of support. } 3. cxd5 Nxd5 4. e4 { Take the whole centre with tempo on the knight. } 4... Nf6 5. Nc3 e5 6. Nf3 { Develop. If ...exd4, Qxd4 and we are well ahead in development. } 6... exd4 7. Qxd4 { The queen is safe in the centre, and the e4 pawn is solid. } 7... Qxd4 8. Nxd4 { Better development and space, with a pleasant endgame. }"
+				},
+				{
+					"id": "symmetrical",
+					"name": "2...c5 3.cxd5",
+					"pgn": "1. d4 d5 2. c4 c5 { Symmetrical, but Black's d5 pawn becomes a target. } 3. cxd5 Qxd5 4. Nf3 { Develop. If ...cxd4, Nc3 gains time on the queen. } 4... cxd4 5. Nc3 Qa5 6. Nxd4 Nf6 7. Bd2 { Threatens Nb3 or Nd5 with tempo. We are ahead in development. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 d5 2. c4 e5 3. dxe5 d4",
+					"question": "Which plan is best for White?",
+					"options": [
+						"4.Nf3 and g3, keeping the extra pawn safe",
+						"4.e3, attacking d4",
+						"4.e4, gaining space",
+						"4.Qa4+"
+					],
+					"answer": 0,
+					"explanation": "Nf3 and g3 develop safely. 4.e3? walks into ...Bb4+ and tricks on the e1-a5 diagonal."
+				},
+				{
+					"pgn": "1. d4 d5 2. c4 Nc6 3. Nf3 Bg4 4. cxd5 Bxf3",
+					"question": "How should White recapture?",
+					"options": [
+						"5.gxf3, keeping the bishop pair and a solid centre",
+						"5.exf3",
+						"5.dxc6",
+						"5.Qa4"
+					],
+					"answer": 0,
+					"explanation": "gxf3 keeps both bishops and opens the g-file. dxc6? loses to ...Bxd1 and our queen."
+				}
+			]
+		}
+	]
+}
