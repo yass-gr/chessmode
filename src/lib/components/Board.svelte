@@ -21,8 +21,13 @@
 	import type { Key } from 'chessground/types';
 	import type { DrawShape, DrawBrushes } from 'chessground/draw';
 	import { Chess, type Square } from 'chess.js';
+ import { boardColors } from '#lib/settings/appearance.ts';
+ import type { BoardTheme, PieceSet } from '#lib/settings/types.ts';
+ import { reducedMotion } from '#lib/motion.ts';
+ import { resolvePremove, type QueuedPremove } from '#lib/settings/premove.ts';
 	import 'chessground/assets/chessground.base.css';
 	import 'chessground/assets/chessground.cburnett.css';
+ import './board-assets/pieces.css';
 
 	interface Props {
 		fen: string;
@@ -33,6 +38,9 @@
 		arrows?: Arrow[];
 		marker?: Marker;
 		coordinates?: boolean;
+  theme?: BoardTheme;
+  pieces?: PieceSet;
+  premove?: { session: string };
 		onmove?: (uci: string) => void;
 	}
 
@@ -44,11 +52,15 @@
 		arrows = [],
 		marker,
 		coordinates = true,
+  theme = 'default',
+  pieces = 'default',
+  premove,
 		onmove
 	}: Props = $props();
 
 	let el: HTMLDivElement;
 	let cg: Api | undefined;
+ let queued: QueuedPremove | undefined;
 
 	const BRUSHES: Record<Brush, string> = {
 		accent: '#ff6b2c',
@@ -77,6 +89,15 @@
 			game = undefined;
 		}
 		const turn = game?.turn() ?? 'w';
+  if (queued && (queued.session !== premove?.session || movable === 'none' || movable === 'both')) { queued = undefined; cg.cancelPremove(); }
+  if (queued && queued.fen !== fen) {
+   const pending = queued; queued = undefined; cg.cancelPremove();
+   if (premove && (movable === 'w' || movable === 'b')) {
+    const move = resolvePremove(pending, fen, premove.session, movable);
+    const currentFen = fen, currentSession = premove.session;
+    if (move) queueMicrotask(() => { if (fen === currentFen && premove?.session === currentSession) onmove?.(move); });
+   }
+  }
 		const canMove = movable === 'both' || movable === turn;
 		cg.set({
 			fen,
@@ -85,9 +106,10 @@
 			lastMove: lastMove as Key[] | undefined,
 			check: game?.inCheck() ? (turn === 'w' ? 'white' : 'black') : false,
 			coordinates,
+   premovable: { enabled: !!premove && (movable === 'w' || movable === 'b') },
 			movable: {
 				free: false,
-				color: canMove ? (turn === 'w' ? 'white' : 'black') : undefined,
+				color: movable === 'both' ? (turn === 'w' ? 'white' : 'black') : movable === 'w' ? 'white' : movable === 'b' ? 'black' : undefined,
 				dests: canMove && game ? legalDests(game) : new Map()
 			}
 		});
@@ -104,9 +126,9 @@
 
 	onMount(() => {
 		cg = Chessground(el, {
-			animation: { enabled: true, duration: 200 },
+			animation: { enabled: !reducedMotion(), duration: 200 },
 			highlight: { lastMove: true, check: true },
-			premovable: { enabled: false },
+			premovable: { enabled: true, events: { set: (from, to) => { const current = cg?.state.premovable.current; if (premove && (movable === 'w' || movable === 'b') && current?.[0] === from && current[1] === to && new Chess(fen).turn() !== movable) queued = { from, to, fen, session: premove.session }; else cg?.cancelPremove(); }, unset: () => { if (!cg?.state.premovable.current) queued = undefined; } } },
 			draggable: { enabled: true, showGhost: true },
 			drawable: {
 				enabled: true,
@@ -134,7 +156,7 @@
 
 	$effect(() => {
 		// Track every prop that feeds the board.
-		void [fen, orientation, movable, lastMove, arrows, coordinates];
+		void [fen, orientation, movable, lastMove, arrows, coordinates, premove];
 		apply();
 	});
 
@@ -148,7 +170,7 @@
 	});
 </script>
 
-<div class="board-wrap">
+<div class:piece-geometric={pieces === 'geometric'} class:piece-outline={pieces === 'outline'} class="board-wrap" style:--light={boardColors[theme][0]} style:--dark={boardColors[theme][1]}>
 	<div class="cg-host" bind:this={el}></div>
 	{#if marker && markerPos}
 		<span
@@ -207,10 +229,9 @@
 		inset: 0;
 	}
 	.board-wrap :global(cg-board) {
-		background-color: var(--sq-light);
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cpath fill='%238b8378' d='M1 0h1v1H1zM3 0h1v1H3zM5 0h1v1H5zM7 0h1v1H7zM0 1h1v1H0zM2 1h1v1H2zM4 1h1v1H4zM6 1h1v1H6zM1 2h1v1H1zM3 2h1v1H3zM5 2h1v1H5zM7 2h1v1H7zM0 3h1v1H0zM2 3h1v1H2zM4 3h1v1H4zM6 3h1v1H6zM1 4h1v1H1zM3 4h1v1H3zM5 4h1v1H5zM7 4h1v1H7zM0 5h1v1H0zM2 5h1v1H2zM4 5h1v1H4zM6 5h1v1H6zM1 6h1v1H1zM3 6h1v1H3zM5 6h1v1H5zM7 6h1v1H7zM0 7h1v1H0zM2 7h1v1H2zM4 7h1v1H4zM6 7h1v1H6z'/%3E%3C/svg%3E");
-		background-size: 100% 100%;
+		background: conic-gradient(var(--light) 25%, var(--dark) 0 50%, var(--light) 0 75%, var(--dark) 0) 0 0 / 25% 25%;
 	}
+	.board-wrap :global(cg-board square.current-premove) { background-color: rgba(255, 107, 44, 0.5); }
 	.board-wrap :global(cg-board square.last-move) {
 		background-color: rgba(255, 143, 87, 0.42);
 	}

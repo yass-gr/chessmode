@@ -1,8 +1,11 @@
 <script lang="ts">
 	import 'chessground/assets/chessground.cburnett.css';
+ import './board-assets/pieces.css';
+ import { boardColors } from '#lib/settings/appearance.ts';
+ import type { BoardTheme, PieceSet } from '#lib/settings/types.ts';
 
 	/** A static, non-interactive board thumbnail. Uses the same cburnett pieces as the main board. */
-	let { fen, orientation = 'white', size = 56 }: { fen: string; orientation?: 'white' | 'black'; size?: number } = $props();
+	let { fen, orientation = 'white', size = 56, theme = 'default', pieces: pieceSet = 'default' }: { fen: string; orientation?: 'white' | 'black'; size?: number; theme?: BoardTheme; pieces?: PieceSet } = $props();
 
 	const NAMES: Record<string, string> = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
 
@@ -28,7 +31,7 @@
 	});
 </script>
 
-<div class="mini cg-wrap" style:width="{size}px" style:height="{size}px" aria-hidden="true">
+<div class:piece-geometric={pieceSet === 'geometric'} class:piece-outline={pieceSet === 'outline'} class="mini cg-wrap" style:width="{size}px" style:height="{size}px" aria-hidden="true" style:--light={boardColors[theme][0]} style:--dark={boardColors[theme][1]}>
 	{#each pieces as p (p.x * 8 + p.y)}
 		<piece class={p.cls} style:left="{p.x * 12.5}%" style:top="{p.y * 12.5}%"></piece>
 	{/each}
@@ -40,9 +43,7 @@
 		flex: 0 0 auto;
 		border-radius: 10px;
 		overflow: hidden;
-		background-color: var(--sq-light);
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cpath fill='%238b8378' d='M1 0h1v1H1zM3 0h1v1H3zM5 0h1v1H5zM7 0h1v1H7zM0 1h1v1H0zM2 1h1v1H2zM4 1h1v1H4zM6 1h1v1H6zM1 2h1v1H1zM3 2h1v1H3zM5 2h1v1H5zM7 2h1v1H7zM0 3h1v1H0zM2 3h1v1H2zM4 3h1v1H4zM6 3h1v1H6zM1 4h1v1H1zM3 4h1v1H3zM5 4h1v1H5zM7 4h1v1H7zM0 5h1v1H0zM2 5h1v1H2zM4 5h1v1H4zM6 5h1v1H6zM1 6h1v1H1zM3 6h1v1H3zM5 6h1v1H5zM7 6h1v1H7zM0 7h1v1H0zM2 7h1v1H2zM4 7h1v1H4zM6 7h1v1H6z'/%3E%3C/svg%3E");
-		background-size: 100% 100%;
+		background: conic-gradient(var(--light) 25%, var(--dark) 0 50%, var(--light) 0 75%, var(--dark) 0) 0 0 / 25% 25%;
 		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
 	}
 	piece {

@@ -1,0 +1,1 @@
+The geometric and outline chess piece sets in this directory are original Chessmode artwork, licensed under GPL-3.0-or-later. Each set was created for this project. The default cburnett set is supplied by chessground under its GPL-3.0 license.
