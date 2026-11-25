@@ -78,7 +78,7 @@ function games(pgn: string): { headers: Record<string, string>; movetext: string
 
 const clean = (text: string) =>
 	text
-		.replace(/\[%[^\]]*\]/g, '')
+		.replace(/\[%(?!cal\b|csl\b)[^\]]*\]/g, '')
 		.replace(/\s+/g, ' ')
 		.trim();
 
@@ -207,4 +207,33 @@ export function exportCoursePgn(file: CourseFile): string {
 	return file.chapters.flatMap((chapter) => chapter.lines.map((line) =>
 		`[Event "${escape(file.name)}"]\n[Chapter "${escape(chapter.name)}"]\n[Line "${escape(line.name)}"]\n\n${line.pgn} *`
 	)).join('\n\n');
+}
+
+/** Build separate chapters from named PGN games, merging games with the same chapter header. */
+export function buildPgnCourse(pgn: string, options: { id: string; name: string; side: Color }): BuiltCourse & { skipped: number } {
+ const list = games(pgn);
+ const usable = list.filter((game) => standard(game.headers));
+ if (!usable.length) throw new Error('No standard starting-position games found in the PGN.');
+ const groups = new Map<string, string[]>();
+ for (const game of usable) {
+  const name = game.headers.Chapter || game.headers.Event || 'Lines';
+  const group = groups.get(name) ?? [];
+  group.push(game.movetext);
+  groups.set(name, group);
+ }
+ let base: CourseFile | undefined;
+ const chapters: CourseFile['chapters'] = [];
+ const conflicts: string[] = [];
+ let serial = 0;
+ for (const [name, movetext] of groups) {
+  const result = buildCourse(readPgnTree(movetext.map((text) => `[Event "game"]\n\n${text}`).join('\n\n')).tree, options);
+  base ??= result.file;
+  conflicts.push(...result.conflicts.map((conflict) => `${name}: ${conflict}`));
+  chapters.push({ ...result.file.chapters[0], id: `chapter-${chapters.length + 1}`, name,
+   lines: result.file.chapters[0].lines.map((line) => ({ ...line, id: `line-${++serial}` })) });
+ }
+ if (!base) throw new Error('The PGN has no moves.');
+ const count = chapters.reduce((total, chapter) => total + chapter.lines.length, 0);
+ const file = { ...base, chapters, tagline: `${count} ${count === 1 ? 'line' : 'lines'} imported from PGN.` };
+ return { file, conflicts, skipped: list.length - usable.length };
 }
