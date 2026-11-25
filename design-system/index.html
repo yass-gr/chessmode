@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chessmode design system</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  /* surfaces */
+  --bg:#0d0d0e;
+  --surface-1:#161617;
+  --surface-2:#1d1d1f;
+  --surface-3:#262628;
+  --surface-4:#313134;
+  --stroke:rgba(255,255,255,.07);
+  --stroke-2:rgba(255,255,255,.12);
+  --highlight:rgba(255,255,255,.06);
+
+  /* text */
+  --text:#f4f4f2;
+  --text-2:#a3a3a8;
+  --text-3:#6f6f75;
+
+  /* accent */
+  --accent:#ff6b2c;
+  --accent-hi:#ff8f57;
+  --accent-lo:#e5501a;
+  --accent-lip:#b83d10;
+  --accent-ink:#ffffff;
+  --accent-soft:rgba(255,107,44,.14);
+  --accent-line:rgba(255,107,44,.55);
+
+  /* status */
+  --good:#3ecf8e;
+  --warn:#f5b83d;
+  --bad:#ff5a52;
+
+  /* move labels (Chessmode's own names) */
+  --m-book:#8e8e94;
+  --m-best:#3ecf8e;
+  --m-good:#7cc4ff;
+  --m-loose:#f5b83d;
+  --m-mistake:#ff8f57;
+  --m-blunder:#ff5a52;
+  --m-find:#c7a6ff;
+
+  /* board */
+  --sq-light:#d9d3c9;
+  --sq-dark:#8b8378;
+  --sq-hl:rgba(255,107,44,.55);
+  --sq-hl-2:rgba(255,143,87,.38);
+
+  /* gradients */
+  --g-accent:linear-gradient(180deg,var(--accent-hi) 0%,var(--accent) 48%,var(--accent-lo) 100%);
+  --g-white:linear-gradient(180deg,#ffffff 0%,#f1f0ee 55%,#dedcd8 100%);
+  --g-surface:linear-gradient(180deg,#232325 0%,#19191b 100%);
+  --g-card-glow:radial-gradient(120% 80% at 50% 120%,rgba(255,107,44,.35) 0%,rgba(255,107,44,0) 60%);
+  --g-sheen:linear-gradient(180deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,0) 40%);
+
+  /* depth */
+  --d-accent:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -2px 0 rgba(0,0,0,.18),0 3px 0 var(--accent-lip),0 10px 24px -8px rgba(255,107,44,.55);
+  --d-accent-press:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(0,0,0,.2),0 1px 0 var(--accent-lip),0 4px 12px -6px rgba(255,107,44,.5);
+  --d-white:inset 0 1px 0 #fff,inset 0 -2px 0 rgba(0,0,0,.08),0 3px 0 #a9a6a0,0 10px 22px -10px rgba(0,0,0,.6);
+  --d-surface:inset 0 1px 0 var(--highlight),0 1px 0 rgba(0,0,0,.6),0 8px 20px -12px rgba(0,0,0,.8);
+  --d-raised:inset 0 1px 0 rgba(255,255,255,.05),0 20px 40px -24px rgba(0,0,0,.9);
+
+  /* radius */
+  --r-xs:8px; --r-sm:12px; --r-md:16px; --r-lg:20px; --r-xl:28px; --r-pill:999px;
+
+  /* type */
+  --font:"Geist",-apple-system,"SF Pro Text",system-ui,sans-serif;
+  --mono:"Geist Mono",ui-monospace,monospace;
+
+  /* motion */
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-press:cubic-bezier(.3,.7,.4,1);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 var(--font);-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+::selection{background:var(--accent);color:#fff}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+img.asset{display:block}
+img.asset.missing{visibility:hidden}
+
+/* ============ DOC SHELL ============ */
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+@media (max-width:700px){.wrap{padding:0 16px}}
+.doc-top{position:sticky;top:0;z-index:30;background:rgba(13,13,14,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--stroke)}
+.doc-top .wrap{display:flex;align-items:center;gap:20px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;text-decoration:none}
+.brand img{width:30px;height:30px;border-radius:8px}
+.brand .ph{width:30px;height:30px;border-radius:8px;background:var(--g-accent);box-shadow:var(--d-accent)}
+.doc-nav{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.doc-nav a{font-size:13px;color:var(--text-2);text-decoration:none;padding:8px 12px;border-radius:var(--r-pill);white-space:nowrap;transition:background .2s,color .2s}
+.doc-nav a:hover{color:var(--text);background:var(--surface-2)}
+
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--stroke)}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 78% 60%,rgba(255,107,44,.18),transparent 70%)}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;min-height:560px;padding-top:40px;padding-bottom:40px}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;min-height:0}}
+.hero h1{font-size:clamp(40px,5.4vw,72px);line-height:1;letter-spacing:-.045em;font-weight:600;margin:0 0 20px}
+.hero h1 span{background:var(--g-accent);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--text-2);font-size:18px;max-width:46ch;margin:0 0 28px}
+.hero .art{position:relative;aspect-ratio:1;max-width:560px;justify-self:center;width:100%}
+.hero .art img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 40px 60px rgba(0,0,0,.6))}
+.hero .art .fallback{position:absolute;inset:18%;border-radius:50%;background:radial-gradient(circle at 50% 70%,rgba(255,107,44,.45),transparent 65%)}
+
+section.block{padding:88px 0;border-bottom:1px solid var(--stroke)}
+.block-head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:40px;flex-wrap:wrap}
+.block-head h2{font-size:36px;letter-spacing:-.035em;font-weight:600;margin:0;line-height:1.05}
+.block-head p{color:var(--text-2);max-width:52ch;margin:0}
+.label{font:500 12px var(--mono);color:var(--text-3);letter-spacing:.02em}
+h3.sub{font-size:15px;font-weight:600;margin:0 0 14px;color:var(--text)}
+.panel{background:var(--surface-1);border:1px solid var(--stroke);border-radius:var(--r-lg);padding:24px}
+
+/* swatches */
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.sw{border-radius:var(--r-md);overflow:hidden;background:var(--surface-1);border:1px solid var(--stroke)}
+.sw i{display:block;height:84px}
+.sw div{padding:10px 12px}
+.sw b{display:block;font-size:13px;font-weight:600}
+.sw span{font:12px var(--mono);color:var(--text-3)}
+.grad-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:12px}
+.grad{height:120px;border-radius:var(--r-lg);border:1px solid var(--stroke);display:flex;align-items:flex-end;padding:12px;font:12px var(--mono);color:rgba(255,255,255,.85)}
+
+/* type */
+.type-row{display:grid;grid-template-columns:170px 1fr;gap:24px;padding:18px 0;border-top:1px solid var(--stroke);align-items:baseline}
+@media (max-width:700px){.type-row{grid-template-columns:1fr;gap:6px}}
+
+/* ============ COMPONENTS ============ */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 26px;border-radius:var(--r-pill);font-weight:600;font-size:16px;letter-spacing:-.01em;transition:transform .14s var(--ease-press),box-shadow .14s var(--ease-press),filter .2s;white-space:nowrap}
+.btn:active{transform:translateY(2px)}
+.btn-primary{background:var(--g-accent);color:var(--accent-ink);box-shadow:var(--d-accent);text-shadow:0 1px 0 rgba(150,40,0,.35)}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-primary:active{box-shadow:var(--d-accent-press)}
+.btn-white{background:var(--g-white);color:#151515;box-shadow:var(--d-white)}
+.btn-white:active{box-shadow:inset 0 1px 0 #fff,0 1px 0 #a9a6a0,0 4px 10px -6px rgba(0,0,0,.6)}
+.btn-surface{background:var(--g-surface);color:var(--text);box-shadow:var(--d-surface);border:1px solid var(--stroke)}
+.btn-surface:hover{border-color:var(--stroke-2)}
+.btn-ghost{color:var(--text-2);height:44px;padding:0 16px}
+.btn-ghost:hover{color:var(--text)}
+.btn.block{width:100%}
+.btn.sm{height:40px;padding:0 18px;font-size:14px}
+.btn[disabled]{background:var(--surface-3);color:var(--text-3);box-shadow:inset 0 1px 0 var(--highlight);text-shadow:none;cursor:not-allowed}
+.icon-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--g-surface);border:1px solid var(--stroke);box-shadow:var(--d-surface);transition:transform .14s var(--ease-press)}
+.icon-btn:active{transform:translateY(1px)}
+.icon-btn svg{width:18px;height:18px}
+
+.card{background:var(--surface-2);border:1px solid var(--stroke);border-radius:var(--r-lg);box-shadow:var(--d-surface);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0;background:var(--g-sheen);pointer-events:none}
+
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:var(--r-pill);background:var(--surface-3);border:1px solid var(--stroke);font-size:12px;font-weight:500;color:var(--text-2)}
+.chip.accent{background:var(--accent-soft);border-color:rgba(255,107,44,.3);color:var(--accent-hi)}
+.mv{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 4px;border-radius:var(--r-pill);background:var(--surface-3);font-size:12px;font-weight:500;color:var(--text)}
+.mv i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font:700 9px var(--mono);font-style:normal;color:#0d0d0e}
+
+.seg{display:flex;background:var(--surface-1);border:1px solid var(--stroke);border-radius:var(--r-pill);padding:4px}
+.seg button{flex:1;height:40px;border-radius:var(--r-pill);font-size:14px;font-weight:500;color:var(--text-2);transition:color .2s}
+.seg button[aria-pressed="true"]{color:var(--text);background:var(--g-surface);box-shadow:var(--d-surface),inset 0 -2px 0 var(--accent)}
+
+.progress{height:8px;border-radius:var(--r-pill);background:var(--surface-3);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.5)}
+.progress i{display:block;height:100%;border-radius:var(--r-pill);background:var(--g-accent);box-shadow:0 0 12px rgba(255,107,44,.6)}
+.ring{--p:.6;--s:44px;width:var(--s);height:var(--s);border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*360deg),var(--surface-3) 0);display:grid;place-items:center;position:relative;flex:0 0 auto}
+.ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:inherit;background:var(--surface-2)}
+.ring span{position:relative;z-index:1;font-size:12px;font-weight:600}
+
+.field{display:flex;align-items:center;gap:10px;height:54px;padding:0 16px;background:var(--surface-1);border:1px solid var(--stroke-2);border-radius:var(--r-md);box-shadow:inset 0 2px 4px rgba(0,0,0,.4);transition:border-color .2s,box-shadow .2s}
+.field:focus-within{border-color:var(--accent-line);box-shadow:inset 0 2px 4px rgba(0,0,0,.4),0 0 0 4px rgba(255,107,44,.12)}
+.field input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--text);font:500 16px var(--font);caret-color:var(--accent)}
+.field input::placeholder{color:var(--text-3)}
+.field svg{width:18px;height:18px;color:var(--text-3)}
+
+.option{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;padding:18px 16px;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--stroke);box-shadow:var(--d-surface);font-size:15px;line-height:1.35;transition:border-color .2s,background .2s}
+.option b{font-weight:600;color:var(--text-2);flex:0 0 auto}
+.option:hover{border-color:var(--stroke-2)}
+.option.selected{border:1.5px solid var(--accent);background:linear-gradient(180deg,rgba(255,107,44,.16),rgba(255,107,44,.06));color:var(--accent-hi);box-shadow:var(--d-surface),0 0 0 4px rgba(255,107,44,.08)}
+.option.selected b{color:var(--accent-hi)}
+.option.correct{border:1.5px solid var(--good);background:linear-gradient(180deg,rgba(62,207,142,.16),rgba(62,207,142,.05))}
+.option.correct b{color:var(--good)}
+.option.wrong{border:1.5px solid var(--bad);background:linear-gradient(180deg,rgba(255,90,82,.14),rgba(255,90,82,.04))}
+.option.wrong b{color:var(--bad)}
+
+.row{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--stroke)}
+.row:first-child{border-top:0}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .t span{font-size:13px;color:var(--text-3)}
+
+.toast{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r-md);background:var(--surface-3);border:1px solid var(--stroke-2);box-shadow:var(--d-raised)}
+.toast .dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto}
+.toast b{display:block;font-size:14px;font-weight:600}
+.toast span{font-size:13px;color:var(--text-2)}
+
+.comp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.comp-grid .panel{display:flex;flex-direction:column;gap:16px}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* board */
+.board{position:relative;aspect-ratio:1;width:100%;border-radius:var(--r-sm);overflow:hidden;display:grid;grid-template-columns:repeat(8,1fr);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 18px 40px -20px rgba(0,0,0,.9)}
+.board i{position:relative;display:block}
+.board i.l{background:var(--sq-light)}
+.board i.d{background:var(--sq-dark)}
+.board i.hl::before{content:"";position:absolute;inset:0;background:var(--sq-hl)}
+.board i.dot::after{content:"";position:absolute;inset:36%;border-radius:50%;background:rgba(13,13,14,.28)}
+.board i img{position:absolute;inset:4%;width:92%;height:92%;z-index:1;filter:drop-shadow(0 2px 1.5px rgba(0,0,0,.35))}
+.board .co{position:absolute;font:600 9px/1 var(--mono);opacity:.75;z-index:2}
+.board i.l .co{color:var(--sq-dark)}
+.board i.d .co{color:var(--sq-light)}
+.board .co.f{right:3px;bottom:2px}
+.board .co.r{left:3px;top:3px}
+.board svg.arrows{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none}
+
+/* ============ PHONE ============ */
+.screens{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:40px 28px;justify-items:center}
+.screen-cap{width:100%;max-width:360px;margin-top:16px}
+.screen-cap b{display:block;font-size:15px;font-weight:600}
+.screen-cap span{font-size:13px;color:var(--text-2)}
+.phone{width:360px;height:780px;border-radius:52px;padding:9px;background:linear-gradient(160deg,#3a3a3d,#141415 40%,#2a2a2c);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 40px 80px -30px rgba(0,0,0,.95)}
+.scr{position:relative;width:100%;height:100%;border-radius:44px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column}
+.status{display:flex;justify-content:space-between;align-items:center;padding:16px 30px 6px;font-size:15px;font-weight:600;flex:0 0 auto}
+.status .ic{display:flex;gap:6px;align-items:center}
+.status svg{height:12px}
+.homebar{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:124px;height:5px;border-radius:5px;background:#fff;opacity:.9;z-index:20}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 18px 12px;flex:0 0 auto}
+.topbar h4{flex:1;margin:0;font-size:17px;font-weight:600;letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pad{padding:0 18px}
+.scroll{flex:1;overflow:hidden;position:relative}
+.tabbar{position:absolute;left:12px;right:12px;bottom:22px;height:66px;border-radius:24px;background:rgba(29,29,31,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--stroke-2);display:flex;justify-content:space-around;align-items:center;box-shadow:0 20px 30px -16px rgba(0,0,0,.9);z-index:10}
+.tabbar span{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:500;color:var(--text-3)}
+.tabbar span svg{width:22px;height:22px}
+.tabbar span.on{color:var(--accent-hi)}
+
+/* home path */
+.module{margin:4px 18px 0;padding:14px 16px}
+.module b{display:block;font-size:15px;font-weight:600}
+.module span{font-size:13px;color:var(--text-2)}
+.module .pts{color:var(--accent-hi)}
+.path{position:relative;height:430px}
+.path .node{position:absolute;transform:translate(-50%,-50%)}
+.path .node img{width:100%;height:100%;object-fit:contain}
+.path .node.fallback-locked{border-radius:50%;background:radial-gradient(circle at 50% 35%,#3a3a3d,#151516 70%);box-shadow:0 10px 18px -6px rgba(0,0,0,.9),inset 0 2px 0 rgba(255,255,255,.08)}
+.path .glow{position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,44,.32),transparent 65%);transform:translate(-50%,-50%);pointer-events:none}
+.path .lbl{position:absolute;font-size:11px;font-weight:600;color:var(--text-3);transform:translate(-50%,0);white-space:nowrap}
+.cta-card{position:absolute;left:12px;right:12px;bottom:100px;padding:18px;border-radius:26px;background:var(--g-accent);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 3px 0 var(--accent-lip),0 30px 50px -20px rgba(255,107,44,.6);z-index:5}
+.cta-card .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:16px}
+.cta-card b{display:block;font-size:17px;font-weight:600;letter-spacing:-.015em}
+.cta-card span{font-size:14px;opacity:.85}
+.cta-card .ring{--s:38px;background:conic-gradient(#fff calc(var(--p)*360deg),rgba(255,255,255,.3) 0)}
+.cta-card .ring::after{background:var(--accent)}
+
+/* misc screen bits */
+.stat-row{display:flex;gap:14px;color:var(--text-2);font-size:13px;align-items:center;flex-wrap:wrap}
+.stat-row span{display:inline-flex;align-items:center;gap:5px}
+.stat-row svg{width:14px;height:14px}
+.bottom-cta{position:absolute;left:18px;right:18px;bottom:30px;z-index:6}
+.fade-bottom{position:absolute;left:0;right:0;bottom:0;height:150px;background:linear-gradient(180deg,rgba(13,13,14,0),var(--bg) 60%);z-index:5;pointer-events:none}
+.prompt{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--stroke);box-shadow:var(--d-surface)}
+.prompt .pc{width:34px;height:34px;border-radius:10px;background:var(--surface-3);display:grid;place-items:center;flex:0 0 auto}
+.prompt .pc img{width:26px;height:26px}
+.prompt b{display:block;font-size:15px;font-weight:600}
+.prompt span{font-size:13px;color:var(--text-2)}
+.moves{font:13px/1.7 var(--mono);color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.moves b{color:var(--text);font-weight:500}
+.moves em{font-style:normal;color:var(--accent-hi)}
+.evalg{width:100%;height:110px;display:block}
+.acc-wrap{display:flex;gap:14px;align-items:center}
+.acc-wrap .ring{--s:76px}
+.acc-wrap .ring::after{inset:6px}
+.acc-wrap .ring span{font-size:20px;letter-spacing:-.03em}
+.mini-board{width:56px;height:56px;border-radius:10px;flex:0 0 auto}
+.flame-badge{width:72px;height:72px;flex:0 0 auto;position:relative}
+.flame-badge img{width:100%;height:100%;object-fit:contain}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
+.cal i{aspect-ratio:1;border-radius:9px;background:var(--surface-3);display:grid;place-items:center;font-size:11px;font-style:normal;color:var(--text-3)}
+.cal i.on{background:var(--g-accent);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 2px 0 var(--accent-lip)}
+.cal i.today{box-shadow:inset 0 0 0 1.5px var(--accent);color:var(--text)}
+
+.icon-tiles{display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap}
+.icon-tiles figure{margin:0;text-align:center}
+.icon-tiles img,.icon-tiles .ph{display:block;border-radius:22.5%;box-shadow:0 20px 40px -20px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.06)}
+.icon-tiles .ph{background:radial-gradient(circle at 50% 60%,rgba(255,107,44,.5),#151516 70%)}
+.icon-tiles figcaption{font:12px var(--mono);color:var(--text-3);margin-top:10px}
+.assets{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.assets figure{margin:0;background:var(--surface-1);border:1px solid var(--stroke);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;gap:10px}
+.assets figure div{aspect-ratio:1;border-radius:var(--r-md);background:radial-gradient(circle at 50% 55%,#202022,#111112 75%);display:grid;place-items:center;overflow:hidden}
+.assets figure img{width:88%;height:88%;object-fit:contain}
+.assets figcaption{font:12px var(--mono);color:var(--text-2)}
+
+footer{padding:40px 0 64px;color:var(--text-3);font-size:13px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="doc-top">
+  <div class="wrap">
+    <a class="brand" href="#"><img class="asset" src="assets/app-icon.png" alt="" onerror="this.outerHTML='<span class=ph></span>'">Chessmode</a>
+    <nav class="doc-nav" aria-label="Sections">
+      <a href="#color">Color</a><a href="#type">Type</a><a href="#depth">Depth</a><a href="#components">Components</a><a href="#board">Board</a><a href="#assets">3D assets</a><a href="#screens">Screens</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="label" style="margin-bottom:16px">Design system · v0.1</p>
+      <h1>Openings, learned <span>in depth.</span></h1>
+      <p>Chessmode's interface: a dark, quiet stage where one warm orange marks the move that matters. Tactile buttons with real depth, soft gradients and 3D objects make a free trainer feel like a premium one.</p>
+      <div class="btn-row"><a class="btn btn-primary" href="#screens">See the screens</a><a class="btn btn-surface" href="#components">Components</a></div>
+    </div>
+    <div class="art"><div class="fallback"></div><img class="asset" src="assets/knight.png" alt="3D knight on a glowing orange base" onerror="this.classList.add('missing')"></div>
+  </div>
+</section>
+
+<!-- COLOR -->
+<section class="block" id="color">
+  <div class="wrap">
+    <div class="block-head"><h2>Color</h2><p>Near-black surfaces stepped by lightness, warm-white text, and one orange that only marks the next action, the target square or progress.</p></div>
+    <h3 class="sub">Surfaces and text</h3>
+    <div class="sw-grid">
+      <div class="sw"><i style="background:#0d0d0e"></i><div><b>bg</b><span>#0D0D0E</span></div></div>
+      <div class="sw"><i style="background:#161617"></i><div><b>surface-1</b><span>#161617</span></div></div>
+      <div class="sw"><i style="background:#1d1d1f"></i><div><b>surface-2</b><span>#1D1D1F</span></div></div>
+      <div class="sw"><i style="background:#262628"></i><div><b>surface-3</b><span>#262628</span></div></div>
+      <div class="sw"><i style="background:#313134"></i><div><b>surface-4</b><span>#313134</span></div></div>
+      <div class="sw"><i style="background:#f4f4f2"></i><div><b>text</b><span>#F4F4F2</span></div></div>
+      <div class="sw"><i style="background:#a3a3a8"></i><div><b>text-2</b><span>#A3A3A8</span></div></div>
+      <div class="sw"><i style="background:#6f6f75"></i><div><b>text-3</b><span>#6F6F75</span></div></div>
+    </div>
+    <h3 class="sub" style="margin-top:32px">Accent and status</h3>
+    <div class="sw-grid">
+      <div class="sw"><i style="background:#ff8f57"></i><div><b>accent-hi</b><span>#FF8F57</span></div></div>
+      <div class="sw"><i style="background:#ff6b2c"></i><div><b>accent</b><span>#FF6B2C</span></div></div>
+      <div class="sw"><i style="background:#e5501a"></i><div><b>accent-lo</b><span>#E5501A</span></div></div>
+      <div class="sw"><i style="background:#b83d10"></i><div><b>accent-lip</b><span>#B83D10</span></div></div>
+      <div class="sw"><i style="background:#3ecf8e"></i><div><b>good</b><span>#3ECF8E</span></div></div>
+      <div class="sw"><i style="background:#f5b83d"></i><div><b>warn</b><span>#F5B83D</span></div></div>
+      <div class="sw"><i style="background:#ff5a52"></i><div><b>bad</b><span>#FF5A52</span></div></div>
+    </div>
+    <h3 class="sub" style="margin-top:32px">Gradients</h3>
+    <div class="grad-row">
+      <div class="grad" style="background:var(--g-accent)">g-accent · buttons, active cards</div>
+      <div class="grad" style="background:var(--g-white);color:#333">g-white · secondary buttons</div>
+      <div class="grad" style="background:var(--g-surface)">g-surface · raised controls</div>
+      <div class="grad" style="background:var(--g-card-glow),var(--surface-1)">g-card-glow · active state light</div>
+    </div>
+    <h3 class="sub" style="margin-top:32px">Move labels</h3>
+    <p style="color:var(--text-2);margin:-6px 0 14px;max-width:60ch;font-size:14px">Chessmode's own names for game review. Each label carries a symbol and a word, so colour is never the only signal.</p>
+    <div class="btn-row" id="mvlabels"></div>
+  </div>
+</section>
+
+<!-- TYPE -->
+<section class="block" id="type">
+  <div class="wrap">
+    <div class="block-head"><h2>Typography</h2><p>Geist for everything you read, Geist Mono for notation and numbers that must line up. Tight tracking on large sizes, normal at body size.</p></div>
+    <div class="type-row"><span class="label">Display · 34/38 · 600</span><span style="font-size:34px;line-height:38px;font-weight:600;letter-spacing:-.035em">Caro-Kann Defence</span></div>
+    <div class="type-row"><span class="label">Title · 22/28 · 600</span><span style="font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.02em">Which plan fits this position?</span></div>
+    <div class="type-row"><span class="label">Headline · 17/22 · 600</span><span style="font-size:17px;line-height:22px;font-weight:600;letter-spacing:-.015em">Advance Variation, Short System</span></div>
+    <div class="type-row"><span class="label">Body · 15/22 · 400</span><span style="font-size:15px;line-height:22px;color:var(--text-2);max-width:62ch">After 3.e5 White takes space. Black gets the light-squared bishop out to f5 before ...e6 closes it in, then hits the chain with ...c5.</span></div>
+    <div class="type-row"><span class="label">Caption · 13/18 · 500</span><span style="font-size:13px;line-height:18px;font-weight:500;color:var(--text-2)">12 lines · 45 min · Black</span></div>
+    <div class="type-row"><span class="label">Notation · Mono 14</span><span style="font:14px/1.6 var(--mono)"><b style="font-weight:500">1.e4 c6 2.d4 d5 3.e5 Bf5</b> <span style="color:var(--text-3)">4.Nf3 e6 5.Be2</span> <span style="color:var(--accent-hi)">5...c5</span></span></div>
+  </div>
+</section>
+
+<!-- DEPTH -->
+<section class="block" id="depth">
+  <div class="wrap">
+    <div class="block-head"><h2>Depth</h2><p>Every pressable thing has a body. A top highlight, a darker lip underneath and a soft shadow make buttons look like objects; pressing moves them down 2px and the lip shrinks.</p></div>
+    <div class="comp-grid">
+      <div class="panel"><h3 class="sub">Primary · press me</h3><button class="btn btn-primary block">Start practice</button><p class="label">inset 0 1px 0 rgba(255,255,255,.45)<br>0 3px 0 accent-lip<br>0 10px 24px -8px accent/55%</p></div>
+      <div class="panel" style="background:var(--g-card-glow),var(--surface-1)"><h3 class="sub">On colour: white</h3><button class="btn btn-white block">Continue line</button><p class="label">inset 0 1px 0 #fff<br>0 3px 0 #A9A6A0</p></div>
+      <div class="panel"><h3 class="sub">Surface</h3><button class="btn btn-surface block">Hint</button><p class="label">g-surface · 1px stroke<br>inset 0 1px 0 white/6%</p></div>
+    </div>
+    <div class="comp-grid" style="margin-top:16px">
+      <div class="panel"><h3 class="sub">Radius</h3><div class="btn-row">
+        <div style="width:56px;height:56px;background:var(--surface-3);border-radius:8px"></div>
+        <div style="width:56px;height:56px;background:var(--surface-3);border-radius:12px"></div>
+        <div style="width:56px;height:56px;background:var(--surface-3);border-radius:16px"></div>
+        <div style="width:56px;height:56px;background:var(--surface-3);border-radius:20px"></div>
+        <div style="width:56px;height:56px;background:var(--surface-3);border-radius:28px"></div>
+        <div style="width:90px;height:56px;background:var(--surface-3);border-radius:999px"></div>
+      </div><p class="label">8 · 12 · 16 · 20 · 28 · pill</p></div>
+      <div class="panel"><h3 class="sub">Spacing</h3><div class="btn-row" style="align-items:flex-end">
+        <i style="width:4px;height:4px;background:var(--accent)"></i><i style="width:8px;height:8px;background:var(--accent)"></i><i style="width:12px;height:12px;background:var(--accent)"></i><i style="width:16px;height:16px;background:var(--accent)"></i><i style="width:20px;height:20px;background:var(--accent)"></i><i style="width:24px;height:24px;background:var(--accent)"></i><i style="width:32px;height:32px;background:var(--accent)"></i><i style="width:40px;height:40px;background:var(--accent)"></i>
+      </div><p class="label">4 · 8 · 12 · 16 · 20 · 24 · 32 · 40. Screen gutter 18.</p></div>
+      <div class="panel"><h3 class="sub">Motion</h3><p style="margin:0;color:var(--text-2);font-size:14px">Presses: 140 ms, ease-press. Pieces: 220 ms, ease-out. Correct move: the square flashes orange, then the next node on the path lights up. Respect reduced motion.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENTS -->
+<section class="block" id="components">
+  <div class="wrap">
+    <div class="block-head"><h2>Components</h2><p>The parts the screens are built from.</p></div>
+    <div class="comp-grid">
+      <div class="panel"><h3 class="sub">Buttons</h3>
+        <div class="btn-row"><button class="btn btn-primary">Start practice</button><button class="btn btn-white">Continue</button></div>
+        <div class="btn-row"><button class="btn btn-surface sm">Hint</button><button class="btn btn-primary sm">Show move</button><button class="btn btn-ghost">Skip</button></div>
+        <div class="btn-row"><button class="btn" disabled>Locked</button>
+          <button class="icon-btn" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="icon-btn" aria-label="More"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
+          <button class="icon-btn" aria-label="Flip board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></svg></button>
+        </div>
+      </div>
+      <div class="panel"><h3 class="sub">Tabs, chips, progress</h3>
+        <div class="seg" role="group"><button aria-pressed="true">Lines</button><button aria-pressed="false">Notes</button><button aria-pressed="false">Games</button></div>
+        <div class="btn-row"><span class="chip">Black</span><span class="chip">12 lines</span><span class="chip accent">5 due</span></div>
+        <div style="display:flex;align-items:center;gap:12px"><div class="progress" style="flex:1"><i style="width:58%"></i></div><span style="font-size:13px;color:var(--text-2)">58%</span></div>
+        <div class="btn-row"><div class="ring" style="--p:.25"><span>1/4</span></div><div class="ring" style="--p:.6;--s:52px"><span>60%</span></div><div class="ring" style="--p:.9;--s:60px"><span>9/10</span></div></div>
+      </div>
+      <div class="panel"><h3 class="sub">Input</h3>
+        <div class="seg" role="group"><button aria-pressed="true">Lichess</button><button aria-pressed="false">Chess.com</button></div>
+        <label class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><input placeholder="Your username" aria-label="Username"></label>
+        <button class="btn btn-primary block">Import my games</button>
+      </div>
+      <div class="panel"><h3 class="sub">Answer options</h3>
+        <button class="option"><b>A.</b>Push ...c5 to hit the d4 pawn</button>
+        <button class="option selected"><b>B.</b>Play ...h6 to keep the bishop safe</button>
+        <button class="option correct"><b>C.</b>Retreat ...Bg6 and keep the bishop</button>
+        <button class="option wrong"><b>D.</b>Trade on e4 straight away</button>
+      </div>
+      <div class="panel"><h3 class="sub">Feedback</h3>
+        <div class="toast"><span class="dot" style="background:rgba(62,207,142,.16);color:var(--good)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><div><b>Correct, 5...c5</b><span>Next review in 4 days</span></div></div>
+        <div class="toast"><span class="dot" style="background:rgba(255,90,82,.16);color:var(--bad)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span><div><b>Not in your line</b><span>The book move is 5...c5. Try again.</span></div></div>
+        <div class="toast"><span class="dot" style="background:var(--accent-soft);color:var(--accent-hi)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span><div><b>You left the book at move 5</b><span>vs. a 1688 on Lichess, yesterday</span></div></div>
+      </div>
+      <div class="panel"><h3 class="sub">List rows</h3>
+        <div>
+          <div class="row"><div class="mini-board" data-fen="rn1qkbnr/pp2pppp/2p5/3pPb2/3P4/8/PPP2PPP/RNBQKBNR"></div><div class="t"><b>Advance Variation</b><span>3.e5 Bf5 · 4 of 6 learned</span></div><div class="ring" style="--p:.66;--s:34px"><span style="font-size:10px">4/6</span></div></div>
+          <div class="row"><div class="mini-board" data-fen="rnbqkbnr/pp2pppp/8/3p4/3P4/8/PPP2PPP/RNBQKBNR"></div><div class="t"><b>Exchange Variation</b><span>3.exd5 cxd5 · new</span></div><span class="chip accent">Start</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOARD -->
+<section class="block" id="board">
+  <div class="wrap">
+    <div class="block-head"><h2>Board</h2><p>Warm stone squares sit calmly on the dark UI. Orange marks the last move and the move to find; dots show legal targets. Pieces: cburnett (GPLv2+), the set the GPL app can ship.</p></div>
+    <div class="comp-grid" style="align-items:start">
+      <div class="panel"><div class="board" data-fen="rn1qkbnr/pp3ppp/2p1p3/3pPb2/3P4/5N2/PPP1BPPP/RNBQK2R" data-hl="e7,e6" data-dots="c6c5" data-arrow="c6,c5" data-coords="1"></div><p class="label" style="margin-top:12px">last move · arrow hint · legal-move dots</p></div>
+      <div class="panel"><h3 class="sub">Board tokens</h3>
+        <div class="sw-grid" style="grid-template-columns:repeat(2,1fr)">
+          <div class="sw"><i style="background:#d9d3c9"></i><div><b>sq-light</b><span>#D9D3C9</span></div></div>
+          <div class="sw"><i style="background:#8b8378"></i><div><b>sq-dark</b><span>#8B8378</span></div></div>
+          <div class="sw"><i style="background:linear-gradient(rgba(255,107,44,.55),rgba(255,107,44,.55)),#d9d3c9"></i><div><b>sq-hl</b><span>accent 55%</span></div></div>
+          <div class="sw"><i style="background:#ff6b2c"></i><div><b>arrow</b><span>accent 90%</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ASSETS -->
+<section class="block" id="assets">
+  <div class="wrap">
+    <div class="block-head"><h2>3D assets</h2><p>Matte black pieces with an orange rim light, glossy orange tokens for whatever is active. Same camera and light on every render.</p></div>
+    <div class="icon-tiles" style="margin-bottom:32px">
+      <figure><img class="asset" src="assets/app-icon.png" width="120" height="120" alt="App icon" onerror="this.outerHTML='<span class=ph style=width:120px;height:120px></span>'"><figcaption>120</figcaption></figure>
+      <figure><img class="asset" src="assets/app-icon.png" width="76" height="76" alt="" onerror="this.outerHTML='<span class=ph style=width:76px;height:76px></span>'"><figcaption>76</figcaption></figure>
+      <figure><img class="asset" src="assets/app-icon.png" width="48" height="48" alt="" onerror="this.outerHTML='<span class=ph style=width:48px;height:48px></span>'"><figcaption>48</figcaption></figure>
+    </div>
+    <div class="assets" id="assetGrid"></div>
+  </div>
+</section>
+
+<!-- SCREENS -->
+<section class="block" id="screens">
+  <div class="wrap">
+    <div class="block-head"><h2>Screens</h2><p>The system applied to the app: the course path, a course, practice, a plan quiz, game import and game review, plus the streak.</p></div>
+    <div class="screens">
+
+      <!-- 1 HOME PATH -->
+      <div>
+        <div class="phone"><div class="scr">
+          <div class="status"><span>9:41</span><span class="ic"><svg viewBox="0 0 18 12" fill="#fff"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="#fff"/></svg></span></div>
+          <div class="topbar"><button class="icon-btn" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button><h4 style="text-align:center">Caro-Kann</h4><button class="icon-btn" aria-label="Streak" style="width:auto;padding:0 12px;border-radius:999px;gap:4px;display:flex;font-size:14px;font-weight:600"><img class="asset" src="assets/flame.png" alt="" style="width:20px;height:20px" onerror="this.classList.add('missing')">12</button></div>
+          <div class="card module"><b>Advance Variation</b><span>Module 2 · <span class="pts">340 pts</span></span></div>
+          <div class="path" id="path"></div>
+          <div class="cta-card"><div class="top"><div><b>Short System</b><span>Line 3 of 6 · 4 min</span></div><div class="ring" style="--p:.33"></div></div><button class="btn btn-white block">Continue line</button></div>
+          <nav class="tabbar" aria-label="Tabs">
+            <span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg>Learn</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 12h16M12 4v16"/></svg>Practice</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg>Drill</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 4 8-9"/><path d="M14 6h6v6"/></svg>Matches</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>You</span>
+          </nav>
+          <span class="homebar"></span>
+        </div></div>
+        <div class="screen-cap"><b>Course path</b><span>Lines as a trail of 3D tokens. The glowing one is next.</span></div>
+      </div>
+
+      <!-- 2 COURSE -->
+      <div>
+        <div class="phone"><div class="scr">
+          <div class="status"><span>9:41</span><span class="ic"><svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="#fff"/></svg></span></div>
+          <div class="topbar"><button class="icon-btn" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><h4>Caro-Kann Defence</h4><button class="icon-btn" aria-label="More"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button></div>
+          <div class="pad">
+            <div class="card" style="height:190px;display:grid;place-items:center;background:var(--g-card-glow),radial-gradient(circle at 50% 40%,#252527,#141415 75%)">
+              <img class="asset" src="assets/board-hero.png" alt="" style="width:100%;height:100%;object-fit:contain" onerror="this.classList.add('missing')">
+            </div>
+            <h2 style="font-size:24px;letter-spacing:-.03em;margin:18px 0 6px;font-weight:600">Caro-Kann Defence</h2>
+            <div class="stat-row"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>Black</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>38 lines</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>2 h 10 min</span></div>
+            <div style="display:flex;align-items:center;gap:12px;margin:16px 0 18px"><div class="progress" style="flex:1"><i style="width:23%"></i></div><span style="font-size:13px;color:var(--text-2)">23%</span></div>
+            <div class="seg" role="group"><button aria-pressed="true">Lines</button><button aria-pressed="false">Notes</button><button aria-pressed="false">Your games</button></div>
+            <div style="margin-top:6px">
+              <div class="row"><div class="mini-board" data-fen="rn1qkbnr/pp2pppp/2p5/3pPb2/3P4/8/PPP2PPP/RNBQKBNR"></div><div class="t"><b>Advance Variation</b><span>3.e5 Bf5 · 4 of 6</span></div><div class="ring" style="--p:.66;--s:34px"><span style="font-size:10px">4/6</span></div></div>
+              <div class="row"><div class="mini-board" data-fen="rn1qkbnr/pp2pppp/2p5/5b2/3PN3/8/PPP2PPP/R1BQKBNR"></div><div class="t"><b>Classical</b><span>3.Nc3 dxe4 4.Nxe4 Bf5</span></div><div class="ring" style="--p:.2;--s:34px"><span style="font-size:10px">1/5</span></div></div>
+            </div>
+          </div>
+          <div class="fade-bottom"></div>
+          <div class="bottom-cta"><button class="btn btn-primary block">Practice 5 due lines</button></div>
+          <span class="homebar"></span>
+        </div></div>
+        <div class="screen-cap"><b>Course</b><span>Hero render, progress and lines. One primary action.</span></div>
+      </div>
+
+      <!-- 3 PRACTICE -->
+      <div>
+        <div class="phone"><div class="scr">
+          <div class="status"><span>9:41</span><span class="ic"><svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="#fff"/></svg></span></div>
+          <div class="topbar"><button class="icon-btn" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div style="flex:1"><div class="progress"><i style="width:40%"></i></div></div><span style="font-size:14px;font-weight:600;color:var(--text-2)">2/5</span></div>
+          <div class="pad">
+            <p style="margin:6px 0 2px;font-size:13px;color:var(--text-3)">Practice · Short System</p>
+            <h2 style="font-size:22px;letter-spacing:-.025em;margin:0 0 16px;font-weight:600">Your move as Black</h2>
+            <div class="board" data-fen="rn1qkbnr/pp3ppp/2p1p3/3pPb2/3P4/5N2/PPP1BPPP/RNBQK2R" data-hl="f1,e2" data-dots="c6c5" data-coords="1"></div>
+            <div class="moves" style="margin:14px 0"><b>1.e4 c6 2.d4 d5 3.e5 Bf5 4.Nf3 e6 5.Be2</b> <em>5...?</em></div>
+            <div class="prompt"><span class="pc"><img class="asset" src="https://cdn.jsdelivr.net/gh/lichess-org/lila@39fe88107d406839d94052ae8f9958423d7c3fc3/public/piece/cburnett/bP.svg" alt=""></span><div><b>Strike the chain</b><span>Which pawn break fits the Short System?</span></div></div>
+          </div>
+          <div class="bottom-cta" style="display:flex;gap:10px"><button class="btn btn-surface" style="flex:1">Hint</button><button class="btn btn-primary" style="flex:1.4">Show move</button></div>
+          <span class="homebar"></span>
+        </div></div>
+        <div class="screen-cap"><b>Practice</b><span>Board first, the prompt explains the idea, two clear actions.</span></div>
+      </div>
+
+      <!-- 4 PLAN QUIZ -->
+      <div>
+        <div class="phone"><div class="scr">
+          <div class="status"><span>9:41</span><span class="ic"><svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="#fff"/></svg></span></div>
+          <div class="topbar"><h4>Find the plan</h4><div class="ring" style="--p:.4;--s:40px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" style="position:relative;z-index:1"><path d="M6 6l12 12M18 6L6 18"/></svg></div></div>
+          <div class="pad">
+            <p style="margin:18px 0 6px;font-size:14px;color:var(--text-3)">Question 2 of 5</p>
+            <h2 style="font-size:22px;line-height:1.25;letter-spacing:-.02em;margin:0 0 18px;font-weight:500">White just played 5.g4, the Bayonet. Where should the bishop go?</h2>
+            <div class="board" style="width:150px;margin-bottom:18px" data-fen="rn1qkbnr/pp3ppp/2p1p3/3pPb2/3P2P1/2N5/PPP2P1P/R1BQKBNR" data-hl="g2,g4"></div>
+            <div style="display:grid;gap:10px">
+              <button class="option"><b>A.</b>Forward to e4, hitting the knight</button>
+              <button class="option selected"><b>B.</b>Back to g6, keeping the diagonal</button>
+              <button class="option"><b>C.</b>To d7, out of the way</button>
+            </div>
+          </div>
+          <div class="bottom-cta"><button class="btn btn-primary block">Check answer</button></div>
+          <span class="homebar"></span>
+        </div></div>
+        <div class="screen-cap"><b>Plan quiz</b><span>Teaches the why, not only the move order.</span></div>
+      </div>
+
+      <!-- 5 IMPORT -->
+      <div>
+        <div class="phone"><div class="scr">
+          <div class="status"><span>9:41</span><span class="ic"><svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="#fff"/></svg></span></div>
+          <div class="topbar"><h4 style="font-size:28px;letter-spacing:-.03em">Matches</h4><button class="icon-btn" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 10-2.3 5.7M20 4v7h-7"/></svg></button></div>
+          <div class="pad" style="display:grid;gap:12px">
+            <div class="card" style="padding:16px;background:var(--g-card-glow),var(--surface-2);display:grid;gap:12px">
+              <div style="display:flex;gap:12px;align-items:center"><img class="asset" src="assets/king.png" alt="" style="width:64px;height:64px;object-fit:contain" onerror="this.classList.add('missing')"><div><b style="font-size:16px">Check your real games</b><div style="font-size:13px;color:var(--text-2)">See where each one left your repertoire.</div></div></div>
+              <div class="seg" role="group"><button aria-pressed="true">Lichess</button><button aria-pressed="false">Chess.com</button></div>
+              <label class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><input value="pawnpusher_92" aria-label="Username"></label>
+              <button class="btn btn-primary block">Import last 50 games</button>
+            </div>
+            <p style="margin:6px 0 0;font-size:13px;color:var(--text-3)">Yesterday</p>
+            <div class="card" style="padding:4px 14px">
+              <div class="row"><div class="t"><b>vs. kingsgambit88 · Loss</b><span>Caro-Kann · Left book at move 5</span></div><span class="chip accent">Drill</span></div>
+              <div class="row"><div class="t"><b>vs. rook_and_roll · Win</b><span>Jobava London · In book to move 11</span></div><span class="chip">Review</span></div>
+              <div class="row"><div class="t"><b>vs. e4isbest · Draw</b><span>Caro-Kann · In book to move 9</span></div><span class="chip">Review</span></div>
+            </div>
+          </div>
+          <span class="homebar"></span>
+        </div></div>
+        <div class="screen-cap"><b>Matches</b><span>Import from Lichess or Chess.com; early exits become drills.</span></div>
+      </div>
+
+      <!-- 6 REVIEW -->
+      <div>
+        <div class="phone"><div class="scr">
+          <div class="status"><span>9:41</span><span class="ic"><svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="#fff"/></svg></span></div>
+          <div class="topbar"><button class="icon-btn" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><h4>Game review</h4><button class="icon-btn" aria-label="Share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v6h14v-6"/></svg></button></div>
+          <div class="pad" style="display:grid;gap:12px">
+            <div class="card" style="padding:16px">
+              <div class="acc-wrap"><div class="ring" style="--p:.816"><span>81.6</span></div><div><b style="font-size:16px">Your accuracy</b><div style="font-size:13px;color:var(--text-2)">vs. kingsgambit88 (1688) · Rapid 10+0</div></div></div>
+              <svg class="evalg" id="evalg" viewBox="0 0 300 110" preserveAspectRatio="none" style="margin-top:14px"></svg>
+              <div style="display:flex;justify-content:space-between;font:11px var(--mono);color:var(--text-3)"><span>move 1</span><span style="color:var(--accent-hi)">left book · 5</span><span>move 38</span></div>
+            </div>
+            <div class="card" style="padding:14px 16px;display:flex;flex-wrap:wrap;gap:8px" id="reviewLabels"></div>
+            <div class="card" style="padding:16px;display:flex;gap:12px;align-items:center;background:var(--g-card-glow),var(--surface-2)">
+              <div class="board" style="width:76px;flex:0 0 auto" data-fen="rn1qkbnr/pp3ppp/2p1p3/3pP3/3Pb1P1/2N5/PPP2P1P/R1BQKBNR" data-hl="f5,e4"></div>
+              <div><b style="font-size:15px">5...Be4 left your line</b><div style="font-size:13px;color:var(--text-2);margin-top:2px">Your course plays 5...Bg6 here.</div></div>
+            </div>
+          </div>
+          <div class="bottom-cta"><button class="btn btn-primary block">Drill this line</button></div>
+          <span class="homebar"></span>
+        </div></div>
+        <div class="screen-cap"><b>Game review</b><span>Accuracy, eval graph, move labels, and the exact move that left the book.</span></div>
+      </div>
+
+      <!-- 7 STREAK -->
+      <div>
+        <div class="phone"><div class="scr" style="background:radial-gradient(90% 50% at 50% 22%,rgba(255,107,44,.28),transparent 70%),var(--bg)">
+          <div class="status"><span>9:41</span><span class="ic"><svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="#fff"/></svg></span></div>
+          <div style="display:grid;place-items:center;padding:20px 18px 0;text-align:center">
+            <img class="asset" src="assets/flame.png" alt="" style="width:190px;height:190px;object-fit:contain;filter:drop-shadow(0 20px 30px rgba(255,107,44,.35))" onerror="this.classList.add('missing')">
+            <div style="font-size:64px;font-weight:600;letter-spacing:-.05em;line-height:1;margin-top:6px">12</div>
+            <div style="font-size:17px;font-weight:600;margin-top:6px">day streak</div>
+            <p style="color:var(--text-2);font-size:14px;margin:8px 0 0;max-width:30ch">All 5 lines kept today. Your next review is tomorrow at 8:00.</p>
+          </div>
+          <div class="pad" style="margin-top:22px">
+            <div class="card" style="padding:16px">
+              <div style="display:flex;justify-content:space-between;font-size:14px"><b>November</b><span style="color:var(--text-2)">Best: 19 days</span></div>
+              <div class="cal" id="cal"></div>
+            </div>
+          </div>
+          <div class="bottom-cta"><button class="btn btn-white block">Done</button></div>
+          <span class="homebar"></span>
+        </div></div>
+        <div class="screen-cap"><b>Streak</b><span>The reward moment: one 3D object, one number.</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">Chessmode design system, v0.1 prototype. Game data, ratings and usernames are sample data. 3D renders are generated; pieces on boards are the cburnett set (GPLv2+).</div></footer>
+
+<script>
+const PC="https://cdn.jsdelivr.net/gh/lichess-org/lila@39fe88107d406839d94052ae8f9958423d7c3fc3/public/piece/cburnett";
+const FILES="abcdefgh";
+function sqIndex(s){return {x:FILES.indexOf(s[0]),y:8-+s[1]}}
+document.querySelectorAll("[data-fen]").forEach(el=>{
+  el.classList.add("board");
+  const fen=el.dataset.fen,hl=(el.dataset.hl||"").split(",").filter(Boolean),coords=el.dataset.coords;
+  const dots=el.dataset.dots?[el.dataset.dots.slice(2,4)]:[];
+  let h="",y=0;
+  for(const r of fen.split("/")){let x=0;for(const ch of r){
+    if(/\d/.test(ch)){for(let k=0;k<+ch;k++){h+=cell(x,y,null);x++}}else{h+=cell(x,y,ch);x++}
+  }y++}
+  function cell(x,y,p){const sq=FILES[x]+(8-y);let c=`<i class="${(x+y)%2?"d":"l"}${hl.includes(sq)?" hl":""}${dots.includes(sq)&&!p?" dot":""}">`;
+    if(p){const w=p===p.toUpperCase();c+=`<img src="${PC}/${w?"w":"b"}${p.toUpperCase()}.svg" alt="">`}
+    if(coords){if(y===7)c+=`<span class="co f">${FILES[x]}</span>`;if(x===0)c+=`<span class="co r">${8-y}</span>`}
+    return c+"</i>"}
+  if(el.dataset.arrow){const[a,b]=el.dataset.arrow.split(",").map(sqIndex);const ax=a.x*12.5+6.25,ay=a.y*12.5+6.25,bx=b.x*12.5+6.25,by=b.y*12.5+8.5;
+    h+=`<svg class="arrows" viewBox="0 0 100 100"><defs><marker id="ah" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="3" markerHeight="3" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff6b2c"/></marker></defs><path d="M${ax} ${ay}L${bx} ${by}" stroke="#ff6b2c" stroke-width="2.6" stroke-linecap="round" opacity=".92" marker-end="url(#ah)"/></svg>`}
+  el.innerHTML=h;
+});
+
+const LABELS=[["Book","B","--m-book"],["Best","!","--m-best"],["Good","+","--m-good"],["Loose","?!","--m-loose"],["Mistake","?","--m-mistake"],["Blunder","??","--m-blunder"],["Find","!!","--m-find"]];
+const lab=(n,s,v,c)=>`<span class="mv"><i style="background:var(${v})">${s}</i>${n}${c!=null?` <span style="color:var(--text-3)">${c}</span>`:""}</span>`;
+document.getElementById("mvlabels").innerHTML=LABELS.map(([n,s,v])=>lab(n,s,v)).join("");
+const counts=[8,14,9,3,2,1,1];
+document.getElementById("reviewLabels").innerHTML=LABELS.map(([n,s,v],i)=>lab(n,s,v,counts[i])).join("");
+
+const ev=[0.2,0.3,0.25,0.3,0.1,-0.6,-0.5,-0.7,-0.4,-0.2,0.1,0.3,0.6,0.5,0.9,1.2,0.8,1.1,1.6,1.4,2.0,1.8,2.4,2.2,3.0,2.7,3.4,3.9,3.6,4.2,4.6,5.0];
+(function(){const W=300,H=110,m=H/2,n=ev.length,cl=v=>Math.max(-5,Math.min(5,v));
+ const p=ev.map((v,i)=>[i/(n-1)*W,m-cl(v)/5*(m-6)]);const line=p.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join("");
+ const area=`M0 ${m}`+p.map(q=>"L"+q[0].toFixed(1)+" "+q[1].toFixed(1)).join("")+`L${W} ${m}Z`;const d=p[5];
+ document.getElementById("evalg").innerHTML=`<defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6b2c" stop-opacity=".45"/><stop offset="1" stop-color="#ff6b2c" stop-opacity="0"/></linearGradient></defs><rect width="${W}" height="${H}" rx="10" fill="#141415"/><line x1="0" x2="${W}" y1="${m}" y2="${m}" stroke="#3a3a3d" stroke-dasharray="3 4"/><path d="${area}" fill="url(#ga)"/><path d="${line}" fill="none" stroke="#ff8f57" stroke-width="2" vector-effect="non-scaling-stroke"/><line x1="${d[0]}" x2="${d[0]}" y1="6" y2="${H-6}" stroke="#ff6b2c" stroke-width="1.5" stroke-dasharray="2 3" vector-effect="non-scaling-stroke"/><circle cx="${d[0]}" cy="${d[1]}" r="4.5" fill="#ff6b2c" stroke="#0d0d0e" stroke-width="2"/>`;
+})();
+
+/* path of 3D nodes */
+(function(){
+ const pts=[[110,58,"done"],[205,98,"done"],[262,170,"done"],[186,232,"active"],[96,300,"locked"],[176,360,"locked"],[268,408,"locked"]];
+ const el=document.getElementById("path");let h="";
+ pts.forEach(([x,y,s],i)=>{
+   const big=s==="active",size=big?150:(i%2?78:92);
+   if(big)h+=`<span class="glow" style="left:${x}px;top:${y}px"></span>`;
+   const src=s==="active"?"assets/node-active.png":s==="done"?"assets/node-done.png":"assets/node-locked.png";
+   h+=`<span class="node" style="left:${x}px;top:${y}px;width:${size}px;height:${size}px"><img class="asset" src="${src}" alt="" onerror="this.parentNode.classList.add('fallback-locked');this.remove()"></span>`;
+ });
+ el.innerHTML=h;
+})();
+
+/* calendar */
+(function(){let h="";for(let d=1;d<=28;d++){const on=d>=13&&d<=24,today=d===24;h+=`<i class="${on?"on":""}${today?" today":""}">${d}</i>`}document.getElementById("cal").innerHTML=h})();
+
+/* asset grid */
+const A=[["knight.png","knight"],["king.png","king"],["node-active.png","node · active"],["node-done.png","node · done"],["node-locked.png","node · locked"],["flame.png","streak flame"],["board-hero.png","board fragment"],["app-icon.png","app icon"]];
+document.getElementById("assetGrid").innerHTML=A.map(([f,n])=>`<figure><div><img class="asset" src="assets/${f}" alt="${n}" onerror="this.classList.add('missing')"></div><figcaption>${n}</figcaption></figure>`).join("");
+
+/* segmented controls */
+document.querySelectorAll(".seg").forEach(g=>g.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;g.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b))}));
+document.querySelectorAll(".option").forEach(o=>o.addEventListener("click",()=>{const p=o.parentElement;if(o.closest("#screens"))p.querySelectorAll(".option").forEach(x=>x.classList.toggle("selected",x===o))}));
+</script>
+</body>
+</html>
