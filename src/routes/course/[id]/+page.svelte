@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
+	import { deleteCustomCourse, isCustom } from '#lib/courses/custom.ts';
 	import { getCourse } from '#lib/courses/index.ts';
 	import type { LineKey } from '#lib/courses/types.ts';
 	import type { LineProgress } from '#lib/db.ts';
@@ -23,7 +25,7 @@
 		progress = await loadProgress();
 		if (!course) return;
 		await setActiveCourse(course.id);
-		const explorer = await loadExplorer(course.id);
+		const explorer = isCustom(course.id) ? undefined : await loadExplorer(course.id);
 		if (explorer) {
 			coverage = courseCoverage(course, explorer);
 			sample = explorer.games;
@@ -32,6 +34,14 @@
 
 	const stats = $derived(course ? courseStats(course, progress, now) : undefined);
 	const orientation = $derived(course?.side === 'w' ? 'white' : 'black');
+	const hasQuiz = $derived(course?.chapters.some((c) => c.quiz.length) ?? false);
+
+	async function remove() {
+		if (!course || !confirm(`Delete “${course.name}” and its progress?`)) return;
+		await deleteCustomCourse(course.id);
+		await goto('/courses');
+	}
+
 	const minutes = $derived(course ? Math.round(course.lines.reduce((s, l) => s + l.plies.filter((p) => p.student).length, 0) * 0.25) : 0);
 </script>
 
@@ -43,6 +53,11 @@
 			<a class="icon-btn" href="/" aria-label="Back">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
 			</a>
+			{#if isCustom(course.id)}
+				<button class="icon-btn" onclick={remove} aria-label="Delete course">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" /></svg>
+				</button>
+			{/if}
 		</header>
 
 		<div class="hero card">
@@ -54,7 +69,7 @@
 		<div class="meta">
 			<span class="chip"><span class="side" class:black={course.side === 'b'}></span>{course.side === 'w' ? 'White' : 'Black'}</span>
 			<span class="chip">{course.lines.length} lines</span>
-			<span class="chip">{course.chapters.length} chapters</span>
+			<span class="chip">{course.chapters.length} {course.chapters.length === 1 ? 'chapter' : 'chapters'}</span>
 			<span class="chip">≈{Math.round(minutes / 6) * 6 >= 60 ? `${Math.round(minutes / 60)} h` : `${minutes} min`}</span>
 		</div>
 
@@ -90,7 +105,7 @@
 		<div class="seg" role="group" aria-label="Sections">
 			<button aria-pressed={tab === 'lines'} onclick={() => (tab = 'lines')}>Lines</button>
 			<button aria-pressed={tab === 'ideas'} onclick={() => (tab = 'ideas')}>Ideas</button>
-			<button aria-pressed={tab === 'quiz'} onclick={() => (tab = 'quiz')}>Quiz</button>
+			{#if hasQuiz}<button aria-pressed={tab === 'quiz'} onclick={() => (tab = 'quiz')}>Quiz</button>{/if}
 		</div>
 
 		{#if tab === 'lines'}
@@ -166,6 +181,8 @@
 
 <style>
 	.top {
+		display: flex;
+		justify-content: space-between;
 		padding: 14px 0 10px;
 	}
 	.hero {

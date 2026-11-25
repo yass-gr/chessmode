@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { courses } from '#lib/courses/index.ts';
+	import { isCustom } from '#lib/courses/custom.ts';
 	import { db, type LineProgress, type RatingRecord, type SessionLog } from '#lib/db.ts';
 	import { ARENA_START, ARENA_UNLOCK_LINES } from '#lib/explorer/arena.ts';
 	import { PUZZLE_START } from '#lib/ratings.ts';
@@ -21,6 +22,7 @@
 	const count = $derived(learned.filter((p) => !scope || p.courseId === scope).length);
 	const scoped = $derived(sessions.filter((s) => !scope || s.courseId === scope));
 	const scopedCourses = $derived(courses.filter((c) => !scope || c.id === scope));
+	const ratedCourses = $derived(scopedCourses.filter((c) => !isCustom(c.id)));
 	const ratingOf = (kind: 'arena' | 'puzzle', id: string) => ratings.find((r) => r.key === `${kind}/${id}`);
 	const learnedIn = (id: string) => learned.filter((p) => p.courseId === id).length;
 	const href = (mode: 'drill' | 'time') => `/drill/run?${new URLSearchParams({ mode, ...(scope ? { course: scope } : {}) })}`;
@@ -72,7 +74,7 @@
 					<p class="muted">Play your opening as a game. Your opponent plays what Lichess players near your rating play, and the engine judges where you stand when their moves run out.</p>
 				</div>
 				<ul class="per-course">
-					{#each scopedCourses as c (c.id)}
+					{#each ratedCourses as c (c.id)}
 						{@const r = ratingOf('arena', c.id)}
 						{@const open = learnedIn(c.id) >= ARENA_UNLOCK_LINES}
 						<li>
@@ -91,7 +93,7 @@
 					<p class="muted">Positions from real games in your openings where the opponent went wrong. Find the punishment.</p>
 				</div>
 				<ul class="per-course">
-					{#each scopedCourses as c (c.id)}
+					{#each ratedCourses as c (c.id)}
 						{@const r = ratingOf('puzzle', c.id)}
 						<li>
 							<span class="t"><b>{c.name}</b><small>{r ? `${r.wins} of ${r.games} solved` : 'Not started'}</small></span>

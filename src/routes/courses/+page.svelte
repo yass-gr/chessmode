@@ -31,6 +31,7 @@
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
 		</a>
 		<h1 class="h-title">Courses</h1>
+		<a class="btn sm btn-surface create" href="/create">Create</a>
 	</header>
 
 	<label class="field search">
@@ -84,6 +85,9 @@
 		align-items: center;
 		gap: 12px;
 		padding: 14px 0 16px;
+	}
+	.create {
+		margin-left: auto;
 	}
 	.search {
 		display: flex;
