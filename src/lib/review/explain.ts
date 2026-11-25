@@ -81,3 +81,36 @@ export function explain(
 	}
 	return { headline };
 }
+
+function branch(fen: Fen, pv: readonly Uci[], score: MoveReview['scoreAfter'], openingExit: boolean): import('#lib/review/types.ts').ReviewBranch {
+	const position = new Chess(fen);
+	const steps: import('#lib/review/types.ts').ReviewBranchStep[] = [];
+	for (const uci of pv.slice(0, 8)) {
+		const fenBefore = position.fen() as Fen;
+		let played;
+		try { played = position.move(uci); } catch { break; }
+		if (!played) break;
+		const targets = position.board().flat().filter(piece => piece && piece.color !== played.color && piece.type !== 'p' && piece.type !== 'k' && position.attackers(piece.square, played.color).includes(played.to));
+		const fork = targets.length >= 2 || (position.isCheck() && targets.length >= 1);
+		const explanation = position.isCheckmate() ? `${played.san} delivers checkmate.`
+			: fork ? `${played.san} attacks multiple pieces.`
+			: played.captured ? `${played.san} captures a ${PIECE_NAMES[played.captured]}.`
+			: openingExit && steps.length === 0 ? `${played.san} leaves the known opening.`
+			: `${played.san} continues the line.`;
+		steps.push({ uci, san: played.san as MoveReview['san'], fenBefore, fenAfter: position.fen() as Fen,
+			...(steps.length === 0 ? { score } : {}), explanation });
+	}
+	return { explanation: steps[0]?.explanation ?? 'No continuation is available.', steps };
+}
+
+export function buildBranches(
+	move: Pick<MoveReview, 'fenBefore' | 'uci' | 'best' | 'scoreAfter'>,
+	replyPv: readonly Uci[],
+	_openingName?: string,
+	openingExit = false
+): NonNullable<MoveReview['branches']> {
+	return {
+		played: branch(move.fenBefore, [move.uci, ...replyPv], move.scoreAfter, openingExit),
+		recommended: branch(move.fenBefore, move.best.pv, move.best.score, false)
+	};
+}

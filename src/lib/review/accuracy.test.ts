@@ -19,3 +19,10 @@ it('measures centipawn loss from the mover’s side and bounds the rating estima
 	expect(estimatedRating(100)).toBe(1140);
 	expect(estimatedRating(900)).toBe(400);
 });
+
+it('reports why a performance estimate is unavailable', async () => {
+	const { ratingContext } = await import('./accuracy.ts');
+	expect(ratingContext(undefined, 0)).toEqual({ kind: 'unavailable', reason: 'missing-data' });
+	expect(ratingContext(20, 9)).toEqual({ kind: 'unavailable', reason: 'short-sample' });
+	expect(ratingContext(20, 10)).toEqual({ kind: 'available', value: estimatedRating(20) });
+});

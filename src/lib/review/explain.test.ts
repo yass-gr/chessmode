@@ -28,3 +28,30 @@ it('names the missed piece and the SAN of the move that wins it', () => {
 	}, []);
 	expect(result.detail).toBe('You missed a chance to win a knight with Qxd5.');
 });
+
+it('stores legal, independently described branches with only known scores', async () => {
+	const { buildBranches } = await import('./explain.ts');
+	const { Chess } = await import('chess.js');
+	const branches = buildBranches(move, ['c6d5' as Uci], undefined, true);
+	expect(branches.played.steps[0].explanation).toContain('captures');
+	expect(branches.recommended.steps[0].explanation).toContain('continues');
+	for (const line of Object.values(branches)) {
+		for (const step of line.steps) {
+			const board = new Chess(step.fenBefore);
+			board.move(step.uci);
+			expect(board.fen()).toBe(step.fenAfter);
+		}
+		expect(line.steps[1]?.score).toBeUndefined();
+	}
+});
+
+it('describes mate, forks, and leaving an opening', async () => {
+	const { buildBranches } = await import('./explain.ts');
+	const make = (fenBefore: string, uci: string) => buildBranches({
+		...move, fenBefore: fenBefore as Fen, uci: uci as Uci,
+		best: { ...move.best, pv: [uci as Uci] }
+	}, [], undefined, true).played.steps[0].explanation;
+	expect(make('7k/5Q2/6K1/8/8/8/8/8 w - - 0 1', 'f7g7')).toContain('checkmate');
+	expect(make('4k3/8/8/8/8/8/8/4K1N1 w - - 0 1', 'g1f3')).toContain('leaves the known opening');
+	expect(make('4k3/8/8/8/r3q3/8/7K/1N6 w - - 0 1', 'b1c3')).toContain('multiple pieces');
+});

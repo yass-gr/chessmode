@@ -1,6 +1,6 @@
 import type { Color } from '#lib/chess/types.ts';
 import { scoreCp, winPercent } from '#lib/review/classify.ts';
-import type { Score } from '#lib/review/types.ts';
+import type { RatingContext, Score } from '#lib/review/types.ts';
 
 const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
 
@@ -44,3 +44,9 @@ export function centipawnLoss(before: Score, after: Score, mover: Color) {
 }
 
 export const estimatedRating = (acpl: number) => Math.round(clamp(3100 * Math.exp(-0.01 * acpl), 400, 3200));
+
+export function ratingContext(acpl: number | undefined, moveCount: number): RatingContext {
+	if (acpl === undefined || !Number.isFinite(acpl) || moveCount <= 0) return { kind: 'unavailable', reason: 'missing-data' };
+	if (moveCount < 10) return { kind: 'unavailable', reason: 'short-sample' };
+	return { kind: 'available', value: estimatedRating(acpl) };
+}
