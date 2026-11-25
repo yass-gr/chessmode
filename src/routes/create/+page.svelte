@@ -7,8 +7,12 @@
 	import { db } from '#lib/db.ts';
 	import type { CourseFile } from '#lib/courses/types.ts';
 	import type { Color } from '#lib/chess/types.ts';
-	import { copyCourse, newCustomId, saveCustomCourse } from '#lib/courses/custom.ts';
-	import { buildCourse, exportCoursePgn, readPgnTree, type BuiltCourse } from '#lib/courses/pgn-tree.ts';
+	import { copyCourse, newCustomId, saveCustomCourse, preserveLineIds } from '#lib/courses/custom.ts';
+	import CoveragePanel from '#lib/components/courses/CoveragePanel.svelte';
+	import { courseCoverage } from '#lib/explorer/coverage.ts';
+	import { loadExplorer, type Explorer } from '#lib/explorer/types.ts';
+	import { courses } from '#lib/courses/index.ts';
+	import { buildPgnCourse, exportCoursePgn, type BuiltCourse } from '#lib/courses/pgn-tree.ts';
 
 	let source = $state<'pgn' | 'study'>('study');
 	let pgn = $state('');
@@ -20,6 +24,24 @@
 	let saving = $state(false);
 	let id = $state(newCustomId());
 	let previous = $state<CourseFile | undefined>();
+	let explorer = $state<Explorer | undefined>();
+	let coverageSource = $state('');
+	let selectedGap = $state('');
+	async function selectCoverage(value: string) {
+		coverageSource = value;
+		explorer = value ? await loadExplorer(value) : undefined;
+	}
+	const report = $derived.by(() => {
+		if (!previous || !built || !('ok' in built)) return undefined;
+		const next = preserveLineIds(previous, built.ok.file);
+		const old = previous.chapters.flatMap((chapter) => chapter.lines);
+		const fresh = next.chapters.flatMap((chapter) => chapter.lines);
+		return { kept: fresh.filter((line) => old.some((item) => item.id === line.id)), added: fresh.filter((line) => !old.some((item) => item.id === line.id)), removed: old.filter((line) => !fresh.some((item) => item.id === line.id)) };
+	});
+	const coverage = $derived.by(() => {
+		if (!explorer || !built || !('ok' in built)) return undefined;
+		try { return courseCoverage(parseCourse(built.ok.file), explorer); } catch { return undefined; }
+	});
 	let loadError = $state('');
 	onMount(async () => {
 		const edit = new URLSearchParams(location.search).get('edit');
@@ -38,8 +60,9 @@
 	const built = $derived.by((): { ok: BuiltCourse; skipped: number } | { error: string } | undefined => {
 		if (!pgn.trim()) return undefined;
 		try {
-			const { tree, skipped } = readPgnTree(pgn);
-			return { ok: buildCourse(tree, { id, name: name.trim() || 'My course', side }), skipped };
+			const result = buildPgnCourse(pgn, { id, name: name.trim() || 'My course', side });
+			parseCourse(result.file);
+			return { ok: result, skipped: result.skipped };
 		} catch (error) {
 			return { error: error instanceof Error ? error.message : String(error) };
 		}
@@ -124,7 +147,7 @@
 			<textarea rows="8" placeholder={'1. e4 c6 2. d4 d5 (2... g6) 3. e5 Bf5 *'} bind:value={pgn} aria-label="PGN" spellcheck={false}></textarea>
 		</label>
 		<label>Choose a PGN file <input type="file" accept=".pgn,text/plain" onchange={(event) => readFile(event.currentTarget.files?.[0])} /></label>
-		<p class="hint muted">Paste or drop PGN. Variations become separate lines and comments become notes.</p>
+		<p class="hint muted">Paste or drop PGN. Edit chapter headers, moves, notes and [%cal] / [%csl] board annotations directly here. Variations become separate lines.</p>
 	{/if}
 
 	<label class="field">
@@ -139,7 +162,7 @@
 	{#if built && 'error' in built}
 		<p class="error">{built.error}</p>
 	{:else if built}
-		{@const lines = built.ok.file.chapters[0].lines}
+		{@const lines = built.ok.file.chapters.flatMap((chapter) => chapter.lines)}
 		<section class="card result">
 			<p><b>{lines.length} {lines.length === 1 ? 'line' : 'lines'}</b> for {side === 'w' ? 'White' : 'Black'}.</p>
 			<ol class="mono">
@@ -155,8 +178,26 @@
 					{#each built.ok.conflicts.slice(0, 4) as c (c)}<li>{c}</li>{/each}
 				</ul>
 			{/if}
+		{#each built.ok.file.chapters as chapter}
+				<p><b>{chapter.name}</b> · {chapter.lines.length} lines</p>
+			{/each}
+			{#if report}
+				<p><b>Reimport changes</b> · {report.kept.length} progress mappings kept · {report.added.length} added · {report.removed.length} removed or changed</p>
+				{#if report.added.length}<p>Added: {report.added.map((line) => line.name).join(', ')}</p>{/if}
+				{#if report.removed.length}<p>Removed or changed: {report.removed.map((line) => line.name).join(', ')}</p>{/if}
+			{/if}
 		<button class="btn btn-surface" onclick={download}>Export preview as PGN</button>
 		</section>
+	{/if}
+	{#if built && 'ok' in built}
+		<label>Compare coverage with a local opening sample
+			<select value={coverageSource} onchange={(event) => selectCoverage(event.currentTarget.value)}>
+				<option value="">Choose a sample</option>
+				{#each courses.filter((course) => !course.id.startsWith('custom-')) as course}<option value={course.id}>{course.name}</option>{/each}
+			</select>
+		</label>
+		{#if coverage && explorer}<CoveragePanel {coverage} {explorer} onselect={(gap) => { selectedGap = `${gap.path.join(' ')} → ${gap.san}`; }} />{/if}
+		{#if selectedGap}<p>Position to inspect in PGN: {selectedGap}</p>{/if}
 	{/if}
 </main>
 
@@ -181,7 +222,11 @@
 		align-content: start;
 		padding-bottom: 140px;
 	}
-	.actions { display:flex; flex-wrap:wrap; gap:8px; }
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
 	.study {
 		display: flex;
 		gap: 8px;

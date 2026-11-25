@@ -68,15 +68,9 @@ export function preserveLineIds(previous: CourseFile, next: CourseFile): CourseF
 		used.add(id);
 		ids.set(line.id, id);
 	}
-	const lines = next.chapters.flatMap((chapter) => chapter.lines.map((line) => ({ ...line, id: ids.get(line.id) ?? line.id })));
-	const oldLines = new Map(previous.chapters.flatMap((chapter) => chapter.lines.map((line) => [line.id, line] as const)));
-	const chapters = previous.chapters.map((chapter) => ({ ...chapter, lines: lines.filter((line) => chapter.lines.some((old) => old.id === line.id)).map((line) => ({ ...line, name: oldLines.get(line.id)?.name ?? line.name })) }));
-	const additions = lines.filter((line) => !oldLines.has(line.id));
-	if (additions.length) {
-		if (chapters.length) chapters[0].lines.push(...additions);
-		else chapters.push({ id: 'lines', name: 'Lines', intro: '', lines: additions });
-	}
-	return { ...previous, name: next.name, side: next.side, chapters };
+	return { ...next, chapters: next.chapters.map((chapter) => ({
+		...chapter, lines: chapter.lines.map((line) => ({ ...line, id: ids.get(line.id) ?? line.id }))
+	})) };
 }
 
 export function copyCourse(file: CourseFile, id = newCustomId()): CourseFile {
