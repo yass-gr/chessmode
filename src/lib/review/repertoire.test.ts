@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { courses, getCourse } from '#lib/courses/index.ts';
+import { getCourse } from '#lib/courses/index.ts';
+import type { Course } from '#lib/courses/types.ts';
 import { readPgn } from '#lib/import/pgn.ts';
 import { findDeviation } from '#lib/review/repertoire.ts';
 
 const plies = (moves: string) => readPgn(moves).plies;
+/** A fixed catalog, so adding a course to the app does not change what these tests mean. */
+const courses = [getCourse('caro-kann')!, getCourse('jobava-london')!];
 
 describe('findDeviation', () => {
 	it('finds where the player left the course', () => {
@@ -29,6 +32,14 @@ describe('findDeviation', () => {
 	it('picks the side from the course that matches when the side is unknown', () => {
 		const found = findDeviation(courses, plies('1. d4 d5 2. Nc3 Nf6 3. Bf4 e6 4. Nb5 Na6 5. h3'));
 		expect(found).toMatchObject({ kind: 'you', course: getCourse('jobava-london'), ply: 8 });
+	});
+
+	it('judges the game by the courses the player studies before the rest of the catalog', () => {
+		const rival: Course = { ...getCourse('caro-kann')!, id: 'rival' as Course['id'] };
+		const game = plies('1. e4 c6 2. d4 d5 3. e5 Bf5');
+		expect(findDeviation([rival, ...courses], game, 'b')?.course.id).toBe('rival');
+		expect(findDeviation([rival, ...courses], game, 'b', new Set(['caro-kann']))?.course.id).toBe('caro-kann');
+		expect(findDeviation(courses, game, 'b', new Set(['jobava-london']))?.course.id).toBe('caro-kann');
 	});
 
 	it('ignores games that never entered the opening', () => {
