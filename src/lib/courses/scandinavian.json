@@ -1,0 +1,424 @@
+{
+	"id": "scandinavian",
+	"name": "Scandinavian Defence",
+	"side": "b",
+	"level": "Beginner to club",
+	"tagline": "1...d5 and ...Qa5: a fight from move one, with the same simple set-up every game.",
+	"description": "A complete Scandinavian repertoire for Black: 1.e4 d5 2.exd5 Qxd5 3.Nc3 Qa5. The queen is safe on a5, pins the c3-knight and eyes the kingside, and Black builds the same solid structure every time: ...Nf6, ...c6, ...Bf5 and ...e6, like a Caro-Kann with the light-squared bishop already out. You also get clear answers to 2.e5, 2.Nc3, 2.Nf3 and the Blackmar-Diemer Gambit, and you learn the knight tricks on d5 and b5 that catch both sides out.",
+	"chapters": [
+		{
+			"id": "main-bc4",
+			"name": "Main Line: 6.Bc4",
+			"moves": "3.Nc3 Qa5 4.d4 Nf6 5.Nf3 c6 6.Bc4 Bf5",
+			"intro": "The main line. Black develops the light-squared bishop to f5 before playing ...e6, so it never gets locked in, and ...c6 gives the queen a retreat to c7 or d8 and keeps White's knight off b5 and d5. White usually plays Bd2, threatening Nd5 with a discovered attack on our queen; after ...e6 the queen simply drops back. Our set-up is ...e6, ...Nbd7, ...Bb4 or ...Be7, and castling. Against Ne5 and g4, the bishop goes to g6 and we trade the strong e5 knight with ...Nbd7.",
+			"lines": [
+				{
+					"id": "bc4-qe2",
+					"name": "7.Bd2 e6 8.Qe2",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Bc4 Bf5 { The bishop comes out before ...e6, the same idea as in the Caro-Kann. } 7. Bd2 { Unpins the knight. Now Nd5 is a threat, uncovering an attack on our queen. } 7... e6 { Calm: if Nd5, the queen retreats to d8 and ...cxd5 or ...exd5 are ready. Now the f8 bishop can come out. } 8. Qe2 { White prepares long castling and d5 or Ne5 ideas. } 8... Bb4 { Pin the knight again and pile up on c3. } 9. O-O-O Nbd7 { Develop and keep e5 under control. } 10. a3 Bxc3 { Trade the bishop for the knight so White's king loses a defender. } 11. Bxc3 Qc7 { The queen is safe and points at h2 and the kingside. Next ...O-O or ...b5 to attack White's king. }"
+				},
+				{
+					"id": "bc4-nd5",
+					"name": "7.Bd2 e6 8.Nd5",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Bc4 Bf5 { The bishop comes out before ...e6, the same idea as in the Caro-Kann. } 7. Bd2 { Unpins the knight. Now Nd5 is a threat, uncovering an attack on our queen. } 7... e6 { Calm: if Nd5, the queen retreats to d8 and ...cxd5 or ...exd5 are ready. Now the f8 bishop can come out. } 8. Nd5 { The discovered attack: the knight hits f6 and the d2 bishop now attacks our queen. } 8... Qd8 { Back to safety. The knight on d5 is attacked by two pawns, so it has to trade itself off. } 9. Nxf6+ Qxf6 { Recapture with the queen: no doubled pawns, and the queen now eyes d4 and b2. Next ...Nd7, ...Bd6 and castle. }"
+				},
+				{
+					"id": "bc4-ne4",
+					"name": "7.Bd2 e6 8.Ne4",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Bc4 Bf5 { The bishop comes out before ...e6, the same idea as in the Caro-Kann. } 7. Bd2 { Unpins the knight. Now Nd5 is a threat, uncovering an attack on our queen. } 7... e6 { Calm: if Nd5, the queen retreats to d8 and ...cxd5 or ...exd5 are ready. Now the f8 bishop can come out. } 8. Ne4 { The knight attacks the queen through the d2 bishop and offers a trade on f6. } 8... Qc7 { The safe square: the queen keeps watching e5 and the kingside. } 9. Nxf6+ gxf6 { Take back with the pawn: the g-file opens for our rook, and f6 and e6 control e5 and d5. } 10. Nh4 Bg6 { Keep the bishop. If Nxg6, ...hxg6 also opens the h-file. Next ...Nd7 and long castling. }"
+				},
+				{
+					"id": "bc4-ne5-g4",
+					"name": "7.Ne5 e6 8.g4",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Bc4 Bf5 { The bishop comes out before ...e6, the same idea as in the Caro-Kann. } 7. Ne5 { White eyes f7 and prepares g4 to chase the bishop. } 7... e6 { Opens the f8 bishop and covers d5 and f5. } 8. g4 { The aggressive plan: kick the bishop and gain space. } 8... Bg6 { The bishop drops back. It is safe as long as we can meet h4-h5. } 9. h4 Nbd7 { The key answer: challenge the e5 knight. If h5, the bishop has e4 waiting. } 10. Nxd7 Nxd7 11. h5 Be4 { The bishop sits in the centre and hits the h1 rook. } 12. Rh3 Bg2 { Attacks the rook again. White's kingside pawns have gone forward and left holes behind them. } 13. Re3 Qc7 { Bring the queen back to the centre, where it eyes the kingside. Next ...Bd5 and ...Nb6: Black's pieces use the light squares White gave up. }"
+				},
+				{
+					"id": "bc4-ne5-nxg6",
+					"name": "7.Ne5 e6 8.g4 Bg6 9.h4 Nbd7 10.Nxg6",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Bc4 Bf5 { The bishop comes out before ...e6, the same idea as in the Caro-Kann. } 7. Ne5 { White eyes f7 and prepares g4 to chase the bishop. } 7... e6 { Opens the f8 bishop and covers d5 and f5. } 8. g4 { The aggressive plan: kick the bishop and gain space. } 8... Bg6 { The bishop drops back. It is safe as long as we can meet h4-h5. } 9. h4 Nbd7 { The key answer: challenge the e5 knight. If h5, the bishop has e4 waiting. } 10. Nxg6 { White takes the bishop instead. } 10... hxg6 { Recapture towards the centre. The h-file opens for our rook against h4, and White's g4 and h4 pawns are loose. Next ...Nb6, ...Bb4 and ...O-O-O. }"
+				},
+				{
+					"id": "bc4-oo",
+					"name": "7.O-O e6 8.Nh4",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Bc4 Bf5 { The bishop comes out before ...e6, the same idea as in the Caro-Kann. } 7. O-O e6 8. Nh4 { White goes after the f5 bishop. } 8... Nbd7 { Let White take: we recapture with the queen. } 9. Nxf5 Qxf5 { The queen is active on f5 and Black has no weaknesses. Next ...Be7, ...O-O and ...Nb6 or ...e5. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 Nf6 5. Nf3 c6 6. Bc4 Bf5 7. Bd2",
+					"question": "What is White threatening after 7.Bd2?",
+					"options": [
+						"Nd5, uncovering an attack on our queen from the d2 bishop",
+						"Ng5, attacking f7",
+						"Qe2 and long castling only",
+						"b4, trapping the queen"
+					],
+					"answer": 0,
+					"explanation": "With the bishop on d2, any knight move from c3 attacks our queen. Nd5 also hits f6. After ...e6 the queen can calmly retreat to d8 and the knight on d5 is attacked by two pawns."
+				},
+				{
+					"pgn": "1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 Nf6 5. Nf3 c6 6. Bc4 Bf5 7. Ne5 e6 8. g4 Bg6 9. h4",
+					"question": "White threatens h5, trapping the bishop. What is the best answer?",
+					"options": [
+						"...h6, making room",
+						"...Nbd7, challenging the e5 knight",
+						"...Be4, at once",
+						"...Bb4, pinning the knight"
+					],
+					"answer": 1,
+					"explanation": "...Nbd7 attacks the e5 knight, which guards the key squares. After Nxd7 Nxd7 h5, the bishop escapes to e4 and White's pawn storm has left holes behind."
+				}
+			]
+		},
+		{
+			"id": "main-other",
+			"name": "Main Line: Other Moves",
+			"moves": "3.Nc3 Qa5 4.d4 Nf6: 5.Nf3 c6 6.Ne5, 6.Be2, 6.h3, 6.Bd3, 6.Bd2; 5.Bd2, 5.Bc4",
+			"intro": "White has many ways to develop, but our set-up does not change: ...c6, ...Bf5 (or ...Bg4 when Bd3 stops ...Bf5) and ...e6. When White plays Bd3, trade bishops or pin the knight with ...Bg4. Against Ne5 followed by g4, the bishop drops to e6 or g6. Always look out for the Bd2 and Nd5 discovered attack, and for the opposite: if White plays Nd5 at the wrong moment, the knight can simply be taken.",
+			"lines": [
+				{
+					"id": "ne5-g4",
+					"name": "6.Ne5 Bf5 7.g4",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Ne5 { The knight jumps in early and prepares g4. } 6... Bf5 { Develop the bishop as usual. } 7. g4 { Chase the bishop at once. } 7... Be6 { The bishop is safe on e6 and hits the queenside. White's g4 has weakened the kingside. } 8. Bg2 Nbd7 { Challenge the strong e5 knight. Next ...Nxe5, ...Bd5 and ...e6. }"
+				},
+				{
+					"id": "ne5-bc4",
+					"name": "6.Ne5 Bf5 7.Bc4",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Ne5 { The knight jumps in early and prepares g4. } 6... Bf5 { Develop the bishop as usual. } 7. Bc4 { After ...e6 this is the 6.Bc4 Bf5 7.Ne5 line from the first chapter. Against g4 the bishop goes to g6, and ...Nbd7 meets h4. } 7... e6 { Opens the f8 bishop and covers d5 and f5. }"
+				},
+				{
+					"id": "be2",
+					"name": "6.Be2 Bf5 7.O-O e6",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Be2 Bf5 7. O-O e6 { Our standard set-up. White's bishop on e2 is less active than on c4. } 8. Bf4 Nbd7 { Develop and control e5. Next ...Be7 or ...Bb4 and castle short. }"
+				},
+				{
+					"id": "h3-bd3",
+					"name": "6.h3 Bf5 7.Bd3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. h3 { White stops ...Bg4. } 6... Bf5 7. Bd3 { White offers a bishop trade. } 7... Bxd3 { Take it: we trade our best minor piece, but White's queen gets pulled forward and we develop smoothly. } 8. Qxd3 e6 { Solid. Next ...Nbd7, ...Be7 or ...Bb4, and castle. }"
+				},
+				{
+					"id": "bd3-bg4",
+					"name": "6.Bd3 Bg4",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Bd3 { Covers f5, so ...Bf5 would just be traded. } 6... Bg4 { Pin the knight instead. It cannot easily support Ne5 or d4 now. } 7. h3 Bh5 { Keep the pin. If g4, ...Bg6 trades off White's good d3 bishop. Next ...e6, ...Nbd7 and ...Bd6. }"
+				},
+				{
+					"id": "bd2-ne4",
+					"name": "6.Bd2 Bf5 7.Ne4",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Nf3 c6 { An important little move: it gives the queen a retreat on c7, and stops Nb5 and Nd5 jumps. } 6. Bd2 Bf5 { If White now plays Bc4, ...e6 brings us back to the main line. } 7. Ne4 { The discovered attack: the d2 bishop hits our queen. } 7... Qc7 { The queen steps aside and keeps watching e5. } 8. Ng3 Bg6 { The bishop drops back to its safe diagonal. Next ...e6, ...Nbd7 and ...Bd6 to fight for e5. }"
+				},
+				{
+					"id": "bd2-nd5-trap",
+					"name": "5.Bd2 c6 6.Nd5??",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. d4 Nf6 { Develop and control e4 and d5. } 5. Bd2 { White prepares Nd5 with a discovered attack on our queen. } 5... c6 { Covers d5 and b5 and gives the queen the c7 square. } 6. Nd5 { This discovered attack does not work. } 6... Qxd5 { Just take it: the queen is no longer on the d2 bishop's diagonal. Black is a whole knight up. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 Nf6 5. Nf3 c6 6. Bd3",
+					"question": "White just played 6.Bd3, covering f5. Where should our light-squared bishop go?",
+					"options": [
+						"...Bf5 anyway",
+						"...Bg4, pinning the knight",
+						"...Be6",
+						"Leave it and play ...e6"
+					],
+					"answer": 1,
+					"explanation": "On f5 the bishop would just be traded for White's bishop with a tempo. ...Bg4 pins the knight and keeps the bishop outside the pawn chain."
+				},
+				{
+					"pgn": "1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 Nf6 5. Bd2 c6 6. Nd5",
+					"question": "White played 6.Nd5, uncovering the d2 bishop. What should Black do?",
+					"options": [
+						"Move the queen to d8",
+						"Take the knight with the queen",
+						"Take the knight with the c-pawn",
+						"...Qxd2+"
+					],
+					"answer": 1,
+					"explanation": "...Qxd5 is perfectly safe: after the queen leaves a5 nothing attacks it. Black simply wins a knight. ...cxd5 would lose the queen to Bxa5."
+				}
+			]
+		},
+		{
+			"id": "fourth-moves",
+			"name": "Fourth-Move Alternatives",
+			"moves": "3.Nc3 Qa5 4.Nf3, 4.Bc4, 4.g3",
+			"intro": "Many players delay d4. Our moves stay the same: ...Nf6, ...c6, and the bishop to f5 or g4. When White plays d3 instead of d4, the centre is quieter and our queen is even safer, so we can calmly develop with ...e6, ...Nbd7 and ...Be7. If White plays d4 later, these lines often transpose to the main chapters. Against the fianchetto with g3, we take space with ...e5.",
+			"lines": [
+				{
+					"id": "nf3-bc4-oo",
+					"name": "4.Nf3 Nf6 5.Bc4 c6 6.O-O",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. Nf3 Nf6 { Develop. If White plays d4 we are back in the main line. } 5. Bc4 c6 6. O-O Bf5 { The bishop takes its usual post. } 7. d3 e6 { Our standard structure: the f5 bishop is outside the chain and the queen is safe on a5. Next ...Nbd7, ...Be7 and ...O-O. }"
+				},
+				{
+					"id": "nf3-be2",
+					"name": "4.Nf3 Nf6 5.Be2",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. Nf3 Nf6 { Develop. If White plays d4 we are back in the main line. } 5. Be2 c6 6. O-O Bf5 7. d4 { After ...e6 we reach the 6.Be2 line from the previous chapter. } 7... e6 { Our standard set-up. White's bishop on e2 is less active than on c4. }"
+				},
+				{
+					"id": "bc4-d3-qf3",
+					"name": "4.Bc4 Nf6 5.d3 c6 6.Bd2 Qc7 7.Qf3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. Bc4 Nf6 5. d3 c6 6. Bd2 { The same idea as always: Nd5 is now a discovered attack on our queen. } 6... Qc7 { Step off the dangerous diagonal before White can use it. } 7. Qf3 e6 { Covers d5 and f5 and blunts the c4 bishop. } 8. O-O-O Nbd7 { Solid development. Next ...Bd6, ...O-O or ...b5 to gain time on White's bishop. }"
+				},
+				{
+					"id": "bc4-d3-nf3",
+					"name": "4.Bc4 Nf6 5.d3 c6 6.Bd2 Qc7 7.Nf3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. Bc4 Nf6 5. d3 c6 6. Bd2 { The same idea as always: Nd5 is now a discovered attack on our queen. } 6... Qc7 { Step off the dangerous diagonal before White can use it. } 7. Nf3 e6 { The same set-up. With d3 played, White has no pressure in the centre. } 8. O-O b5 { Gain space with tempo on the c4 bishop. Next ...Bd6 and ...O-O. }"
+				},
+				{
+					"id": "g3",
+					"name": "4.g3 Nf6 5.Bg2 c6",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nc3 Qa5 { The classical square. The queen is safe, pins the c3 knight against the king, and eyes the kingside along the fifth rank. } 4. g3 Nf6 5. Bg2 { The bishop on g2 aims down the long diagonal at b7 and c6. } 5... c6 { Blunt the bishop before it bites. } 6. Nge2 e5 { Take the centre: our e5 pawn shuts the g2 bishop out and frees the f8 bishop. } 7. d4 Bd6 { Protect e5 and develop. Next ...O-O and ...Bg4 or ...Bf5. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. Bc4 Nf6 5. d3 c6 6. Bd2",
+					"question": "Why does Black play 6...Qc7 here?",
+					"options": [
+						"To prepare ...e5 at once",
+						"To get the queen off the d2 bishop’s diagonal before Nd5 or Nb5 discovers an attack on it",
+						"To attack h2",
+						"Because the queen is trapped on a5"
+					],
+					"answer": 1,
+					"explanation": "With the bishop on d2 every knight jump from c3 attacks the queen with tempo. On c7 the queen is safe and still watches e5."
+				},
+				{
+					"pgn": "1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. g3 Nf6 5. Bg2 c6 6. Nge2",
+					"question": "What is Black’s plan against the g3 set-up?",
+					"options": [
+						"...e5, taking the centre and blocking the g2 bishop",
+						"...g6 and ...Bg7",
+						"...Qh5, attacking e2",
+						"...b5 to gain space"
+					],
+					"answer": 0,
+					"explanation": "White has not played d4, so ...e5 is free. It blunts the g2 bishop and gives Black's pieces easy development."
+				}
+			]
+		},
+		{
+			"id": "third-moves",
+			"name": "3.Nf3 and 3.d4",
+			"moves": "2.exd5 Qxd5 3.Nf3, 3.d4",
+			"intro": "If White does not attack the queen with Nc3, it can stay on d5 for now. After 3.Nf3 we play ...Nf6, ...Bg4 and ...Nc6, so queen, knight, bishop and soon a rook all hit d4. Black often castles long and follows up with ...e5. When White kicks the queen with c4, it goes to f5. If White plays Nc3 later, ...Qa5 takes us back to the main line. Against 3.d4 Nf6 4.c4 the check on e4 is strong: careless moves like Be2 lose the g2 pawn.",
+			"lines": [
+				{
+					"id": "nf3-ooo",
+					"name": "3.Nf3 Nf6 4.d4 Bg4 5.Be2 Nc6 6.O-O O-O-O",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nf3 { White develops without attacking the queen. } 3... Nf6 { Develop. If Nc3, ...Qa5 brings us back to the main line. } 4. d4 Bg4 { Pin the knight: it stops Ne5 and takes a defender away from d4. } 5. Be2 Nc6 { Hit d4 again. Queen, knight and bishop now all aim at White's centre. } 6. O-O O-O-O { Castle long: the rook joins the attack on d4 at once, and our king is safe on the queenside. } 7. Be3 Qf5 { The queen leaves the d-file before c4 can hit it and eyes the kingside. } 8. c4 e5 { Strike at d4 again. } 9. d5 { This is the same position as the 6.O-O line. } 9... e4 { Gain more space and kick the f3 knight. Our pieces are active and White's d5 pawn can become a target. }"
+				},
+				{
+					"id": "nf3-ooo-h3",
+					"name": "...6...O-O-O 7.h3? Bxf3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nf3 { White develops without attacking the queen. } 3... Nf6 { Develop. If Nc3, ...Qa5 brings us back to the main line. } 4. d4 Bg4 { Pin the knight: it stops Ne5 and takes a defender away from d4. } 5. Be2 Nc6 { Hit d4 again. Queen, knight and bishop now all aim at White's centre. } 6. O-O O-O-O { Castle long: the rook joins the attack on d4 at once, and our king is safe on the queenside. } 7. h3 { Natural, but it forgets d4. } 7... Bxf3 { Remove the knight that guards d4. } 8. Bxf3 Qxd4 { Black wins a clean pawn, with the rook on d8 supporting the queen. }"
+				},
+				{
+					"id": "nf3-ooo-c3",
+					"name": "...6...O-O-O 7.c3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nf3 { White develops without attacking the queen. } 3... Nf6 { Develop. If Nc3, ...Qa5 brings us back to the main line. } 4. d4 Bg4 { Pin the knight: it stops Ne5 and takes a defender away from d4. } 5. Be2 Nc6 { Hit d4 again. Queen, knight and bishop now all aim at White's centre. } 6. O-O O-O-O { Castle long: the rook joins the attack on d4 at once, and our king is safe on the queenside. } 7. c3 { White protects d4 with a pawn. } 7... e5 { Open the centre while our pieces are better developed. If dxe5, the queen recaptures; if c4, the queen drops back to d7. }"
+				},
+				{
+					"id": "nf3-c4",
+					"name": "...5...Nc6 6.c4 Qf5",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nf3 { White develops without attacking the queen. } 3... Nf6 { Develop. If Nc3, ...Qa5 brings us back to the main line. } 4. d4 Bg4 { Pin the knight: it stops Ne5 and takes a defender away from d4. } 5. Be2 Nc6 { Hit d4 again. Queen, knight and bishop now all aim at White's centre. } 6. c4 { Kick the queen at once. } 6... Qf5 { The active retreat: from f5 the queen eyes f3 and the kingside. } 7. O-O O-O-O 8. Be3 e5 { Strike at d4 again. } 9. d5 { This is the same position as the 6.O-O line. } 9... e4 { Gain more space and kick the f3 knight. Our pieces are active and White's d5 pawn can become a target. }"
+				},
+				{
+					"id": "nf3-h3",
+					"name": "...5...Nc6 6.h3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nf3 { White develops without attacking the queen. } 3... Nf6 { Develop. If Nc3, ...Qa5 brings us back to the main line. } 4. d4 Bg4 { Pin the knight: it stops Ne5 and takes a defender away from d4. } 5. Be2 Nc6 { Hit d4 again. Queen, knight and bishop now all aim at White's centre. } 6. h3 Bxf3 { Take before the bishop is pushed back. Now d4 has lost a defender. } 7. Bxf3 Qd7 { Not ...Qxd4: Bxc6+ bxc6 Qxd4 wins our queen, because no rook guards it yet. Next ...O-O-O and ...e5. }"
+				},
+				{
+					"id": "nf3-nc3",
+					"name": "3.Nf3 Nf6 4.Nc3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. Nf3 { White develops without attacking the queen. } 3... Nf6 { Develop. If Nc3, ...Qa5 brings us back to the main line. } 4. Nc3 Qa5 { Back to the main line by a different move order. If d4 follows, ...c6 and ...Bf5. }"
+				},
+				{
+					"id": "d4-c4-be2",
+					"name": "3.d4 Nf6 4.c4 Qe4+ 5.Be2?",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. d4 Nf6 4. c4 { Gains space and kicks the queen. } 4... Qe4+ { A useful check: White has no good way to block it. } 5. Be2 { Natural, but it drops a pawn. } 5... Qxg2 { The g2 pawn falls, and the h1 rook is attacked too. } 6. Bf3 Qg6 { The queen is safe, and Black is a clean pawn up. Next ...Nc6 and ...e5 or ...Bf5. }"
+				},
+				{
+					"id": "d4-c4-ne2",
+					"name": "3.d4 Nf6 4.c4 Qe4+ 5.Ne2",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. d4 Nf6 4. c4 { Gains space and kicks the queen. } 4... Qe4+ { A useful check: White has no good way to block it. } 5. Ne2 e5 { Hit d4 at once, while White's pieces are tangled. } 6. Nc3 Bb4 { Pin the knight. Black develops quickly and the queen on e4 is annoying for White. }"
+				},
+				{
+					"id": "d4-c4-be3",
+					"name": "3.d4 Nf6 4.c4 Qe4+ 5.Be3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. exd5 Qxd5 { The queen comes out early, but White's knight has only one good square to attack it from. } 3. d4 Nf6 4. c4 { Gains space and kicks the queen. } 4... Qe4+ { A useful check: White has no good way to block it. } 5. Be3 e5 { Strike back in the centre before White can develop. } 6. Nc3 Bb4 { Pin the knight that attacks our queen. If Qb3, ...Bxc3+ and ...exd4 give Black easy play. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 d5 2. exd5 Qxd5 3. d4 Nf6 4. c4 Qe4+ 5. Be2",
+					"question": "What does Black play after 5.Be2?",
+					"options": [
+						"...Qxg2, winning a pawn",
+						"...Qd5",
+						"...e5",
+						"...Bf5"
+					],
+					"answer": 0,
+					"explanation": "With the bishop on e2 nothing protects g2. ...Qxg2 also attacks the h1 rook, and after Bf3 Qg6 Black is a pawn up."
+				},
+				{
+					"pgn": "1. e4 d5 2. exd5 Qxd5 3. Nf3 Nf6 4. d4 Bg4 5. Be2 Nc6 6. O-O O-O-O 7. h3",
+					"question": "White just played 7.h3. How does Black win a pawn?",
+					"options": [
+						"...Bh5, keeping the pin",
+						"...Bxf3 and ...Qxd4",
+						"...e5",
+						"...Qa5"
+					],
+					"answer": 1,
+					"explanation": "The f3 knight is the main defender of d4. After ...Bxf3 Bxf3 Qxd4, the rook on d8 backs up the queen and Black is a pawn up."
+				}
+			]
+		},
+		{
+			"id": "advance",
+			"name": "Advance: 2.e5",
+			"moves": "2.e5 Bf5",
+			"intro": "After 2.e5 White avoids the Scandinavian and gets a French-style position. We take a good version: the bishop comes to f5 before ...e6, just as in the Caro-Kann Advance. Then we play ...c5 and ...Nc6 to attack d4, the base of White's chain, often with ...Qb6. If White offers a trade of light-squared bishops, take it; White loses its best defender of the light squares.",
+			"lines": [
+				{
+					"id": "adv-nf3-c3",
+					"name": "2.e5 Bf5 3.d4 e6 4.Nf3 c5 5.c3 Nc6",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. e5 { White gains space and avoids our main lines. } 2... Bf5 { The bishop comes out before ...e6 locks it in. } 3. d4 e6 4. Nf3 c5 { Attack the base of White's chain. } 5. c3 Nc6 { More pressure on d4. } 6. Be2 cxd4 7. cxd4 Bb4+ { A useful check: it disturbs White's development. } 8. Nc3 Nge7 { The knight heads for c6 or g6 and keeps the f5 bishop company. Next ...O-O and ...Rc8 on the open file. }"
+				},
+				{
+					"id": "adv-bd3",
+					"name": "4.Bd3 Bxd3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. e5 { White gains space and avoids our main lines. } 2... Bf5 { The bishop comes out before ...e6 locks it in. } 3. d4 e6 4. Bd3 { White offers to trade bishops. } 4... Bxd3 5. Qxd3 c5 { The usual break. White's light squares are weaker without the bishop. } 6. c3 Nc6 7. Nf3 Qb6 { Pressure on d4 and b2. Next ...Nge7-f5 adds a third attacker to d4. }"
+				},
+				{
+					"id": "adv-c3",
+					"name": "4.c3 c5",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. e5 { White gains space and avoids our main lines. } 2... Bf5 { The bishop comes out before ...e6 locks it in. } 3. d4 e6 4. c3 c5 { Same plan: hit d4. } 5. Nf3 { After ...Nc6 this is the same position as the 4.Nf3 line. } 5... Nc6 { More pressure on d4. } 6. Be2 cxd4 7. cxd4 Bb4+ { A useful check: it disturbs White's development. } 8. Nc3 Nge7 { The knight heads for c6 or g6 and keeps the f5 bishop company. Next ...O-O and ...Rc8 on the open file. }"
+				},
+				{
+					"id": "adv-nf3-early",
+					"name": "3.Nf3 e6 4.Be2",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. e5 { White gains space and avoids our main lines. } 2... Bf5 { The bishop comes out before ...e6 locks it in. } 3. Nf3 e6 4. Be2 c5 { Attack d4 before White has played it. } 5. O-O Nc6 { Our pieces go to their usual squares. If d4, ...Qb6 or ...cxd4 hit the centre. }"
+				},
+				{
+					"id": "adv-bd3-early",
+					"name": "3.Bd3 Bxd3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. e5 { White gains space and avoids our main lines. } 2... Bf5 { The bishop comes out before ...e6 locks it in. } 3. Bd3 Bxd3 { Take it: we trade off White's best attacking bishop, and White must recapture with a pawn. } 4. cxd3 Nc6 { Attack e5, which has no pawn behind it. } 5. d4 Nxd4 { The d4 pawn was not protected. } 6. Qa4+ Nc6 { Block the check: Black is a clean pawn up, and White's queen will be kicked by ...e6 and ...Qd7. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 d5 2. e5",
+					"question": "What is Black’s plan against 2.e5?",
+					"options": [
+						"...Bf5, then ...e6 and ...c5 against d4",
+						"...f6 at once",
+						"...e6 and ...b6 to fianchetto",
+						"...Nc6 and ...Nxe5"
+					],
+					"answer": 0,
+					"explanation": "Like the Caro-Kann Advance: get the bishop out first, then hit the base of White's chain with ...c5, ...Nc6 and ...Qb6."
+				},
+				{
+					"pgn": "1. e4 d5 2. e5 Bf5 3. d4 e6 4. Nf3 c5 5. c3 Nc6",
+					"question": "Which White pawn is Black’s main target?",
+					"options": [
+						"e5",
+						"d4",
+						"c3",
+						"f2"
+					],
+					"answer": 1,
+					"explanation": "d4 holds the whole chain together. Black hits it with ...c5, ...Nc6 and ...Qb6; if it falls, e5 is weak too."
+				}
+			]
+		},
+		{
+			"id": "second-moves",
+			"name": "Second-Move Alternatives",
+			"moves": "2.Nc3, 2.Nf3, 2.d4, 2.d3",
+			"intro": "Not everyone takes on d5. Against 2.Nc3 we push ...d4, gain space and kick the knight, then follow up with ...e5. Against 2.Nf3 we take on e4 and develop quickly: the knight that hunts our pawn is spending time. Against the Blackmar-Diemer Gambit (2.d4 dxe4 3.Nc3 Nf6 4.f3) we take the pawn and develop the bishop to f5, trading off White's attacking bishop with ...Bxd3. Against 2.d3 we trade queens and enjoy an easy game.",
+			"lines": [
+				{
+					"id": "nc3-nce2",
+					"name": "2.Nc3 d4 3.Nce2 e5 4.Ng3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. Nc3 { White defends e4 instead of taking. } 2... d4 { Gain space and kick the knight. } 3. Nce2 e5 { Support the d4 pawn: Black has a big centre. } 4. Ng3 Be6 { Develop and watch the a2-g8 diagonal, so Bc4 is less dangerous. } 5. Nf3 f6 { Protect e5 for good. Our centre is rock solid. } 6. Bb5+ c6 { Block and gain time on the bishop. Next ...Nd7, ...Bd6 and ...Ne7. }"
+				},
+				{
+					"id": "nc3-nb1",
+					"name": "2.Nc3 d4 3.Nb1",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. Nc3 { White defends e4 instead of taking. } 2... d4 { Gain space and kick the knight. } 3. Nb1 { The knight goes home. } 3... Nf6 4. d3 e5 { We have more space in the centre. } 5. Nf3 Nc6 { Develop. Next ...Bd6 or ...Be7, then castle. }"
+				},
+				{
+					"id": "nc3-nd5",
+					"name": "2.Nc3 d4 3.Nd5",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. Nc3 { White defends e4 instead of taking. } 2... d4 { Gain space and kick the knight. } 3. Nd5 { The knight jumps forward. } 3... c6 { Kick it at once. } 4. Nf4 e5 { And again. The knight has moved four times. } 5. Nd3 Nd7 { Simple development. Next ...Ngf6 and ...Bd6. We are ahead in development. }"
+				},
+				{
+					"id": "nf3-ng5-d3",
+					"name": "2.Nf3 dxe4 3.Ng5 Nf6 4.d3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. Nf3 dxe4 { Take the pawn. } 3. Ng5 { Attacks e4. } 3... Nf6 { Protect the pawn and develop. } 4. d3 exd3 5. Bxd3 Nc6 6. O-O Bg4 { Develop with tempo on the queen. Black is comfortable: White's knight on g5 is misplaced. }"
+				},
+				{
+					"id": "nf3-ng5-nc3",
+					"name": "2.Nf3 dxe4 3.Ng5 Nf6 4.Nc3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. Nf3 dxe4 { Take the pawn. } 3. Ng5 { Attacks e4. } 3... Nf6 { Protect the pawn and develop. } 4. Nc3 Bf5 { Protect the e4 pawn and develop. } 5. d3 exd3 6. Bxd3 Bxd3 7. Qxd3 Qxd3 8. cxd3 e6 { An easy endgame: White's isolated d-pawn is a target. Next ...Nc6 and ...Bb4 or ...Be7. }"
+				},
+				{
+					"id": "nf3-ne5",
+					"name": "2.Nf3 dxe4 3.Ne5",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. Nf3 dxe4 { Take the pawn. } 3. Ne5 Nd7 { Challenge the knight and develop. } 4. Nc4 Ngf6 { Black is a pawn up and developing normally. }"
+				},
+				{
+					"id": "bdg-bd3",
+					"name": "Blackmar-Diemer: 5...Bf5 6.Bd3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. d4 dxe4 3. Nc3 Nf6 4. f3 exf3 5. Nxf3 { The Blackmar-Diemer Gambit: White gives a pawn for fast development and the open f-file. } 5... Bf5 { Develop with control of e4 and d3. } 6. Bd3 Bxd3 { Trade off White's most dangerous attacking piece. } 7. Qxd3 c6 { Solid: cover d5 and b5. } 8. Bg5 e6 9. O-O-O Nbd7 { Black is a pawn up and safe. Next ...Be7 and ...O-O. }"
+				},
+				{
+					"id": "bdg-bc4",
+					"name": "Blackmar-Diemer: 5...Bf5 6.Bc4",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. d4 dxe4 3. Nc3 Nf6 4. f3 exf3 5. Nxf3 { The Blackmar-Diemer Gambit: White gives a pawn for fast development and the open f-file. } 5... Bf5 { Develop with control of e4 and d3. } 6. Bc4 e6 { Blunt the c4 bishop's aim at f7. } 7. O-O c6 { The same solid structure: the f5 bishop is out and e6 holds the centre. Next ...Nbd7, ...Bd6 or ...Be7, and castle. }"
+				},
+				{
+					"id": "bdg-f3-e5",
+					"name": "2.d4 dxe4 3.f3 e5",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. d4 dxe4 3. f3 { White offers the pawn at once. } 3... e5 { Strike back in the centre. } 4. dxe5 Qxd1+ 5. Kxd1 Nc6 { White's king has lost the right to castle and e5 is weak. } 6. Bb5 Bd7 7. fxe4 O-O-O { Black is well ahead in development with White's king stuck in the centre. }"
+				},
+				{
+					"id": "d3",
+					"name": "2.d3",
+					"pgn": "1. e4 d5 { The Scandinavian: Black challenges e4 at once. } 2. d3 dxe4 3. dxe4 Qxd1+ { Trade queens: White's king can no longer castle. } 4. Kxd1 e5 { Take central space. Next ...Nc6, ...Nf6 and ...Bc5. Black has an easy game. } 5. Nf3 Nc6"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 d5 2. Nc3",
+					"question": "What is Black’s plan against 2.Nc3?",
+					"options": [
+						"...d4, gaining space and kicking the knight",
+						"...dxe4 only",
+						"...e6, a French",
+						"...Nf6, inviting e5"
+					],
+					"answer": 0,
+					"explanation": "...d4 gains space with tempo. After Nce2, ...e5 builds a big centre, and ...f6 later makes it solid."
+				},
+				{
+					"pgn": "1. e4 d5 2. d4 dxe4 3. Nc3 Nf6 4. f3 exf3 5. Nxf3 Bf5 6. Bd3",
+					"question": "Why does Black take on d3?",
+					"options": [
+						"To win a pawn",
+						"To trade off White’s most dangerous attacking bishop",
+						"Because the bishop was trapped",
+						"To open the f-file"
+					],
+					"answer": 1,
+					"explanation": "In the Blackmar-Diemer, White's light-squared bishop leads the attack on h7. Trading it removes most of White's compensation for the pawn."
+				}
+			]
+		}
+	]
+}
