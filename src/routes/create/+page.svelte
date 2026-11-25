@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { seg } from '#lib/components/seg.ts';
 	import { goto } from '$app/navigation';
 	import type { Color } from '#lib/chess/types.ts';
 	import { newCustomId, saveCustomCourse } from '#lib/courses/custom.ts';
@@ -70,7 +71,7 @@
 
 	<p class="muted lead">Turn your own repertoire into a course. Every branch becomes a line you learn, practice and drill like any other.</p>
 
-	<div class="seg" role="group" aria-label="Source">
+	<div class="seg" use:seg role="group" aria-label="Source">
 		<button aria-pressed={source === 'study'} onclick={() => (source = 'study')}>Lichess study</button>
 		<button aria-pressed={source === 'pgn'} onclick={() => (source = 'pgn')}>Paste PGN</button>
 	</div>
@@ -95,7 +96,7 @@
 		<input type="text" placeholder="Course name" bind:value={name} aria-label="Course name" maxlength="60" />
 	</label>
 
-	<div class="seg" role="group" aria-label="You play">
+	<div class="seg" use:seg role="group" aria-label="You play">
 		<button aria-pressed={side === 'w'} onclick={() => (side = 'w')}>I play White</button>
 		<button aria-pressed={side === 'b'} onclick={() => (side = 'b')}>I play Black</button>
 	</div>

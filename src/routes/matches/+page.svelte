@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { seg } from '#lib/components/seg.ts';
 	import { onMount } from 'svelte';
 	import { liveQuery } from 'dexie';
 	import { goto } from '$app/navigation';
@@ -109,7 +110,7 @@
 		<section class="card import" aria-label="Import games">
 			<h2>Import games</h2>
 			<form onsubmit={importOnline}>
-				<div class="seg" role="group" aria-label="Game platform">
+				<div class="seg" use:seg role="group" aria-label="Game platform">
 					{#each sources as platform}
 						<button type="button" disabled={busy} aria-pressed={source === platform} onclick={() => { source = platform; }}>{PLATFORMS[platform]}</button>
 					{/each}
@@ -175,7 +176,7 @@
 	.games { padding: 0 14px; }
 	.game { min-height: 70px; padding: 11px 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 	.game + .game { border-top: 1px solid var(--stroke); }
-	.game:hover b { color: var(--accent-hi); }
+	@media (hover: hover) and (pointer: fine) { .game:hover b { color: var(--accent-hi); } }
 	.game div { min-width: 0; }
 	.game b, .metadata, .opening { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 	.metadata, .opening, .empty { color: var(--text-2); font-size: 13px; }
