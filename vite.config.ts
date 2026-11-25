@@ -33,7 +33,9 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			adapter: adapter({ fallback: 'index.html' })
+			adapter: adapter({ fallback: 'index.html' }),
+			// The SPA fallback is served at every depth, so asset URLs must not be relative.
+			paths: { relative: false }
 		})
 	]
 });
