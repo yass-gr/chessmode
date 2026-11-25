@@ -32,7 +32,9 @@
 	let moveList = $state<HTMLDivElement>();
 	const promotions = [{ piece: 'Queen', key: 'q' }, { piece: 'Rook', key: 'r' }, { piece: 'Bishop', key: 'b' }, { piece: 'Knight', key: 'n' }];
 
-	const deviation = $derived(plies.length ? findDeviation(courses, plies, game?.userColor) : undefined);
+	let studied = $state.raw(new Set<string>());
+	void db.progress.toArray().then((rows) => (studied = new Set(rows.map((r) => r.courseId))));
+	const deviation = $derived(plies.length ? findDeviation(courses, plies, game?.userColor, studied) : undefined);
 	let deviationLearned = $state(false);
 	$effect(() => {
 		const key = deviation?.line;
