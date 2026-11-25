@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { seg } from '#lib/components/seg.ts';
 	import { onMount } from 'svelte';
 	import { courses } from '#lib/courses/index.ts';
 	import type { LineKey } from '#lib/courses/types.ts';
@@ -39,7 +40,7 @@
 		<input type="search" placeholder="Search by name or moves, e.g. 1.d4 d5 2.Nc3" bind:value={text} aria-label="Search courses" autocapitalize="none" spellcheck={false} />
 	</label>
 
-	<div class="seg" role="group" aria-label="Side">
+	<div class="seg" use:seg role="group" aria-label="Side">
 		<button aria-pressed={side === undefined} onclick={() => (side = undefined)}>All</button>
 		<button aria-pressed={side === 'w'} onclick={() => (side = 'w')}>White</button>
 		<button aria-pressed={side === 'b'} onclick={() => (side = 'b')}>Black</button>
