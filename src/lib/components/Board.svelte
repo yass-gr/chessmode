@@ -232,17 +232,41 @@
 	.board-wrap :global(piece) {
 		filter: drop-shadow(0 2px 1.5px rgba(0, 0, 0, 0.35));
 	}
-	.board-wrap :global(coords) {
-		font: 600 10px var(--mono);
-		opacity: 0.85;
+	.board-wrap :global(.cg-wrap coords) {
+		font: 600 clamp(8px, 1.9vw, 11px) / 1 var(--mono);
+		opacity: 0.9;
 	}
-	.board-wrap :global(coords coord:nth-child(odd)) {
-		color: var(--sq-light);
+	.board-wrap :global(.cg-wrap coords.ranks) {
+		left: 3px;
+		top: 0;
+		height: 100%;
+		width: 12px;
 	}
-	.board-wrap :global(coords coord:nth-child(even)) {
-		color: var(--sq-dark);
+	.board-wrap :global(.cg-wrap coords.ranks coord) {
+		transform: none;
+		padding-top: 3px;
 	}
 	.board-wrap :global(.cg-wrap coords.files) {
-		bottom: 1px;
+		left: 0;
+		bottom: 3px;
+		height: auto;
+		text-transform: none;
+	}
+	.board-wrap :global(.cg-wrap coords.files coord) {
+		flex: 1 1 0;
+		text-align: right;
+		padding-right: 4px;
+	}
+	.board-wrap :global(.cg-wrap coords coord:nth-child(odd)) {
+		color: var(--sq-light);
+	}
+	.board-wrap :global(.cg-wrap coords coord:nth-child(even)) {
+		color: var(--sq-dark);
+	}
+	.board-wrap :global(.cg-wrap coords.black coord:nth-child(odd)) {
+		color: var(--sq-dark);
+	}
+	.board-wrap :global(.cg-wrap coords.black coord:nth-child(even)) {
+		color: var(--sq-light);
 	}
 </style>
