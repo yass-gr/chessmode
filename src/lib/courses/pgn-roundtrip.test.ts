@@ -1,0 +1,28 @@
+import { describe, expect, it } from 'vitest';
+import { buildCourse, exportCoursePgn, readPgnTree } from '#lib/courses/pgn-tree.ts';
+import { parseCourse } from '#lib/courses/parse.ts';
+import { preserveLineIds } from '#lib/courses/custom.ts';
+
+const build = (pgn: string) => buildCourse(readPgnTree(pgn).tree, { id: 'custom-test', name: 'Test', side: 'w' }).file;
+
+describe('course PGN', () => {
+	it('round trips branches and notes on both sides', () => {
+		const original = build('1. e4 {First} e5 {Reply} 2. Nf3 (2. Bc4) *');
+		// Use opponent branches because a repertoire keeps one move for the student.
+		const branched = build('1. e4 {First} e5 {Reply} (1... c5 {Sicilian}) 2. Nf3 *');
+		const again = build(exportCoursePgn(branched));
+		expect(parseCourse(again).lines.map(l => l.plies.map(p => [p.uci, p.note]))).toEqual(parseCourse(branched).lines.map(l => l.plies.map(p => [p.uci, p.note])));
+		expect(original.chapters[0].lines).toHaveLength(1);
+	});
+	it('retains IDs only for unchanged move sequences', () => {
+		const old = build('1. e4 e5 (1... c5 2. Nf3) 2. Nf3 *');
+		const updated = build('1. e4 c5 (1... e5 2. Bc4) 2. Nf3 *');
+		const result = preserveLineIds(old, updated);
+		expect(result.chapters[0].lines[0].id).toBe(old.chapters[0].lines[1].id);
+		expect(result.chapters[0].lines[1].id).not.toBe(old.chapters[0].lines[0].id);
+	});
+	it('rejects unclosed variations and comments', () => {
+		expect(() => readPgnTree('1. e4 (1. d4')).toThrow();
+		expect(() => readPgnTree('1. e4 {note')).toThrow();
+	});
+});
