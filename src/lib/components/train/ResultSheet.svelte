@@ -39,7 +39,7 @@
 		backdrop-filter: blur(3px);
 		-webkit-backdrop-filter: blur(3px);
 		z-index: 50;
-		animation: fade 0.25s ease;
+		animation: fade 0.46s var(--ease-drawer) both;
 	}
 	.sheet {
 		position: fixed;
@@ -55,7 +55,7 @@
 		border-bottom: 0;
 		box-shadow: 0 -30px 60px -20px rgba(0, 0, 0, 0.9);
 		text-align: center;
-		animation: up 0.38s var(--ease-out);
+		animation: up 0.46s var(--ease-drawer) both;
 	}
 	img {
 		width: 132px;
@@ -114,8 +114,7 @@
 	}
 	@keyframes up {
 		from {
-			transform: translate(-50%, 40px);
-			opacity: 0;
+			transform: translate(-50%, 100%);
 		}
 	}
 	@keyframes fade {
@@ -132,11 +131,22 @@
 			padding-bottom: 24px;
 			margin-top: 60px;
 		}
+		.sheet,
+		.scrim {
+			animation-duration: 0.26s;
+			animation-timing-function: var(--ease-out);
+		}
 		@keyframes up {
 			from {
-				transform: translate(-50%, calc(50% + 30px));
+				transform: translate(-50%, 50%) scale(0.96);
 				opacity: 0;
 			}
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.sheet {
+			animation-name: fade;
+			animation-duration: 0.2s;
 		}
 	}
 </style>
