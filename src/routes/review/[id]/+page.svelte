@@ -11,6 +11,8 @@
 	import { CLASSIFICATIONS, expectedPoints } from '#lib/review/classify.ts';
 	import { isRetryable, lineMoves, retryMove, transition, type ReviewState } from '#lib/review/session.ts';
 	import type { GameRecord, GameReview, Score } from '#lib/review/types.ts';
+	import { courses } from '#lib/courses/index.ts';
+	import { findDeviation } from '#lib/review/repertoire.ts';
 
 	let game = $state<GameRecord>();
 	let plies = $state<Ply[]>([]);
@@ -29,6 +31,19 @@
 	let moveList = $state<HTMLDivElement>();
 	const promotions = [{ piece: 'Queen', key: 'q' }, { piece: 'Rook', key: 'r' }, { piece: 'Bishop', key: 'b' }, { piece: 'Knight', key: 'n' }];
 
+	const deviation = $derived(plies.length ? findDeviation(courses, plies, game?.userColor) : undefined);
+	let deviationLearned = $state(false);
+	$effect(() => {
+		const key = deviation?.line;
+		deviationLearned = false;
+		if (key) void db.progress.get(key).then((row) => (deviationLearned = !!row && deviation?.line === key));
+	});
+	const deviationHref = $derived.by(() => {
+		if (!deviation) return '';
+		if (deviationLearned) return `/practice/run?line=${encodeURIComponent(deviation.line)}`;
+		const line = deviation.course.lines.find((l) => l.key === deviation.line);
+		return `/learn/${deviation.course.id}/${line?.id ?? ''}`;
+	});
 	const reviewed = $derived(progress?.moves ?? []);
 	const position = $derived(plies[session.ply - 1]);
 	const current = $derived(reviewed[session.ply - 1]);
@@ -398,6 +413,22 @@
 
 				{#if !started}
 					<EvalGraph win={progress?.win ?? []} moves={reviewed} total={plies.length} ply={session.ply} onselect={select} />
+					{#if deviation}
+						<section class="card repertoire" aria-label="Repertoire">
+							<span class="eyeline">{deviation.course.name}</span>
+							{#if deviation.kind === 'you'}
+								<p><b>You left your repertoire at {moveNumber(deviation.ply + 1)}</b> You played <span class="san">{deviation.played.san}</span>, the course plays <span class="san">{deviation.expected.san}</span>.</p>
+							{:else if deviation.kind === 'opponent'}
+								<p><b>Your opponent left the course at {moveNumber(deviation.ply + 1)}</b> <span class="san">{deviation.played.san}</span> is not prepared in the course, so you were on your own from here.</p>
+							{:else}
+								<p><b>You played the course to the end of the line</b> Every move up to {moveNumber(deviation.ply + 1)} was from your repertoire.</p>
+							{/if}
+							<div class="repertoire-actions">
+								<button class="btn sm btn-surface" onclick={() => select(deviation.kind === 'complete' ? deviation.ply + 1 : deviation.ply)}>Show position</button>
+								<a class="btn sm btn-primary" href={deviationHref}>{deviationLearned ? 'Drill this line' : 'Learn this line'}</a>
+							</div>
+						</section>
+					{/if}
 					<div class="seg" role="group" aria-label="Review panel">
 						<button aria-pressed={tab === 'moves'} onclick={() => { tab = 'moves'; }}>Moves</button>
 						<button aria-pressed={tab === 'summary'} onclick={() => { tab = 'summary'; }}>Summary</button>
@@ -489,6 +520,11 @@
 	.move-row > span { text-align: center; color: var(--text-2); font: 11px var(--mono); }
 	.move { display: flex; text-align: left; align-items: center; justify-content: space-between; min-height: 35px; padding: 3px 9px; gap: 5px; font: 13px var(--mono); border-radius: var(--r-xs); }
 	.move:hover, .moments button:hover { background: var(--surface-4); }
+	.repertoire { padding: 12px 14px; display: grid; gap: 8px; }
+	.repertoire p { font-size: 14px; line-height: 1.5; color: var(--text-2); }
+	.repertoire p b { display: block; color: var(--text); font-weight: 600; }
+	.repertoire .san { font: 600 13px var(--mono); color: var(--accent-hi); }
+	.repertoire-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 	.moments { padding: 10px 12px; }
 	.moments h2 { font-size: 14px; margin-bottom: 6px; }
 	.moments > div { display: grid; max-height: 220px; overflow-y: auto; }
