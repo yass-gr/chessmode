@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type { Card } from 'ts-fsrs';
-import type { LineKey } from '#lib/courses/types.ts';
+import type { CourseFile, LineKey } from '#lib/courses/types.ts';
 import type { GameRecord, GameReview } from '#lib/review/types.ts';
 
 /** Spaced-repetition state for one course line. A row exists once the line has been learned. */
@@ -50,6 +50,13 @@ export interface RatingRecord {
 	seen: string[];
 }
 
+/** A course the student built from a PGN; stored as the file so it parses like a bundled one. */
+export interface CustomCourseRecord {
+	id: string;
+	file: CourseFile;
+	createdAt: number;
+}
+
 export class ChessmodeDB extends Dexie {
 	progress!: EntityTable<LineProgress, 'key'>;
 	sessions!: EntityTable<SessionLog, 'id'>;
@@ -57,6 +64,7 @@ export class ChessmodeDB extends Dexie {
 	reviews!: EntityTable<GameReview & { key: string }, 'key'>;
 	settings!: EntityTable<Setting, 'key'>;
 	ratings!: EntityTable<RatingRecord, 'key'>;
+	customCourses!: EntityTable<CustomCourseRecord, 'id'>;
 
 	constructor() {
 		super('chessmode');
@@ -68,6 +76,7 @@ export class ChessmodeDB extends Dexie {
 			settings: 'key'
 		});
 		this.version(2).stores({ ratings: 'key, kind, courseId' });
+		this.version(3).stores({ customCourses: 'id' });
 	}
 }
 
