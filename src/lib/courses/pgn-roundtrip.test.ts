@@ -22,6 +22,16 @@ describe('course PGN', () => {
 		expect(again.chapters.map((chapter) => [chapter.name, chapter.lines.map((line) => line.pgn)])).toEqual(original.chapters.map((chapter) => [chapter.name, chapter.lines.map((line) => line.pgn)]));
 		expect(again.chapters[0].lines[0].pgn).toContain('[%csl Ye4]');
 	});
+	it('keeps authored line names and chapter intros', () => {
+		const source = '[Chapter "Open"]\n[Line "Center"]\n[Intro "Play e4."]\n\n1. e4 e5 *';
+		const options = { id: 'custom-test', name: 'Test', side: 'w' as const };
+		const file = buildPgnCourse(source, options).file;
+		expect(file.chapters[0].intro).toBe('Play e4.');
+		expect(file.chapters[0].lines[0].name).toBe('Center');
+		const again = buildPgnCourse(exportCoursePgn(file), options).file;
+		expect(again.chapters[0].intro).toBe('Play e4.');
+		expect(again.chapters[0].lines[0].name).toBe('Center');
+	});
 	it('retains IDs only for unchanged move sequences', () => {
 		const old = build('1. e4 e5 (1... c5 2. Nf3) 2. Nf3 *');
 		const updated = build('1. e4 c5 (1... e5 2. Bc4) 2. Nf3 *');
