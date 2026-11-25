@@ -7,15 +7,17 @@
 	import { db } from '#lib/db.ts';
 	import type { CourseFile } from '#lib/courses/types.ts';
 	import type { Color } from '#lib/chess/types.ts';
-	import { copyCourse, newCustomId, saveCustomCourse, preserveLineIds } from '#lib/courses/custom.ts';
+	import { copyCourse, diffReimport, newCustomId, saveCustomCourse, type ReimportLine } from '#lib/courses/custom.ts';
 	import CoveragePanel from '#lib/components/courses/CoveragePanel.svelte';
-	import { courseCoverage } from '#lib/explorer/coverage.ts';
+	import CourseEditor from './CourseEditor.svelte';
+	import { courseCoverage, type Gap } from '#lib/explorer/coverage.ts';
 	import { loadExplorer, type Explorer } from '#lib/explorer/types.ts';
 	import { courses } from '#lib/courses/index.ts';
-	import { buildPgnCourse, exportCoursePgn, type BuiltCourse } from '#lib/courses/pgn-tree.ts';
+	import { buildPgnCourse, exportCoursePgn } from '#lib/courses/pgn-tree.ts';
 
 	let source = $state<'pgn' | 'study'>('study');
 	let pgn = $state('');
+	let pgnEcho = $state('');
 	let url = $state('');
 	let name = $state('');
 	let side = $state<Color>('w');
@@ -24,59 +26,128 @@
 	let saving = $state(false);
 	let id = $state(newCustomId());
 	let previous = $state<CourseFile | undefined>();
+	let draft = $state<CourseFile | undefined>();
+	let generation = $state(0);
+	let skipped = $state(0);
+	let conflicts = $state<string[]>([]);
+	let parseError = $state('');
+	let progressKeys = $state<string[]>([]);
 	let explorer = $state<Explorer | undefined>();
 	let coverageSource = $state('');
-	let selectedGap = $state('');
-	async function selectCoverage(value: string) {
-		coverageSource = value;
-		explorer = value ? await loadExplorer(value) : undefined;
-	}
+	let focusFen = $state('');
+	let focusToken = $state(0);
+	let loadError = $state('');
+
+	const titled = $derived({ id, name: name.trim() || 'My course', side });
+	const lineCount = $derived(draft?.chapters.reduce((total, chapter) => total + chapter.lines.length, 0) ?? 0);
+	const ready = $derived(draft ? { ...draft, ...titled } : undefined);
+	const structureError = $derived.by(() => {
+		if (!ready || !lineCount) return '';
+		try {
+			parseCourse(ready);
+			return '';
+		} catch (error) {
+			return error instanceof Error ? error.message : String(error);
+		}
+	});
 	const report = $derived.by(() => {
-		if (!previous || !built || !('ok' in built)) return undefined;
-		const next = preserveLineIds(previous, built.ok.file);
-		const old = previous.chapters.flatMap((chapter) => chapter.lines);
-		const fresh = next.chapters.flatMap((chapter) => chapter.lines);
-		return { kept: fresh.filter((line) => old.some((item) => item.id === line.id)), added: fresh.filter((line) => !old.some((item) => item.id === line.id)), removed: old.filter((line) => !fresh.some((item) => item.id === line.id)) };
+		if (!previous || !ready || structureError || parseError) return undefined;
+		try {
+			return diffReimport(previous, ready, progressKeys);
+		} catch {
+			return undefined;
+		}
 	});
 	const coverage = $derived.by(() => {
-		if (!explorer || !built || !('ok' in built)) return undefined;
-		try { return courseCoverage(parseCourse(built.ok.file), explorer); } catch { return undefined; }
+		if (!explorer || !ready || structureError) return undefined;
+		try {
+			return courseCoverage(parseCourse(ready), explorer);
+		} catch {
+			return undefined;
+		}
 	});
-	let loadError = $state('');
+
+	function listed(lines: ReimportLine[]) {
+		const shown = lines.slice(0, 8).map((line) => line.name);
+		return lines.length > 8 ? `${shown.join(', ')} and ${lines.length - 8} more` : shown.join(', ');
+	}
+
+	function ingest(text: string) {
+		pgn = text;
+		if (!text.trim()) {
+			parseError = 'The PGN has no moves.';
+			return;
+		}
+		try {
+			const result = buildPgnCourse(text, titled);
+			parseCourse(result.file);
+			draft = { ...result.file, ...titled };
+			skipped = result.skipped;
+			conflicts = result.conflicts;
+			parseError = '';
+			pgnEcho = text;
+			generation += 1;
+		} catch (error) {
+			parseError = error instanceof Error ? error.message : String(error);
+		}
+	}
+
+	function onDraft(file: CourseFile) {
+		draft = { ...file, ...titled };
+		parseError = '';
+		conflicts = [];
+		const exported = exportCoursePgn(draft);
+		pgn = exported;
+		pgnEcho = exported;
+	}
+
+	async function loadProgress(courseId: string) {
+		progressKeys = (await db.progress.where('courseId').equals(courseId).toArray()).map((row) => row.key);
+	}
+
 	onMount(async () => {
 		const edit = new URLSearchParams(location.search).get('edit');
 		if (!edit) return;
 		const row = await db.customCourses.get(edit);
-		if (!row) { loadError = 'Course not found on this device.'; return; }
-		previous = row.file; id = row.id; name = row.file.name; side = row.file.side; pgn = exportCoursePgn(row.file); source = 'pgn';
+		if (!row) {
+			loadError = 'Course not found on this device.';
+			return;
+		}
+		previous = row.file;
+		id = row.id;
+		name = row.file.name;
+		side = row.file.side;
+		source = 'pgn';
+		draft = row.file;
+		pgn = exportCoursePgn(row.file);
+		pgnEcho = pgn;
+		generation += 1;
+		await loadProgress(row.id);
 	});
-	async function readFile(file: File | undefined) { if (file) adopt(await file.text()); }
-	function download() {
-		if (!built || !('ok' in built)) return;
-		const url = URL.createObjectURL(new Blob([exportCoursePgn(built.ok.file)], { type: 'application/x-chess-pgn' }));
-		const link = document.createElement('a'); link.href = url; link.download = 'repertoire.pgn'; link.click(); URL.revokeObjectURL(url);
+
+	async function readFile(file: File | undefined) {
+		if (file) ingest(await file.text());
 	}
 
-	const built = $derived.by((): { ok: BuiltCourse; skipped: number } | { error: string } | undefined => {
-		if (!pgn.trim()) return undefined;
-		try {
-			const result = buildPgnCourse(pgn, { id, name: name.trim() || 'My course', side });
-			parseCourse(result.file);
-			return { ok: result, skipped: result.skipped };
-		} catch (error) {
-			return { error: error instanceof Error ? error.message : String(error) };
-		}
-	});
+	function download() {
+		if (!ready) return;
+		const linkUrl = URL.createObjectURL(new Blob([exportCoursePgn(ready)], { type: 'application/x-chess-pgn' }));
+		const link = document.createElement('a');
+		link.href = linkUrl;
+		link.download = 'repertoire.pgn';
+		link.click();
+		URL.revokeObjectURL(linkUrl);
+	}
 
 	const studyId = $derived(url.match(/lichess\.org\/study\/([A-Za-z0-9]{8})/)?.[1]);
 
 	/** Lichess exports name the study and the board orientation in each chapter's headers. */
 	function adopt(text: string) {
-		pgn = text;
 		const study = text.match(/^\[StudyName "(.+)"\]$/m)?.[1];
 		if (study && !name) name = study;
 		const orientation = text.match(/^\[Orientation "(white|black)"\]$/m)?.[1];
 		if (orientation) side = orientation === 'white' ? 'w' : 'b';
+		ingest(text);
 	}
 
 	async function fetchStudy() {
@@ -94,6 +165,16 @@
 		}
 	}
 
+	async function selectCoverage(value: string) {
+		coverageSource = value;
+		explorer = value ? await loadExplorer(value) : undefined;
+	}
+
+	function openGap(gap: Gap) {
+		focusFen = gap.fen;
+		focusToken += 1;
+	}
+
 	async function copy() {
 		if (!previous) return;
 		const file = copyCourse(previous);
@@ -101,15 +182,19 @@
 		await goto(`/create?edit=${file.id}`, { invalidateAll: true });
 		location.reload();
 	}
+
 	async function markLearned() {
 		if (!previous || !confirm('Mark every saved line as learned?')) return;
 		for (const line of parseCourse(previous).lines) await finishLearn(line.key, previous.id);
+		await loadProgress(previous.id);
 		loadError = 'All saved lines are marked learned.';
 	}
+
 	async function create() {
-		if (!built || !('ok' in built)) return;
+		if (!ready || structureError || parseError || !lineCount) return;
 		saving = true;
-		await saveCustomCourse(built.ok.file);
+		const file = { ...ready, tagline: `${lineCount} ${lineCount === 1 ? 'line' : 'lines'} imported from PGN.` };
+		await saveCustomCourse(file);
 		await goto(`/course/${id}`);
 	}
 </script>
@@ -125,7 +210,13 @@
 	</header>
 
 	{#if loadError}<p class="error">{loadError}</p>{/if}
-	{#if previous}<p class="muted">Saving replaces this course. Unchanged move sequences keep their progress; changed or removed lines lose it.</p><div class="actions"><button class="btn btn-surface" onclick={copy}>Copy saved course</button><button class="btn btn-surface" onclick={markLearned}>Mark saved lines learned</button></div>{/if}
+	{#if previous}
+		<p class="muted">Saving replaces this course. Unchanged move sequences keep their progress. Changed and removed lines lose it.</p>
+		<div class="actions">
+			<button class="btn btn-surface" onclick={copy}>Copy saved course</button>
+			<button class="btn btn-surface" onclick={markLearned}>Mark saved lines learned</button>
+		</div>
+	{/if}
 	<p class="muted lead">Turn your own repertoire into a course. Every branch becomes a line you learn, practice and drill like any other.</p>
 
 	<div class="seg" use:seg role="group" aria-label="Source">
@@ -144,10 +235,10 @@
 		{#if pgn && source === 'study'}<p class="hint muted">Loaded {pgn.match(/^\[Event /gm)?.length ?? 1} chapters.</p>{/if}
 	{:else}
 		<label class="field area" ondragover={(event) => event.preventDefault()} ondrop={(event) => { event.preventDefault(); void readFile(event.dataTransfer?.files[0]); }}>
-			<textarea rows="8" placeholder={'1. e4 c6 2. d4 d5 (2... g6) 3. e5 Bf5 *'} bind:value={pgn} aria-label="PGN" spellcheck={false}></textarea>
+			<textarea rows="8" placeholder={'1. e4 c6 2. d4 d5 (2... g6) 3. e5 Bf5 *'} bind:value={pgn} aria-label="PGN" spellcheck={false} oninput={() => { if (pgn !== pgnEcho) ingest(pgn); }}></textarea>
 		</label>
 		<label>Choose a PGN file <input type="file" accept=".pgn,text/plain" onchange={(event) => readFile(event.currentTarget.files?.[0])} /></label>
-		<p class="hint muted">Paste or drop PGN. Edit chapter headers, moves, notes and [%cal] / [%csl] board annotations directly here. Variations become separate lines.</p>
+		<p class="hint muted">Paste or drop PGN. Variations become separate lines. Edit chapters, moves, notes and arrows on the board below.</p>
 	{/if}
 
 	<label class="field">
@@ -159,50 +250,59 @@
 		<button aria-pressed={side === 'b'} onclick={() => (side = 'b')}>I play Black</button>
 	</div>
 
-	{#if built && 'error' in built}
-		<p class="error">{built.error}</p>
-	{:else if built}
-		{@const lines = built.ok.file.chapters.flatMap((chapter) => chapter.lines)}
+	{#if parseError}<p class="error">{parseError}</p>{/if}
+	{#if structureError}<p class="error">{structureError}</p>{/if}
+
+	{#if ready && lineCount}
 		<section class="card result">
-			<p><b>{lines.length} {lines.length === 1 ? 'line' : 'lines'}</b> for {side === 'w' ? 'White' : 'Black'}.</p>
-			<ol class="mono">
-				{#each lines.slice(0, 5) as line (line.id)}<li>{line.name}</li>{/each}
-				{#if lines.length > 5}<li class="muted">and {lines.length - 5} more</li>{/if}
-			</ol>
-			{#if built.skipped}
-				<p class="warn">Skipped {built.skipped} {built.skipped === 1 ? 'chapter that starts' : 'chapters that start'} from a set-up position or another variant.</p>
+			<p><b>{lineCount} {lineCount === 1 ? 'line' : 'lines'}</b> for {side === 'w' ? 'White' : 'Black'}.</p>
+			{#if skipped}
+				<p class="warn">Skipped {skipped} {skipped === 1 ? 'chapter that starts' : 'chapters that start'} from a set-up position or another variant.</p>
 			{/if}
-			{#if built.ok.conflicts.length}
-				<p class="warn">Your PGN gives two moves for you in {built.ok.conflicts.length === 1 ? 'one position' : `${built.ok.conflicts.length} positions`}. A course needs one answer, so the first is kept.</p>
+			{#if conflicts.length}
+				<p class="warn">Your PGN gives two moves for you in {conflicts.length === 1 ? 'one position' : `${conflicts.length} positions`}. A course needs one answer, so the first is kept.</p>
 				<ul class="mono conflicts">
-					{#each built.ok.conflicts.slice(0, 4) as c (c)}<li>{c}</li>{/each}
+					{#each conflicts.slice(0, 4) as conflict (conflict)}<li>{conflict}</li>{/each}
 				</ul>
 			{/if}
-		{#each built.ok.file.chapters as chapter}
+			{#each ready.chapters as chapter}
 				<p><b>{chapter.name}</b> · {chapter.lines.length} lines</p>
 			{/each}
-			{#if report}
-				<p><b>Reimport changes</b> · {report.kept.length} progress mappings kept · {report.added.length} added · {report.removed.length} removed or changed</p>
-				{#if report.added.length}<p>Added: {report.added.map((line) => line.name).join(', ')}</p>{/if}
-				{#if report.removed.length}<p>Removed or changed: {report.removed.map((line) => line.name).join(', ')}</p>{/if}
-			{/if}
-		<button class="btn btn-surface" onclick={download}>Export preview as PGN</button>
+			<button class="btn btn-surface" onclick={download}>Export preview as PGN</button>
 		</section>
 	{/if}
-	{#if built && 'ok' in built}
-		<label>Compare coverage with a local opening sample
+
+	{#if report}
+		<section class="card result">
+			<h2>Reimport</h2>
+			{#if report.progressTotal === 0}
+				<p>No learned lines yet, so there is no progress to keep.</p>
+			{:else}
+				<p><b>{report.progressKept} of {report.progressTotal}</b> learned {report.progressTotal === 1 ? 'line keeps its progress' : 'lines keep their progress'}.</p>
+			{/if}
+			<p>Added {report.added.length}{report.added.length ? `: ${listed(report.added)}` : ''}</p>
+			<p>Changed {report.changed.length}{report.changed.length ? `: ${report.changed.slice(0, 8).map((line) => `${line.previousName} → ${line.name}`).join(', ')}` : ''}</p>
+			<p>Removed {report.removed.length}{report.removed.length ? `: ${listed(report.removed)}` : ''}</p>
+		</section>
+	{/if}
+
+	{#if ready}
+		<CourseEditor file={ready} {side} {generation} {focusFen} {focusToken} onchange={onDraft} />
+	{/if}
+
+	{#if ready && lineCount}
+		<label class="field choice">Compare coverage with a local opening sample
 			<select value={coverageSource} onchange={(event) => selectCoverage(event.currentTarget.value)}>
 				<option value="">Choose a sample</option>
 				{#each courses.filter((course) => !course.id.startsWith('custom-')) as course}<option value={course.id}>{course.name}</option>{/each}
 			</select>
 		</label>
-		{#if coverage && explorer}<CoveragePanel {coverage} {explorer} onselect={(gap) => { selectedGap = `${gap.path.join(' ')} → ${gap.san}`; }} />{/if}
-		{#if selectedGap}<p>Position to inspect in PGN: {selectedGap}</p>{/if}
+		{#if coverage && explorer}<CoveragePanel {coverage} {explorer} onselect={openGap} />{/if}
 	{/if}
 </main>
 
 <div class="cta">
-	<button class="btn btn-primary block" disabled={!built || !('ok' in built) || saving} onclick={create}>{previous ? 'Save changes' : 'Create course'}</button>
+	<button class="btn btn-primary block" disabled={!ready || !!structureError || !!parseError || !lineCount || saving} onclick={create}>{previous ? 'Save changes' : 'Create course'}</button>
 </div>
 
 <style>
@@ -262,7 +362,9 @@
 		display: grid;
 		gap: 8px;
 	}
-	.result ol,
+	.result h2 {
+		font-size: 16px;
+	}
 	.result ul {
 		margin: 0;
 		padding-left: 18px;
@@ -273,6 +375,20 @@
 	}
 	.conflicts {
 		color: var(--text-3);
+	}
+	.choice {
+		height: auto;
+		padding: 10px 16px;
+		display: grid;
+		gap: 6px;
+	}
+	.choice select {
+		width: 100%;
+		height: 36px;
+		color: var(--text);
+		background: transparent;
+		border: 0;
+		font: inherit;
 	}
 	.cta {
 		position: fixed;
