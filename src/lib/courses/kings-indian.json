@@ -1,0 +1,435 @@
+{
+	"id": "kings-indian",
+	"name": "King's Indian Defense",
+	"side": "b",
+	"level": "Club (800–2000)",
+	"tagline": "Let White build the centre, then hit back with ...e5, ...f5 and a kingside attack.",
+	"description": "A complete Black repertoire against 1.d4 built on ...Nf6, ...g6, ...Bg7, ...d6 and castling. White takes the centre, and Black attacks it with ...e5 or ...c5 once the king is safe. When the centre locks, Black storms the kingside with ...f5, ...f4 and ...g5 while White plays on the queenside. You learn one clear plan against each main system — Classical, Sämisch, Four Pawns, Fianchetto — and the same set-up against the London, Trompowsky, Colle and other club systems.",
+	"chapters": [
+		{
+			"id": "classical",
+			"name": "Classical: 5.Nf3 O-O 6.Be2 e5",
+			"moves": "1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.Nf3 O-O 6.Be2 e5",
+			"intro": "The main line of the King's Indian. Black lets White build a big centre, castles, and then strikes with ...e5. When White closes the centre with d5, the game is a race: White attacks on the queenside with b4 and c5, Black attacks on the kingside with ...Nd7 (or ...Nh5), ...f5, ...f4 and ...g5-g4. Black's knight on e7 heads for g6 and the queen and rook join the attack. Remember: in the race, speed matters more than a pawn. If White keeps the tension with Be3, ...Ng4 or ...Re8 hits the centre, and against the queen trade with dxe5 Black is fine as long as the d4 square is covered.",
+			"lines": [
+				{
+					"id": "mdp-ne1-be3",
+					"name": "Mar del Plata: 9.Ne1 Nd7 10.Be3",
+					"pgn": "1. d4 Nf6 { Flexible: Black controls e4 and keeps the choice between ...d5 and ...d6. } 2. c4 g6 { The King's Indian: the bishop goes to g7, where it presses on d4 and the long diagonal. } 3. Nc3 Bg7 4. e4 d6 { Black lets White take the centre. The pawn on d6 keeps e5 under control and prepares ...e5. } 5. Nf3 O-O { King safety first. Black will hit the centre only when the king is tucked away. } 6. Be2 e5 { The key break. It fights for the dark squares and opens the g7 bishop's diagonal if White ever takes. } 7. O-O Nc6 { Adds pressure on d4 and asks White to decide. } 8. d5 { White closes the centre and gains space on the queenside. } 8... Ne7 { The knight heads for the kingside, where it supports ...f5 and can come to g6. } 9. Ne1 { White prepares f3 and Nd3 to support c5. } 9... Nd7 { Clears the path for the f-pawn. Next ...f5. } 10. Be3 f5 { The King's Indian break: Black attacks e4 and opens the f-file towards White's king. } 11. f3 f4 { Gains space and locks the kingside. Now ...g5, ...g4 and ...Ng6 bring every piece to the attack. } 12. Bf2 g5 { The pawn storm begins. White's play is on the queenside, so Black must be fast: ...Ng6, ...Rf7 and ...g4. }"
+				},
+				{
+					"id": "mdp-nd3",
+					"name": "Mar del Plata: 10.Nd3",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. Ne1 Nd7 10. Nd3 { The knight supports c5 and keeps an eye on f4. } 10... f5 11. Bd2 Nf6 { The knight comes back to f6 to support ...f4 and later ...g5-g4. } 12. f3 f4 13. c5 g5 { White breaks on the queenside, Black storms the kingside. Keep going with ...Ng6, ...Rf7 and ...h5: the attack on White's king counts more than queenside pawns. }"
+				},
+				{
+					"id": "mdp-f3-g4",
+					"name": "Mar del Plata: 10.f3 f5 11.g4",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. Ne1 Nd7 10. f3 f5 11. g4 { White tries to stop Black's kingside play by blocking it. } 11... f4 { Close the kingside. White's own pawns now shield nothing, and Black can prepare ...h5 to open the h-file, while the e7 knight goes to g6 or the bishop to f6 and h4. }"
+				},
+				{
+					"id": "mdp-nd2",
+					"name": "Mar del Plata: 9.Nd2",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. Nd2 { White heads for b3 or c4 and prepares b4. } 9... a5 { Slows down b4, so White's queenside attack takes longer. } 10. a3 Nd7 11. Rb1 f5 12. b4 Kh8 { A useful waiting move: the king leaves the g8-a2 diagonal, so a later c5 and Qb3 come without check. Then ...Ng8 or ...Nf6 and the kingside attack goes ahead. }"
+				},
+				{
+					"id": "mdp-bd2",
+					"name": "Mar del Plata: 9.Bd2 Nh5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. Bd2 { White prepares b4 with the bishop's support. } 9... Nh5 { The knight clears the f-pawn and eyes f4. } 10. g3 f5 { The usual break. If exf5, ...Nxf5 or ...gxf5 gives Black a strong centre and play against White's king. }"
+				},
+				{
+					"id": "bayonet",
+					"name": "Bayonet: 9.b4 Nh5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. b4 { The Bayonet: White starts the queenside attack at once. } 9... Nh5 { The knight jumps out of the way of the f-pawn and eyes f4. } 10. Re1 f5 11. Ng5 { The knight aims at e6. } 11... Nf6 { The knight returns to defend e4-pressure and covers e8 and d5. Next ...h6 to chase the g5 knight, and the usual ...f4 and ...g5 plan. }"
+				},
+				{
+					"id": "be3-re8",
+					"name": "8.Be3 Re8 9.d5 Nd4",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. Be3 { White keeps the tension and defends d4 once more. } 8... Re8 { Pressure on e4, which makes dxe5 less attractive and prepares ...exd4. } 9. d5 Nd4 { A key trick: the knight jumps into d4, and if White takes it, the e4 pawn falls. } 10. Nxd4 exd4 11. Bxd4 Nxe4 { The point: e4 was defended only by the c3 knight. } 12. Bxg7 Kxg7 13. Nxe4 Rxe4 14. Bd3 Re8 { Material is level, and White's d5 pawn is cut off from its support. Black has active pieces and an easy game. }"
+				},
+				{
+					"id": "exchange",
+					"name": "Exchange: 7.dxe5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. dxe5 { White hopes for a quiet endgame. } 7... dxe5 8. Qxd8 Rxd8 9. Bg5 Re8 { The rook stays on the e-file to support e5. } 10. Nd5 Nxd5 11. cxd5 c6 { Attacks the d5 pawn at once, before White can support it. } 12. Bc4 b5 13. Bb3 a5 { Black gains space on the queenside with tempo. The g7 bishop and Black's queenside majority make the endgame at least equal. }"
+				},
+				{
+					"id": "petrosian",
+					"name": "Petrosian: 7.d5 a5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. d5 { White closes the centre at once. } 7... a5 { Slows down b4 and gives the knight the c5 square. } 8. Bg5 { Pins the knight to make ...f5 harder. } 8... h6 9. Bh4 Na6 10. Nd2 Nc5 { The knight lands on its ideal square, hitting e4 and safe from pawns because of ...a5. Next ...Qe8, ...Nh7 and ...f5 when the time is right. }"
+				},
+				{
+					"id": "gligoric",
+					"name": "Gligoric: 7.Be3 exd4",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. Be3 { White develops and keeps the option of castling either side. } 7... exd4 { Release the tension: the g7 bishop's diagonal opens and the e4 pawn becomes a target. } 8. Nxd4 Re8 { Pressure on e4. } 9. f3 c6 10. Qd2 d5 { The central break. White's pawns on e4 and c4 are hit, and Black's pieces become active. } 11. exd5 cxd5 12. O-O Nc6 { Black's pieces are active, and the isolated d5 pawn is well supported. }"
+				},
+				{
+					"id": "nf3-transpose",
+					"name": "3.Nf3 and 5.e4 (transposes)",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. Nc3 O-O { The same set-up whatever order White chooses. } 5. e4 d6 { We are back in the Classical: after Be2, ...e5 as usual. } 6. Be2 e5"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. Ne1 Nd7 10. Be3",
+					"question": "What is Black's main plan here?",
+					"options": [
+						"...f5, ...f4 and ...g5: a pawn storm on the kingside",
+						"...c6 and ...cxd5 to open the c-file",
+						"...b5 to fight on the queenside",
+						"...Nc5 and a quiet wait"
+					],
+					"answer": 0,
+					"explanation": "With the centre closed, each side attacks where its pawns point. Black's pawns point at the kingside, so ...f5, ...f4 and ...g5-g4 bring the attack."
+				},
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. Be3 Re8 9. d5",
+					"question": "What is the trick behind 9...Nd4?",
+					"options": [
+						"If Nxd4 exd4 Bxd4, ...Nxe4 wins back the piece and e4 falls",
+						"It traps White's queen",
+						"It prepares ...Nxe2+ and nothing more",
+						"It threatens ...Nxf3+ and mate"
+					],
+					"answer": 0,
+					"explanation": "After the trades on d4 the c3 knight is the only defender of e4, so ...Nxe4 wins the pawn back and Black gets active play."
+				},
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. Nd2 a5 10. a3 Nd7 11. Rb1 f5 12. b4",
+					"question": "Why is 12...Kh8 a useful move?",
+					"options": [
+						"It prepares ...Rg8 and ...g5",
+						"It takes the king off the g8-a2 diagonal before White plays c5 and Qb3",
+						"It defends the h7 pawn",
+						"It prepares long castling"
+					],
+					"answer": 1,
+					"explanation": "When the centre opens with c5 and ...dxc5, a queen or bishop on the a2-g8 diagonal would give check. Kh8 avoids that in advance."
+				}
+			]
+		},
+		{
+			"id": "samisch",
+			"name": "Sämisch: 5.f3",
+			"moves": "1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c5",
+			"intro": "In the Sämisch White supports e4 with f3 and often plans Be3, Qd2, long castling and a pawn storm with g4 and h4. Black castles and strikes at once with ...c5, the Sämisch Gambit. If White takes on c5, the queens come off and Black gets strong play on the dark squares for the pawn. If White pushes d5, ...e6 and ...exd5 give a Benoni structure where White's f3 and slow kingside development leave Black active. If White keeps the tension, ...cxd4 and ...Nc6 hit the centre. The rule: open lines before White's pawn storm starts.",
+			"lines": [
+				{
+					"id": "samisch-d5",
+					"name": "6...c5 7.d5 e6",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f3 { The Sämisch: e4 is supported for good and g4 becomes possible. The downside: the g1 knight loses its best square. } 5... O-O 6. Be3 c5 { The Sämisch Gambit: hit d4 before White can castle long and start a pawn storm. } 7. d5 e6 { Undermine d5 and open the e-file. } 8. Qd2 exd5 9. cxd5 Re8 { The rook takes the open file and eyes e4 and e3. } 10. Nge2 a6 { Prepares ...b5, Black's queenside majority. } 11. a4 Nbd7 { The knight heads for e5, a perfect central square that no White pawn can attack. }"
+				},
+				{
+					"id": "samisch-dxc5",
+					"name": "7.dxc5: the gambit",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f3 O-O 6. Be3 c5 7. dxc5 { White accepts the pawn. } 7... dxc5 8. Qxd8 Rxd8 9. Bxc5 Nc6 { Black is a pawn down but much faster: every piece is developing and the g7 bishop rakes the long diagonal. } 10. Nd5 Nxd5 11. cxd5 b6 { Kick the bishop before taking anything back. } 12. Ba3 Nd4 { The knight lands on d4, hits c2 and f3, and White's king is still in the centre. Black has full compensation. }"
+				},
+				{
+					"id": "samisch-nge2",
+					"name": "7.Nge2 Nc6 8.d5 Ne5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f3 O-O 6. Be3 c5 7. Nge2 { White defends d4 with the knight. } 7... Nc6 { Add pressure on d4. } 8. d5 Ne5 { The knight takes the central square, hitting c4. } 9. Ng3 e6 10. Be2 exd5 11. cxd5 h5 { Chases the g3 knight away from its good square. Black has active pieces and a fine Benoni-type game. }"
+				},
+				{
+					"id": "samisch-qd2",
+					"name": "7.Qd2 cxd4",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f3 O-O 6. Be3 c5 7. Qd2 { White wants long castling at once. } 7... cxd4 8. Bxd4 Nc6 { Develop with tempo on the d4 bishop. } 9. Be3 Be6 { Hits c4. Next ...Ne5, ...Rc8 and ...a6 with ...b5: Black's play on the c-file comes before White's kingside attack. } 10. Rc1 Ne5 { The knight takes e5 and attacks c4 again. Black is fully developed and very active. }"
+				},
+				{
+					"id": "samisch-bg5",
+					"name": "6.Bg5 c5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f3 O-O 6. Bg5 { White pins the knight and keeps e3 free. } 6... c5 { Same idea as against 6.Be3: hit d4 at once. } 7. d5 e6 8. Qd2 exd5 9. cxd5 h6 { Ask the bishop. } 10. Be3 Re8 { A Benoni structure where Black has active pieces and the queenside majority. Next ...a6 and ...b5, or ...Nbd7 and ...Ne5. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f3 O-O 6. Be3",
+					"question": "Why does Black play 6...c5 here?",
+					"options": [
+						"To open lines before White castles long and storms with g4 and h4",
+						"To win the e4 pawn",
+						"To prepare ...Qb6 and ...Qxb2 only",
+						"To stop White from castling short"
+					],
+					"answer": 0,
+					"explanation": "White's plan is slow but dangerous. ...c5 hits d4 at once, and if White takes, Black's pieces become very active."
+				},
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f3 O-O 6. Be3 c5 7. dxc5 dxc5 8. Qxd8 Rxd8 9. Bxc5 Nc6",
+					"question": "Black is a pawn down. What is the compensation?",
+					"options": [
+						"Faster development and a strong g7 bishop on the long diagonal",
+						"Nothing; it is just a mistake",
+						"A passed pawn",
+						"White's king is in check"
+					],
+					"answer": 0,
+					"explanation": "White has only the bishop out and the g1 knight has no good square. Black's pieces come to d4, b6 and the d-file quickly."
+				}
+			]
+		},
+		{
+			"id": "four-pawns",
+			"name": "Four Pawns Attack: 5.f4",
+			"moves": "1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f4 O-O 6.Nf3 c5",
+			"intro": "White builds a huge centre with pawns on c4, d4, e4 and f4. It looks scary, but it is overextended and slow to develop. Black castles and hits the centre at once with ...c5. After d5, ...e6 and ...exd5 open the e-file, and Black's rook on e8 presses on e4. If White plays the sharp e5 push, Black counter-attacks the pawn with ...Ng4 and ...Qb6. If White takes on c5, Black recaptures and is happy to trade queens. The key idea: attack the pawns, don't let them roll forward unchallenged.",
+			"lines": [
+				{
+					"id": "fp-nd2",
+					"name": "Main line: 9.cxd5 Re8 10.Nd2",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f4 { The Four Pawns Attack: White grabs as much space as possible. } 5... O-O 6. Nf3 c5 { Hit the centre before White finishes developing. } 7. d5 e6 { Open the e-file and undermine d5. } 8. Be2 exd5 9. cxd5 Re8 { The rook hits e4. White must spend a move to protect it. } 10. Nd2 Na6 { The knight heads for c7, where it supports ...b5. } 11. O-O Nc7 { Next ...a6, ...Rb8 and ...b5: Black's queenside majority gets rolling. }"
+				},
+				{
+					"id": "fp-e5",
+					"name": "Main line: 10.e5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f4 O-O 6. Nf3 c5 7. d5 e6 8. Be2 exd5 9. cxd5 Re8 10. e5 { The sharpest try: White pushes before Black can blockade. } 10... dxe5 11. fxe5 Ng4 { Attack the e5 pawn at once. } 12. Bg5 Qb6 { Hits b2 and gets out of the pin. } 13. O-O Nxe5 { The pawn falls. White has some activity, but Black's pieces are coordinated and the d5 pawn is now weak. }"
+				},
+				{
+					"id": "fp-exd5",
+					"name": "9.exd5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f4 O-O 6. Nf3 c5 7. d5 e6 8. Be2 exd5 9. exd5 { White recaptures with the e-pawn, leaving the e4 square free. } 9... Bf5 { The bishop takes the free diagonal and eyes e4. } 10. O-O Ne4 { The knight lands on the strong e4 square. Trades help Black, because White's pawns on f4 and d5 become weak. } 11. Nxe4 Bxe4 { The bishop dominates the centre. }"
+				},
+				{
+					"id": "fp-dxc5",
+					"name": "7.dxc5 dxc5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f4 O-O 6. Nf3 c5 7. dxc5 { White takes, hoping to keep the centre. } 7... dxc5 { Recapture and offer the queen trade. Without queens, White's big pawn centre is a target, not a weapon. } 8. Qxd8 Rxd8 9. e5 Ne8 { The knight steps back and will come out via c7 or g7. } 10. Be3 b6 { Supports c5 for good. Black's d4 square, the open d-file and the g7 bishop give Black an easy endgame. }"
+				},
+				{
+					"id": "fp-bd3",
+					"name": "10.Bd3? c4",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f4 O-O 6. Nf3 c5 7. d5 e6 8. Be2 exd5 9. cxd5 Re8 10. Bd3 { Looks natural, but the bishop is a target. } 10... c4 { Kicks the bishop away from e4's defence. If Bxc4, ...Nxe4 wins the pawn with a big attack on the e-file. } 11. Bc2 Qb6 { Stops White from castling, and e4 is still weak. Black's pieces are much more active. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f4 O-O 6. Nf3",
+					"question": "How does Black best fight White's big centre?",
+					"options": [
+						"6...c5, hitting it at once",
+						"6...Nbd7 and wait",
+						"6...b6 and ...Bb7",
+						"6...h6 and ...g5"
+					],
+					"answer": 0,
+					"explanation": "White's pawns are far forward and White's pieces are not yet developed. ...c5 attacks the centre before it can be supported."
+				},
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f4 O-O 6. Nf3 c5 7. d5 e6 8. Be2 exd5 9. cxd5",
+					"question": "What does 9...Re8 achieve?",
+					"options": [
+						"It puts pressure on e4, which White must defend",
+						"It prepares ...Rxe2",
+						"It protects f7",
+						"It prepares ...Kf8"
+					],
+					"answer": 0,
+					"explanation": "With the e-file half-open, the rook hits e4. White has to spend a move on Nd2, Bd3 or e5, and Black gains time."
+				}
+			]
+		},
+		{
+			"id": "fianchetto",
+			"name": "Fianchetto Variation: g3 and Bg2",
+			"moves": "1.d4 Nf6 2.c4 g6 3.Nf3 Bg7 4.g3 O-O 5.Bg2 d6 6.O-O Nc6",
+			"intro": "When White fianchettoes, the g2 bishop makes Black's usual kingside attack much harder. So Black plays on the queenside with the Panno set-up: ...Nc6, ...a6, ...Rb8 and ...b5, opening the b-file. If White pushes d5, the knight goes to a5, and ...c5 and ...b5 follow. Black's rook on b8 and the g7 bishop on the long diagonal work together against b2. Against every move order with g3, the set-up is the same.",
+			"lines": [
+				{
+					"id": "fi-main",
+					"name": "Panno: 8.d5 Na5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 { The Fianchetto: White's bishop on g2 protects the king and fights Black's g7 bishop. } 4... O-O 5. Bg2 d6 6. O-O Nc6 { The Panno set-up: pressure on d4 and a plan of ...a6, ...Rb8 and ...b5. } 7. Nc3 a6 { Prepares ...Rb8 and ...b5 to open the b-file. } 8. d5 Na5 { The knight hits c4. } 9. Nd2 c5 { Supports the knight on a5 and prepares ...b5. } 10. Qc2 Rb8 11. b3 b5 { The queenside break. After cxb5 axb5, the b-file opens and the g7 bishop joins the attack on White's queenside. }"
+				},
+				{
+					"id": "fi-h3",
+					"name": "Panno: 8.h3 Rb8 9.e4",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5. Bg2 d6 6. O-O Nc6 7. Nc3 a6 8. h3 { White prepares Be3 without allowing ...Ng4. } 8... Rb8 9. e4 b5 { Carry on with the plan. White's centre looks big, but the queenside is about to open. } 10. cxb5 axb5 { The b-file is half-open and ...b4 is coming to kick the c3 knight away from e4. }"
+				},
+				{
+					"id": "fi-b3",
+					"name": "Panno: 8.b3 Rb8",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5. Bg2 d6 6. O-O Nc6 7. Nc3 a6 8. b3 { White supports c4 against ...b5. } 8... Rb8 9. Bb2 b5 10. cxb5 axb5 { The b-file is open for Black's rook, and ...b4 next drives the c3 knight away from the centre. }"
+				},
+				{
+					"id": "fi-g3-first",
+					"name": "3.g3 (transposes)",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. g3 Bg7 4. Bg2 O-O 5. Nc3 d6 6. Nf3 Nc6 { The same Panno set-up. After O-O and ...a6 we are back in the main line. } 7. O-O a6 8. d5 Na5"
+				},
+				{
+					"id": "fi-nf3-g3",
+					"name": "2.Nf3 g6 3.g3 (transposes)",
+					"pgn": "1. d4 Nf6 2. Nf3 g6 3. g3 Bg7 4. Bg2 O-O 5. O-O d6 { If White plays c4, we have reached the Fianchetto by another route, and Black's set-up does not change. } 6. c4 Nc6 7. Nc3 a6 8. h3 Rb8 { Next ...b5, as in the main lines. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5. Bg2 d6 6. O-O Nc6 7. Nc3 a6",
+					"question": "What is the idea of the Panno set-up with ...Nc6 and ...a6?",
+					"options": [
+						"...Rb8 and ...b5 to open the queenside",
+						"...f5 and ...g5 to attack the king",
+						"...e5 and ...exd4",
+						"...Bh3 to trade bishops"
+					],
+					"answer": 0,
+					"explanation": "The g2 bishop makes a kingside attack hard, so Black plays where White is weaker: ...Rb8 and ...b5 open the b-file."
+				},
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5. Bg2 d6 6. O-O Nc6 7. Nc3 a6 8. d5",
+					"question": "Where should the c6 knight go?",
+					"options": [
+						"8...Na5, hitting c4",
+						"8...Ne5, into the centre",
+						"8...Nb8, back home",
+						"8...Nb4, hitting a2"
+					],
+					"answer": 0,
+					"explanation": "On a5 the knight attacks c4 and supports ...c5 and ...b5. On e5 it would just be traded off."
+				}
+			]
+		},
+		{
+			"id": "other-mainlines",
+			"name": "Averbakh, h3 and Other Systems",
+			"moves": "1.d4 Nf6 2.c4 g6 3.Nc3 Bg7",
+			"intro": "White has many ways to avoid the main lines after 3.Nc3. Against the Averbakh (5.Be2 and 6.Bg5) Black hits d4 with ...c5, because the bishop on g5 has left the queenside. Against slow moves like h3 or Be3, Black still plays ...e5 and, after d5, finds good squares for the knights on a6 and c5 or h5. When White develops the bishop to f4 or g5 before e4, Black chases it with ...h6, ...g5 and ...Nh5 to win the bishop pair. The pattern is always the same: castle, then strike at the centre with a pawn.",
+			"lines": [
+				{
+					"id": "averbakh",
+					"name": "Averbakh: 5.Be2 O-O 6.Bg5 c5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Be2 O-O 6. Bg5 { The Averbakh: the bishop stops ...e5 for now: after dxe5 and a queen trade, the rook on d8 would be hit by the g5 bishop. } 6... c5 { So Black hits d4 with the other pawn. } 7. d5 e6 8. Qd2 exd5 9. exd5 Re8 { The rook takes the open file. } 10. Nf3 Bg4 11. O-O Nbd7 { Black is well developed. Plans: ...a6 and ...b5, or ...Ne5 to trade White's defenders. }"
+				},
+				{
+					"id": "h3-be3",
+					"name": "5.h3 O-O 6.Be3 e5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. h3 { The Makogonov: White takes g4 away from Black's pieces and may push g4 later. } 5... O-O 6. Be3 e5 { Same break as always. } 7. d5 Na6 { The knight heads for c5, its best square in this structure. } 8. g4 Nc5 { The knight hits e4 and cannot be chased by a pawn easily. Next ...a5 to secure it, and ...c6 or ...Nh5 depending on White's set-up. }"
+				},
+				{
+					"id": "nf3-h3",
+					"name": "5.Nf3 O-O 6.h3 e5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 { White keeps the g4 square from Black's knight and bishop. } 6... e5 7. d5 a5 { Secures c5 for a knight and slows down b4. } 8. Bg5 Na6 9. Be2 h6 10. Be3 Nh5 { The knight clears the f-pawn: ...f5 is next, as in the main lines. }"
+				},
+				{
+					"id": "nf3-be3",
+					"name": "5.Nf3 O-O 6.Be3 e5 7.d5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be3 e5 7. d5 Ng4 { Hits the e3 bishop: it has no comfortable square. } 8. Bg5 f6 9. Bh4 g5 10. Bg3 f5 { The knight on g4 and the f-pawn hit e4 and the kingside. White's bishop on g3 is out of play. }"
+				},
+				{
+					"id": "bd3-nge2",
+					"name": "5.Bd3 O-O 6.Nge2",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Bd3 { White supports e4 with the bishop, often followed by Nge2 and f3. } 5... O-O 6. Nge2 Nc6 { Pressure on d4, which has only the queen and e2 knight to defend it. } 7. O-O e5 8. d5 Nd4 { The knight takes the outpost. If Nxd4, ...exd4 opens the long diagonal for the g7 bishop. }"
+				},
+				{
+					"id": "bf4",
+					"name": "4.Nf3 O-O 5.Bf4",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. Nf3 O-O 5. Bf4 d6 6. e3 c5 { Hit d4: with the bishop on f4, the queenside is less protected. } 7. d5 Nh5 { Chase the bishop. If it leaves the h2-b8 diagonal, ...e5 comes with gain of space. } 8. Bg5 h6 9. Bh4 g5 10. Bg3 Nxg3 11. hxg3 { White's doubled g-pawns do not matter much, but Black now has the bishop pair. } 11... Nd7 { The knight heads for e5, a fine square in front of White's d-pawn. Next ...a6 and ...b5, and the two bishops come alive. }"
+				},
+				{
+					"id": "bg5",
+					"name": "4.Nf3 O-O 5.Bg5",
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. Nf3 O-O 5. Bg5 d6 6. e3 h6 { Ask the bishop. } 7. Bh4 g5 8. Bg3 Nh5 { The knight goes after the g3 bishop. After ...Nxg3, Black has the bishop pair and can follow up with ...c5 or ...e5. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Be2 O-O 6. Bg5",
+					"question": "Why does Black play 6...c5 instead of 6...e5?",
+					"options": [
+						"After ...e5, dxe5 dxe5 Qxd8 Rxd8 Nd5 wins material, because the g5 bishop hits the rook on d8",
+						"...c5 prepares ...Qb6 only",
+						"...e5 is illegal",
+						"...c5 prepares queenside castling"
+					],
+					"answer": 0,
+					"explanation": "With the bishop on g5, the queen trade leaves the rook on d8 exposed: Nd5 hits f6 and c7, and Bxd8 can follow. So Black hits d4 with ...c5 instead."
+				},
+				{
+					"pgn": "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. Nf3 O-O 5. Bf4 d6 6. e3 c5 7. d5",
+					"question": "What is the point of 7...Nh5?",
+					"options": [
+						"Chase the f4 bishop and win the bishop pair",
+						"Prepare ...f5 only",
+						"Defend the g7 bishop",
+						"Threaten ...Nf4 mate"
+					],
+					"answer": 0,
+					"explanation": "The knight attacks the bishop on f4. After Bg5 h6 Bh4 g5 Bg3 Nxg3, Black has the two bishops."
+				}
+			]
+		},
+		{
+			"id": "club-systems",
+			"name": "London, Trompowsky, Colle and Other Systems",
+			"moves": "1.d4 Nf6 2...",
+			"intro": "Many club players avoid c4 altogether. The good news: the King's Indian set-up works against everything. Black plays ...g6, ...Bg7, ...d6 and castles, then chooses the break: ...e5 against the London, Colle and Torre, often prepared with ...Nbd7. Against the London, ...Nh5 is a recurring idea to win the bishop pair. Against the Trompowsky, if White takes on f6, Black recaptures with the e-pawn and gets the bishop pair plus quick ...f5. Against 2.Nc3 and an early e4, ...c6 and ...b5 give Black counterplay before White's attack starts.",
+			"lines": [
+				{
+					"id": "london-h3",
+					"name": "London: 5.h3 O-O 6.Be2",
+					"pgn": "1. d4 Nf6 2. Bf4 { The London System. } 2... g6 { The same King's Indian set-up. } 3. Nf3 Bg7 4. e3 d6 { Prepares ...e5, which hits the f4 bishop. } 5. h3 O-O 6. Be2 Nbd7 { Supports ...e5. } 7. O-O Qe8 { Another supporter for ...e5, and the queen stays clear of a pin on the d-file. } 8. Bh2 e5 { Black has reached the ideal set-up. If dxe5, ...dxe5 and the g7 bishop gets the long diagonal; if White waits, ...e4 gains space. } 9. c4 Ne4 { The knight lands in the centre and opens the way for ...f5. }"
+				},
+				{
+					"id": "london-be2",
+					"name": "London: 5.Be2 O-O 6.O-O Nh5",
+					"pgn": "1. d4 Nf6 2. Bf4 g6 3. Nf3 Bg7 4. e3 d6 5. Be2 O-O 6. O-O Nh5 { Without h3, the bishop has no retreat to h2. The knight hits it at once. } 7. Bg5 h6 8. Bh4 g5 9. Nfd2 Nf4 { The knight jumps forward instead of retreating. After exf4 gxh4 Black has the bishop pair and the open g-file. } 10. exf4 gxh4 { The doubled h-pawns do not matter much: Black has two bishops, and the g-file is a highway towards White's king. Next ...Nd7, ...c5 and ...Kh8 with ...Rg8. }"
+				},
+				{
+					"id": "london-c4",
+					"name": "London: 5.c4 Nh5",
+					"pgn": "1. d4 Nf6 2. Bf4 g6 3. e3 Bg7 4. Nf3 d6 5. c4 Nh5 { White has not played h3, so the bishop has no safe square on the h2-b8 diagonal. } 6. Nc3 Nxf4 7. exf4 O-O { Black has the bishop pair and White's f4 pawn blocks the remaining bishop's path. Next ...c5 or ...e5. }"
+				},
+				{
+					"id": "london-nf3-first",
+					"name": "2.Nf3 g6 3.Bf4 (transposes)",
+					"pgn": "1. d4 Nf6 2. Nf3 g6 3. Bf4 Bg7 { A London by another move order; nothing changes for Black. } 4. e3 d6 5. h3 O-O 6. Be2 Nbd7"
+				},
+				{
+					"id": "tromp-bxf6",
+					"name": "Trompowsky: 2.Bg5 g6 3.Bxf6",
+					"pgn": "1. d4 Nf6 2. Bg5 { The Trompowsky: White threatens to double Black's pawns. } 2... g6 { Fine: if White takes, Black gets the bishop pair. } 3. Bxf6 exf6 { Recapture with the e-pawn: the f8 bishop's route stays clear and the f-pawn can go to f5. } 4. e3 Bg7 5. c4 d6 6. Nc3 O-O 7. Nf3 f5 { The doubled pawn controls e4. Next ...Nd7, ...c6 and ...Nf6, and the two bishops come alive when the position opens. }"
+				},
+				{
+					"id": "tromp-nd2",
+					"name": "Trompowsky: 3.Nd2",
+					"pgn": "1. d4 Nf6 2. Bg5 g6 3. Nd2 Bg7 4. e4 d6 5. c3 O-O 6. Ngf3 h6 { Ask the bishop to decide. } 7. Bh4 c5 { Hit the centre. If dxc5, ...dxc5 and the g7 bishop's diagonal opens. }"
+				},
+				{
+					"id": "colle",
+					"name": "Colle: 3.e3 and 4.Bd3",
+					"pgn": "1. d4 Nf6 2. Nf3 g6 3. e3 Bg7 4. Bd3 O-O 5. O-O d6 6. c3 Nbd7 { Prepare ...e5. } 7. Nbd2 e5 8. e4 exd4 { Release the tension to open the long diagonal for the g7 bishop. } 9. cxd4 c5 { Hit White's centre again before it settles. If d5, Black has the e5 square for a knight. }"
+				},
+				{
+					"id": "torre",
+					"name": "Torre: 3.Bg5",
+					"pgn": "1. d4 Nf6 2. Nf3 g6 3. Bg5 Bg7 4. Nbd2 O-O 5. e3 d6 6. c3 Nbd7 7. Bd3 h6 { Ask the bishop before ...e5. } 8. Bh4 e5 { The usual break. Black's set-up is solid, and ...Qe8 or ...Re8 adds pressure on e4. }"
+				},
+				{
+					"id": "nc3-150",
+					"name": "2.Nc3 g6 3.e4: the 150 Attack",
+					"pgn": "1. d4 Nf6 2. Nc3 g6 3. e4 d6 { We get a Pirc structure. } 4. Be3 Bg7 5. Qd2 c6 { White wants Bh6 and long castling. Black prepares ...b5, the counter-attack against White's king. } 6. f3 b5 { Gain space with tempo-ideas ...b4 and ...Qa5. Delay castling until White commits; the queenside attack comes first. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. d4 Nf6 2. Bf4 g6 3. e3 Bg7 4. Nf3 d6 5. c4",
+					"question": "White has not played h3. What is Black's best idea?",
+					"options": [
+						"5...Nh5, going after the f4 bishop",
+						"5...e5 at once",
+						"5...b6",
+						"5...Bg4"
+					],
+					"answer": 0,
+					"explanation": "Without h3 the bishop has no retreat to h2. After ...Nh5 Black wins the bishop pair."
+				},
+				{
+					"pgn": "1. d4 Nf6 2. Bg5 g6 3. Bxf6",
+					"question": "How should Black recapture?",
+					"options": [
+						"3...exf6, keeping the bishop's route clear and preparing ...f5",
+						"3...gxf6",
+						"Either is the same"
+					],
+					"answer": 0,
+					"explanation": "With ...g6 played, ...gxf6 would leave the g7 square empty and the pawns broken. ...exf6 keeps a solid structure and the bishop pair."
+				}
+			]
+		}
+	]
+}
