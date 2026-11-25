@@ -50,8 +50,14 @@
 
 	--font: 'Geist', -apple-system, 'SF Pro Text', system-ui, sans-serif;
 	--mono: 'Geist Mono', ui-monospace, monospace;
-	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-	--ease-press: cubic-bezier(0.3, 0.7, 0.4, 1);
+	/* Motion. Entrances and presses use --ease-out, things moving on screen --ease-in-out,
+	   sheets and page pushes --ease-drawer (the iOS curve). */
+	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+	--ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+	--dur-press: 160ms;
+	--dur-push: 380ms;
+	--dur-present: 460ms;
 
 	--gutter: 18px;
 	--tabbar-h: 66px;
@@ -67,6 +73,22 @@
 html {
 	-webkit-text-size-adjust: 100%;
 	-webkit-tap-highlight-color: transparent;
+}
+/* No double-tap zoom wait on controls, and a long press on one never selects its label. */
+a,
+button,
+[role='button'] {
+	touch-action: manipulation;
+}
+button,
+[role='button'],
+.chip,
+.seg,
+.icon-btn,
+.row-item {
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-touch-callout: none;
 }
 body {
 	margin: 0;
@@ -121,9 +143,9 @@ p {
 	white-space: nowrap;
 	user-select: none;
 	transition:
-		transform 0.14s var(--ease-press),
-		box-shadow 0.14s var(--ease-press),
-		filter 0.2s;
+		transform var(--dur-press) var(--ease-out),
+		box-shadow var(--dur-press) var(--ease-out),
+		filter 0.2s ease;
 }
 .btn:active:not([disabled]) {
 	transform: translateY(2px);
@@ -133,9 +155,6 @@ p {
 	color: #fff;
 	box-shadow: var(--d-accent);
 	text-shadow: 0 1px 0 rgba(150, 40, 0, 0.35);
-}
-.btn-primary:hover {
-	filter: brightness(1.06);
 }
 .btn-primary:active {
 	box-shadow: var(--d-accent-press);
@@ -154,16 +173,10 @@ p {
 	box-shadow: var(--d-surface);
 	border: 1px solid var(--stroke);
 }
-.btn-surface:hover {
-	border-color: var(--stroke-2);
-}
 .btn-ghost {
 	color: var(--text-2);
 	height: 44px;
 	padding: 0 16px;
-}
-.btn-ghost:hover {
-	color: var(--text);
 }
 .btn.block {
 	width: 100%;
@@ -191,10 +204,10 @@ p {
 	background: var(--g-surface);
 	border: 1px solid var(--stroke);
 	box-shadow: var(--d-surface);
-	transition: transform 0.14s var(--ease-press);
+	transition: transform var(--dur-press) var(--ease-out);
 }
 .icon-btn:active {
-	transform: translateY(1px);
+	transform: translateY(1px) scale(0.94);
 }
 .icon-btn svg {
 	width: 18px;
@@ -255,12 +268,34 @@ p {
 	font-size: 14px;
 	font-weight: 500;
 	color: var(--text-2);
-	transition: color 0.2s;
+	transition: color 0.2s ease;
 }
 .seg button[aria-pressed='true'] {
 	color: var(--text);
 	background: var(--g-surface);
 	box-shadow: var(--d-surface), inset 0 -2px 0 var(--accent);
+}
+/* With the sliding thumb from `use:seg`, the thumb carries the selected look instead of the button. */
+.seg.has-thumb {
+	position: relative;
+	isolation: isolate;
+}
+.seg.has-thumb button[aria-pressed='true'] {
+	background: none;
+	box-shadow: none;
+}
+.seg-thumb {
+	position: absolute;
+	z-index: -1;
+	top: 4px;
+	bottom: 4px;
+	left: 0;
+	border-radius: var(--r-pill);
+	background: var(--g-surface);
+	box-shadow: var(--d-surface), inset 0 -2px 0 var(--accent);
+	transition:
+		transform 260ms var(--ease-in-out),
+		width 260ms var(--ease-in-out);
 }
 
 .progress {
@@ -333,16 +368,17 @@ p {
 	font-size: 15px;
 	line-height: 1.35;
 	transition:
-		border-color 0.2s,
-		background 0.2s;
+		transform var(--dur-press) var(--ease-out),
+		border-color 0.2s ease,
+		background 0.2s ease;
+}
+.option:active {
+	transform: scale(0.98);
 }
 .option b {
 	font-weight: 600;
 	color: var(--text-2);
 	flex: 0 0 auto;
-}
-.option:hover {
-	border-color: var(--stroke-2);
 }
 .option.selected {
 	border: 1.5px solid var(--accent);
@@ -431,11 +467,217 @@ p {
 	border: 0;
 }
 
+/* ---------- press feedback ----------
+   Pressable surfaces answer on touch-down. Cards and chips sink slightly; plain rows dim, like iOS lists. */
+a.card,
+button.card,
+a.chip,
+button.chip,
+.seg button {
+	transition:
+		transform var(--dur-press) var(--ease-out),
+		color 0.2s ease,
+		background-color 0.2s ease,
+		border-color 0.2s ease;
+}
+a.card:active,
+button.card:active {
+	transform: scale(0.98);
+}
+a.chip:active,
+button.chip:active,
+.seg button:active {
+	transform: scale(0.95);
+}
+.row-item,
+.ch-head,
+.cov-head {
+	transition: opacity var(--dur-press) var(--ease-out);
+}
+.row-item:active,
+.ch-head:active,
+.cov-head:active {
+	opacity: 0.55;
+	transition-duration: 0s;
+}
+
+/* Touch screens report a sticky hover after a tap, so hover styles only exist for a real pointer. */
+@media (hover: hover) and (pointer: fine) {
+	.btn-primary:hover {
+		filter: brightness(1.06);
+	}
+	.btn-surface:hover {
+		border-color: var(--stroke-2);
+	}
+	.btn-ghost:hover {
+		color: var(--text);
+	}
+	.option:hover {
+		border-color: var(--stroke-2);
+	}
+}
+
+/* ---------- page transitions (see onNavigate in +layout.svelte) ----------
+   push/pop slide like a navigation stack, present/dismiss bring a full-screen flow up and back down. */
+:root[data-nav]::view-transition-old(root),
+:root[data-nav]::view-transition-new(root) {
+	animation-duration: var(--dur-push);
+	animation-timing-function: var(--ease-drawer);
+	animation-fill-mode: both;
+	mix-blend-mode: normal;
+}
+:root[data-nav='push']::view-transition-old(root) {
+	animation-name: nav-behind;
+}
+:root[data-nav='push']::view-transition-new(root) {
+	animation-name: nav-from-right;
+	box-shadow: -16px 0 40px rgba(0, 0, 0, 0.5);
+}
+:root[data-nav='pop']::view-transition-old(root) {
+	z-index: 1;
+	animation-name: nav-to-right;
+	box-shadow: -16px 0 40px rgba(0, 0, 0, 0.5);
+}
+:root[data-nav='pop']::view-transition-new(root) {
+	animation-name: nav-from-behind;
+}
+:root[data-nav='present']::view-transition-old(root),
+:root[data-nav='present']::view-transition-new(root) {
+	animation-duration: var(--dur-present);
+}
+:root[data-nav='present']::view-transition-old(root) {
+	animation-name: nav-dim;
+}
+:root[data-nav='present']::view-transition-new(root) {
+	animation-name: nav-from-bottom;
+}
+:root[data-nav='dismiss']::view-transition-old(root) {
+	z-index: 1;
+	animation-name: nav-to-bottom;
+}
+:root[data-nav='dismiss']::view-transition-new(root) {
+	animation-name: nav-undim;
+}
+/* The tab bar stays put while pages slide underneath it. */
+:root[data-nav='push'] .tabbar,
+:root[data-nav='pop'] .tabbar {
+	view-transition-name: tabbar;
+}
+::view-transition-group(tabbar),
+::view-transition-new(tabbar) {
+	animation: none;
+}
+::view-transition-old(tabbar) {
+	display: none;
+}
+@keyframes nav-from-right {
+	from {
+		transform: translateX(100%);
+	}
+}
+@keyframes nav-to-right {
+	to {
+		transform: translateX(100%);
+	}
+}
+@keyframes nav-behind {
+	to {
+		transform: translateX(-30%);
+		opacity: 0.55;
+	}
+}
+@keyframes nav-from-behind {
+	from {
+		transform: translateX(-30%);
+		opacity: 0.55;
+	}
+}
+@keyframes nav-from-bottom {
+	from {
+		transform: translateY(100%);
+	}
+}
+@keyframes nav-to-bottom {
+	to {
+		transform: translateY(100%);
+	}
+}
+@keyframes nav-dim {
+	to {
+		opacity: 0.5;
+	}
+}
+@keyframes nav-undim {
+	from {
+		opacity: 0.5;
+	}
+}
+@keyframes nav-fade-in {
+	from {
+		opacity: 0;
+	}
+}
+@keyframes nav-fade-out {
+	to {
+		opacity: 0;
+	}
+}
+@keyframes nav-shift-in {
+	from {
+		opacity: 0;
+		transform: translateX(24px);
+	}
+}
+@keyframes nav-rise-in {
+	from {
+		opacity: 0;
+		transform: translateY(24px);
+	}
+}
+/* A full-width slide across a desktop window is heavy; a short shift and fade reads as the same move. */
+@media (min-width: 900px) {
+	:root[data-nav]::view-transition-old(root),
+	:root[data-nav]::view-transition-new(root) {
+		animation-duration: 240ms;
+		animation-timing-function: var(--ease-out);
+		box-shadow: none;
+	}
+	:root[data-nav]::view-transition-old(root) {
+		animation-name: nav-fade-out;
+	}
+	:root[data-nav='push']::view-transition-new(root) {
+		animation-name: nav-shift-in;
+	}
+	:root[data-nav='present']::view-transition-new(root) {
+		animation-name: nav-rise-in;
+	}
+	:root[data-nav='pop']::view-transition-new(root),
+	:root[data-nav='dismiss']::view-transition-new(root) {
+		animation-name: nav-fade-in;
+	}
+}
+
+/* Reduced motion keeps the feedback that explains a change (fades, colors) and drops travel and loops. */
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
 	*::after {
-		transition: none !important;
-		animation: none !important;
+		transition-property: opacity, color, background-color, border-color, box-shadow, filter !important;
+		animation-iteration-count: 1 !important;
+	}
+	:root[data-nav]::view-transition-old(root),
+	:root[data-nav]::view-transition-new(root) {
+		animation-duration: 180ms;
+		animation-timing-function: ease;
+		box-shadow: none;
+	}
+	:root[data-nav]::view-transition-old(root) {
+		animation-name: nav-fade-out;
+	}
+	:root[data-nav]::view-transition-new(root) {
+		animation-name: nav-fade-in;
+	}
+	.seg-thumb {
+		transition: none;
 	}
 }
