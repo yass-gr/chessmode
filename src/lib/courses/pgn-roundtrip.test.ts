@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildCourse, exportCoursePgn, readPgnTree } from '#lib/courses/pgn-tree.ts';
+import { buildCourse, buildPgnCourse, exportCoursePgn, readPgnTree } from '#lib/courses/pgn-tree.ts';
 import { parseCourse } from '#lib/courses/parse.ts';
 import { preserveLineIds } from '#lib/courses/custom.ts';
 
@@ -13,6 +13,14 @@ describe('course PGN', () => {
 		const again = build(exportCoursePgn(branched));
 		expect(parseCourse(again).lines.map(l => l.plies.map(p => [p.uci, p.note]))).toEqual(parseCourse(branched).lines.map(l => l.plies.map(p => [p.uci, p.note])));
 		expect(original.chapters[0].lines).toHaveLength(1);
+	});
+	it('preserves chapters and board directives through export and reimport', () => {
+		const source = '[Chapter "Open"]\n\n1. e4 { Attack [%cal Ge2e4,Re7e5] [%csl Ye4] } e5 *\n\n[Chapter "Sicilian"]\n\n1. e4 c5 { [%cal Gc5c4] } 2. Nf3 *';
+		const options = { id: 'custom-test', name: 'Test', side: 'w' as const };
+		const original = buildPgnCourse(source, options).file;
+		const again = buildPgnCourse(exportCoursePgn(original), options).file;
+		expect(again.chapters.map((chapter) => [chapter.name, chapter.lines.map((line) => line.pgn)])).toEqual(original.chapters.map((chapter) => [chapter.name, chapter.lines.map((line) => line.pgn)]));
+		expect(again.chapters[0].lines[0].pgn).toContain('[%csl Ye4]');
 	});
 	it('retains IDs only for unchanged move sequences', () => {
 		const old = build('1. e4 e5 (1... c5 2. Nf3) 2. Nf3 *');
