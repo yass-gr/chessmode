@@ -26,7 +26,8 @@ function tokens(movetext: string): Token[] {
 		if (/\s/.test(c)) i++;
 		else if (c === '{') {
 			const end = movetext.indexOf('}', i);
-			const stop = end < 0 ? movetext.length : end;
+			if (end < 0) throw new Error('Unclosed PGN comment.');
+			const stop = end;
 			out.push({ kind: 'comment', text: movetext.slice(i + 1, stop) });
 			i = stop + 1;
 		} else if (c === ';') {
@@ -103,7 +104,7 @@ export function readPgnTree(pgn: string): { tree: TreeNode; skipped: number } {
 			if (token.kind === 'end') break;
 			if (token.kind === 'comment') {
 				const text = clean(token.text);
-				if (text && frame.last) frame.last.note = frame.last.note ? `${frame.last.note} ${text}` : text;
+				if (text && frame.last && frame.last.note !== text) frame.last.note = frame.last.note ? `${frame.last.note} ${text}` : text;
 			} else if (token.kind === 'open') {
 				if (!frame.before) throw new Error('A variation starts before any move.');
 				stack.push(frame);
@@ -129,6 +130,7 @@ export function readPgnTree(pgn: string): { tree: TreeNode; skipped: number } {
 				frame = { chess: frame.chess, at: edge.node, last: edge, before };
 			}
 		}
+		if (stack.length) throw new Error('Unclosed PGN variation.');
 	}
 	if (!root.children.size) throw new Error('The PGN has no moves.');
 	return { tree: root, skipped: list.length - usable.length };
@@ -177,8 +179,7 @@ export function buildCourse(tree: TreeNode, options: { id: string; name: string;
 		const pgn = path
 			.map((e, i) => {
 				const number = i % 2 === 0 ? `${i / 2 + 1}. ` : '';
-				const mine = (i % 2 === 0 ? 'w' : 'b') === options.side;
-				const note = mine && e.note ? ` { ${e.note.replace(/[{}]/g, '')} }` : '';
+				const note = e.note ? ` { ${e.note.replace(/[{}]/g, '')} }` : '';
 				return `${number}${e.san}${note}`;
 			})
 			.join(' ');
@@ -198,4 +199,12 @@ export function buildCourse(tree: TreeNode, options: { id: string; name: string;
 		chapters: [{ id: 'lines', name: 'Lines', intro: 'The lines from your PGN, one per branch.', lines, quiz: [] }]
 	};
 	return { file, conflicts };
+}
+
+/** Export each line as a game; shared prefixes merge again on import. */
+export function exportCoursePgn(file: CourseFile): string {
+	const escape = (value: string) => value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+	return file.chapters.flatMap((chapter) => chapter.lines.map((line) =>
+		`[Event "${escape(file.name)}"]\n[Chapter "${escape(chapter.name)}"]\n[Line "${escape(line.name)}"]\n\n${line.pgn} *`
+	)).join('\n\n');
 }
