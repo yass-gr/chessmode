@@ -1,0 +1,188 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { liveQuery } from 'dexie';
+	import { goto } from '$app/navigation';
+	import { db, getSetting, setSetting } from '#lib/db.ts';
+	import { fetchGames, PLATFORMS, type OnlineSource } from '#lib/import/fetch-games.ts';
+	import { parsePgn } from '#lib/import/pgn.ts';
+	import type { GameRecord, GameReview } from '#lib/review/types.ts';
+
+	const sources: OnlineSource[] = ['lichess', 'chesscom'];
+	const date = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' });
+	let source = $state<OnlineSource>('lichess');
+	let usernames = $state<Record<OnlineSource, string>>({ lichess: '', chesscom: '' });
+	let pgn = $state('');
+	let games = $state<GameRecord[]>([]);
+	let reviews = $state(new Map<string, GameReview>());
+	let busy = $state(false);
+	let message = $state('');
+	let error = $state('');
+	let controller: AbortController | undefined;
+
+	onMount(() => {
+		const subscription = liveQuery(async () => ({
+			games: await db.games.orderBy('playedAt').reverse().toArray(),
+			reviews: await db.reviews.toArray()
+		})).subscribe({
+			next: data => {
+				games = data.games;
+				const latest = new Map<string, GameReview>();
+				for (const review of data.reviews) {
+					if ((latest.get(review.gameId)?.depth ?? 0) < review.depth) latest.set(review.gameId, review);
+				}
+				reviews = latest;
+			},
+			error: () => { error = 'Could not read saved games on this device.'; }
+		});
+		for (const key of sources) {
+			void getSetting('games.username.' + key, '').then(value => {
+				if (!usernames[key]) usernames[key] = value;
+			}).catch(() => { error = 'Could not read saved usernames.'; });
+		}
+		return () => {
+			subscription.unsubscribe();
+			controller?.abort();
+		};
+	});
+
+	function result(game: GameRecord) {
+		if (game.result === '1/2-1/2') return 'Draw';
+		if (game.result === '*') return 'Unfinished';
+		if (!game.userColor) return game.result;
+		return (game.userColor === 'w') === (game.result === '1-0') ? 'Win' : 'Loss';
+	}
+
+	async function importOnline(event: SubmitEvent) {
+		event.preventDefault();
+		if (busy) return;
+		const platform = source;
+		const username = usernames[platform].trim();
+		const request = new AbortController();
+		controller = request;
+		busy = true;
+		error = '';
+		message = '';
+		try {
+			const { games: imported, missingArchives } = await fetchGames(platform, username, request.signal);
+			await db.transaction('rw', db.games, db.settings, async () => {
+				await db.games.bulkPut(imported);
+				await setSetting('games.username.' + platform, username);
+			});
+			message = imported.length ? 'Imported ' + imported.length + ' standard games.' : 'No recent standard games found.';
+			if (missingArchives) message += ' One Chess.com archive was unavailable.';
+		} catch (cause) {
+			if (!request.signal.aborted) error = cause instanceof Error ? cause.message : 'Could not import these games.';
+		} finally {
+			busy = false;
+			controller = undefined;
+		}
+	}
+
+	async function importPgn(event: SubmitEvent) {
+		event.preventDefault();
+		let game: GameRecord;
+		error = '';
+		message = '';
+		try {
+			game = parsePgn(pgn);
+		} catch (cause) {
+			error = cause instanceof Error && /^(Only standard|The PGN)/.test(cause.message)
+				? cause.message : 'This PGN could not be read. Paste one complete game with legal moves.';
+			return;
+		}
+		try {
+			await db.games.put(game);
+			await goto('/review/' + game.id);
+		} catch {
+			error = 'Could not save the pasted game on this device.';
+		}
+	}
+</script>
+
+<svelte:head><title>Matches · Chessmode</title></svelte:head>
+
+<main class="page matches">
+	<header>
+		<h1>Matches</h1>
+	</header>
+	<div class="columns">
+		<section class="card import" aria-label="Import games">
+			<h2>Import games</h2>
+			<form onsubmit={importOnline}>
+				<div class="seg" role="group" aria-label="Game platform">
+					{#each sources as platform}
+						<button type="button" disabled={busy} aria-pressed={source === platform} onclick={() => { source = platform; }}>{PLATFORMS[platform]}</button>
+					{/each}
+				</div>
+				<label class="field">
+					<input aria-label="Username" placeholder={PLATFORMS[source] + ' username'} bind:value={usernames[source]} required disabled={busy} autocapitalize="none" spellcheck={false} />
+				</label>
+				<button class="btn btn-primary block" disabled={busy}>{busy ? 'Importing…' : source === 'lichess' ? 'Import last 50 games' : 'Import recent games'}</button>
+			</form>
+			<details>
+				<summary>Paste a PGN</summary>
+				<form onsubmit={importPgn}>
+					<textarea aria-label="Game PGN" placeholder="1. e4 e5 2. Nf3…" bind:value={pgn} required spellcheck={false} rows="5"></textarea>
+					<button class="btn block">Review PGN</button>
+				</form>
+			</details>
+			{#if message}<p class="feedback" role="status">{message}</p>{/if}
+			{#if error}<p class="feedback error" role="alert">{error}</p>{/if}
+		</section>
+		<section aria-labelledby="games-label">
+			<h2 id="games-label">Saved games <span>{games.length}</span></h2>
+			{#if games.length}
+				<div class="card games">
+					{#each games as game (game.id)}
+						{@const opponent = game.userColor === 'w' ? game.black.name : game.white.name}
+						{@const review = reviews.get(game.id)}
+						{@const accuracy = game.userColor === 'b' ? review?.black.accuracy : review?.white.accuracy}
+						<a class="game" href={'/review/' + game.id}>
+							<div>
+								<b>{game.userColor ? 'vs. ' + opponent : game.white.name + ' vs. ' + game.black.name}</b>
+								<span class="metadata">{[result(game), game.speed, date.format(game.playedAt)].filter(Boolean).join(' · ')}</span>
+								{#if review?.opening || game.opening}<span class="opening">{(review?.opening ?? game.opening)?.name}</span>{/if}
+							</div>
+							<span class="chip" title={review ? 'Accuracy' : undefined}>
+								{#if review && !game.userColor}{review.white.accuracy.toFixed(1)}% / {review.black.accuracy.toFixed(1)}%
+								{:else if accuracy !== undefined}{accuracy.toFixed(1)}%{:else}Review{/if}
+							</span>
+						</a>
+					{/each}
+				</div>
+			{:else}
+				<p class="card empty">Imported games appear here.</p>
+			{/if}
+		</section>
+	</div>
+</main>
+
+<style>
+	.matches { max-width: 1060px; }
+	header { margin-bottom: 18px; }
+	h1 { font-size: clamp(28px, 4vw, 38px); letter-spacing: -.045em; line-height: 1.1; }
+	h2 { font-size: 17px; letter-spacing: -.02em; }
+	h2 span { margin-left: 6px; color: var(--text-2); font: 12px var(--mono); }
+	.columns { display: grid; gap: 22px; align-items: start; }
+	.import { display: grid; gap: 14px; padding: 16px; background: var(--g-card-glow), var(--surface-2); }
+	form { display: grid; gap: 11px; }
+	summary { cursor: pointer; color: var(--text-2); font-weight: 600; }
+	details[open] form { margin-top: 12px; }
+	textarea { width: 100%; padding: 10px; border: 1px solid var(--stroke-2); border-radius: var(--r-sm); resize: vertical; background: var(--bg); color: var(--text); font: 13px/1.5 var(--mono); }
+	.feedback { color: var(--text); font-size: 13px; }
+	.error { color: var(--bad); }
+	.games, .empty { margin-top: 9px; }
+	.games { padding: 0 14px; }
+	.game { min-height: 70px; padding: 11px 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+	.game + .game { border-top: 1px solid var(--stroke); }
+	.game:hover b { color: var(--accent-hi); }
+	.game div { min-width: 0; }
+	.game b, .metadata, .opening { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+	.metadata, .opening, .empty { color: var(--text-2); font-size: 13px; }
+	.opening { font-size: 12px; }
+	.chip { flex-shrink: 0; }
+	.empty { padding: 14px; }
+	@media (min-width: 780px) {
+		.columns { grid-template-columns: minmax(300px, 370px) 1fr; gap: 28px; }
+	}
+</style>

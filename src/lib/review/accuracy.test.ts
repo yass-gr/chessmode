@@ -10,6 +10,7 @@ it('matches a four-ply worked example with weights of 10 and 5 for White', () =>
 	expect(gameAccuracy(game, colors, 'b')).toBeCloseTo(73.13913, 3);
 	expect(moveAccuracy(10, 30)).toBe(100);
 	expect(moveAccuracy(100, 0)).toBe(0);
+	expect(gameAccuracy([100, 0], ['w'], 'w')).toBe(0.5);
 });
 
 it('measures centipawn loss from the mover’s side and bounds the rating estimate', () => {
