@@ -7,7 +7,7 @@
 	import ResultSheet from '#lib/components/train/ResultSheet.svelte';
 	import { db } from '#lib/db.ts';
 	import { logSession } from '#lib/progress.ts';
-	import { moveDeadline, pickNext, TIME_MODE } from '#lib/train/session.ts';
+	import { adjust, clockSpeed, drain, lineResult, pickNext, TIME_MODE } from '#lib/train/session.ts';
 	import { best } from '#lib/train/stats.ts';
 
 	type Item = { course: Course; line: Line };
@@ -23,8 +23,7 @@
 	let mistakes = $state(0);
 	let previousBest = $state(0);
 	let over = $state(false);
-	let deadline = $state(0);
-	let now = $state(Date.now());
+	let remaining = $state(0);
 	let bump = $state<'plus' | 'minus' | undefined>();
 
 	onMount(async () => {
@@ -45,16 +44,17 @@
 		over = false;
 		item = pickNext(pool, undefined);
 		round += 1;
-		deadline = Date.now() + TIME_MODE.startMs;
+		remaining = TIME_MODE.startMs;
 	}
-
-	const remaining = $derived(Math.max(0, deadline - now));
 
 	$effect(() => {
 		if (mode !== 'time' || over || !item) return;
+		let last = performance.now();
 		const t = setInterval(() => {
-			now = Date.now();
-			if (now >= deadline) finish();
+			const at = performance.now();
+			remaining = drain(remaining, at - last, score);
+			last = at;
+			if (remaining <= 0) finish();
 		}, 100);
 		return () => clearInterval(t);
 	});
@@ -73,17 +73,18 @@
 	function onmistake() {
 		mistakes += 1;
 		if (mode === 'time') {
-			deadline = moveDeadline(deadline, Date.now(), 'mistake');
+			remaining = adjust(remaining, 'mistake');
 			flashBump('minus');
+			if (remaining <= 0) finish();
 		}
 	}
 
-	function onfinish(r: { mistakes: number }) {
+	function onfinish(r: { mistakes: number; hints: number }) {
 		if (over) return;
 		if (r.mistakes === 0) {
 			score += 1;
-			if (mode === 'time') {
-				deadline = moveDeadline(deadline, Date.now(), 'clean');
+			if (mode === 'time' && lineResult(r.mistakes, r.hints) === 'clean') {
+				remaining = adjust(remaining, 'clean');
 				flashBump('plus');
 			}
 		} else if (mode === 'drill') {
@@ -113,8 +114,8 @@
 					</div>
 					<div class="score">
 						<b>{score}</b>
-						<span>{score === 1 ? 'line' : 'lines'}</span>
-						{#if bump}<em class={bump}>{bump === 'plus' ? '+8s' : '−5s'}</em>{/if}
+						<span>{score === 1 ? 'line' : 'lines'}{clockSpeed(score) > 1 ? ` · clock ×${clockSpeed(score).toFixed(2)}` : ''}</span>
+						{#if bump}<em class={bump}>{bump === 'plus' ? `+${TIME_MODE.cleanMs / 1000}s` : `−${TIME_MODE.mistakeMs / 1000}s`}</em>{/if}
 					</div>
 				{:else}
 					<div class="streak">
