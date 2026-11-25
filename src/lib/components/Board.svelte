@@ -220,8 +220,10 @@
 	.board-wrap :global(cg-board square.move-dest) {
 		background: radial-gradient(rgba(13, 13, 14, 0.28) 20%, transparent 22%);
 	}
-	.board-wrap :global(cg-board square.move-dest:hover) {
-		background: rgba(255, 107, 44, 0.3);
+	@media (hover: hover) and (pointer: fine) {
+		.board-wrap :global(cg-board square.move-dest:hover) {
+			background: rgba(255, 107, 44, 0.3);
+		}
 	}
 	.board-wrap :global(cg-board square.oc.move-dest) {
 		background: radial-gradient(transparent 0%, transparent 78%, rgba(13, 13, 14, 0.3) 80%);

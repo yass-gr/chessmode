@@ -340,9 +340,17 @@
 		flex: 0 0 auto;
 	}
 	.dot.you {
+		position: relative;
 		background: var(--accent);
 		box-shadow: 0 0 0 4px var(--accent-soft);
-		animation: pulse 1.4s var(--ease-out) infinite;
+	}
+	.dot.you::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: var(--accent);
+		animation: pulse 1.6s var(--ease-out) infinite;
 	}
 	.dot.opp {
 		background: var(--text-3);
@@ -354,8 +362,12 @@
 		background: var(--good);
 	}
 	@keyframes pulse {
-		50% {
-			box-shadow: 0 0 0 7px rgba(255, 107, 44, 0.05);
+		from {
+			opacity: 0.45;
+		}
+		to {
+			transform: scale(2.6);
+			opacity: 0;
 		}
 	}
 	.san {
@@ -439,6 +451,11 @@
 	}
 	.shake {
 		animation: shake 0.4s var(--ease-out);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.shake {
+			animation: none;
+		}
 	}
 	@keyframes shake {
 		20%,

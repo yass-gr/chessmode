@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { seg } from '#lib/components/seg.ts';
 	import { page } from '$app/state';
 	import Board, { type Arrow, type Marker } from '#lib/components/Board.svelte';
 	import EvalGraph from '#lib/components/review/EvalGraph.svelte';
@@ -326,7 +327,7 @@
 				<!-- Keep swipe capture on the wrapper since Chessground handles its own touch events. -->
 				<div class="board-row" role="group" aria-label="Board position" ontouchstartcapture={touchStart} ontouchendcapture={touchEnd} ontouchcancel={() => { touch = undefined; }}>
 					<div class="eval" class:inverted={orientation === 'b'} role="img" aria-label={'Evaluation ' + scoreLabel(score)}>
-						<div class="fill" style:height={win + '%'}></div>
+						<div class="fill" style:transform="scaleY({win / 100})"></div>
 						<span>{scoreLabel(score)}</span>
 					</div>
 					<Board {fen} orientation={orientation === 'w' ? 'white' : 'black'} {lastMove} {arrows} {marker}
@@ -429,7 +430,7 @@
 							</div>
 						</section>
 					{/if}
-					<div class="seg" role="group" aria-label="Review panel">
+					<div class="seg" use:seg role="group" aria-label="Review panel">
 						<button aria-pressed={tab === 'moves'} onclick={() => { tab = 'moves'; }}>Moves</button>
 						<button aria-pressed={tab === 'summary'} onclick={() => { tab = 'summary'; }}>Summary</button>
 					</div>
@@ -491,7 +492,7 @@
 	.side.white { background: #e9e4dd; border-color: #f4f4f2; }
 	.board-row { display: grid; grid-template-columns: 23px minmax(0, 1fr); gap: 6px; }
 	.eval { position: relative; overflow: hidden; text-align: center; border: 1px solid var(--stroke-2); border-radius: var(--r-xs); background: #262629; color: var(--text); }
-	.eval .fill { position: absolute; inset: auto 0 0; background: #e9e4dd; transition: height .2s ease; }
+	.eval .fill { position: absolute; inset: 0; background: #e9e4dd; transform-origin: bottom; transition: transform 200ms var(--ease-out); }
 	.eval.inverted { background: #e9e4dd; color: var(--bg); }
 	.eval.inverted .fill { background: #262629; }
 	.eval span { position: absolute; inset: 6px auto auto 50%; writing-mode: vertical-rl; transform: translateX(-50%) rotate(180deg); font: 700 10px var(--mono); mix-blend-mode: difference; color: white; }
@@ -514,12 +515,12 @@
 	.error { color: var(--bad); }
 	.error button { margin-top: 8px; }
 	.status { color: var(--good); font-size: 13px; padding: 0 4px; }
-	.moves { max-height: 260px; overflow-y: auto; padding: 6px; }
+	.moves { max-height: 260px; overflow-y: auto; overscroll-behavior: contain; padding: 6px; }
 	.move-row { display: grid; grid-template-columns: 37px 1fr 1fr; gap: 3px; align-items: center; }
 	.move-row:nth-child(even) { background: var(--surface-1); border-radius: var(--r-xs); }
 	.move-row > span { text-align: center; color: var(--text-2); font: 11px var(--mono); }
 	.move { display: flex; text-align: left; align-items: center; justify-content: space-between; min-height: 35px; padding: 3px 9px; gap: 5px; font: 13px var(--mono); border-radius: var(--r-xs); }
-	.move:hover, .moments button:hover { background: var(--surface-4); }
+	@media (hover: hover) and (pointer: fine) { .move:hover, .moments button:hover { background: var(--surface-4); } }
 	.repertoire { padding: 12px 14px; display: grid; gap: 8px; }
 	.repertoire p { font-size: 14px; line-height: 1.5; color: var(--text-2); }
 	.repertoire p b { display: block; color: var(--text); font-weight: 600; }
