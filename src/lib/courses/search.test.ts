@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { courses } from '#lib/courses/index.ts';
+import { getCourse } from '#lib/courses/index.ts';
 import { positionOf, searchCourses } from '#lib/courses/search.ts';
 
+/** A fixed catalog, so adding a course to the app does not change what these tests mean. */
+const courses = [getCourse('caro-kann')!, getCourse('jobava-london')!];
 const ids = (text: string, side?: 'w' | 'b') => searchCourses(courses, { text, side }).map((c) => c.id);
 
 describe('searchCourses', () => {
