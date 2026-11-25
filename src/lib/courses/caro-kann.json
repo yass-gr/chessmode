@@ -1,0 +1,503 @@
+{
+	"id": "caro-kann",
+	"name": "Caro-Kann Defence",
+	"side": "b",
+	"level": "Beginner to club",
+	"tagline": "A rock-solid answer to 1.e4 with clear plans and no bad bishop.",
+	"description": "A complete Caro-Kann repertoire for Black: 1.e4 c6 2.d4 d5, getting the light-squared bishop out before closing the centre. You meet the Advance with ...Bf5 and ...c5, the Classical with ...Bf5-g6 and a rock-solid set-up, the Exchange and Panov with active pieces against White's centre, and every common sideline with a simple plan. The positions are sound and easy to understand, and you learn how to punish the mistakes club players actually make.",
+	"chapters": [
+		{
+			"id": "advance",
+			"name": "Advance Variation",
+			"moves": "3.e5 Bf5",
+			"intro": "After 3.e5 White has space, but Black has a clear target: the d4 pawn at the base of the chain. Black puts the bishop on f5 first, then plays ...e6 and ...c5, adding ...Nc6, ...Qb6 or ...Ne7-f5 to pile up on d4. If the f3-knight is d4's main defender, pinning or taking it with ...Bg4 is a recurring idea. Against the aggressive 4.Nc3 and 5.g4 (the Bayonet), Black must hit back at once with ...c5 and stop h4-h5 with ...h5. Remember: the bishop goes to g6 or h7, never into a trap on e4.",
+			"lines": [
+				{
+					"id": "advance-short-be3",
+					"name": "Short System: 6.Be3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. Nf3 { The Short System: quiet development and castling, with c3 or c4 decided later. } e6 { Opens the f8-bishop and supports d5. Now ...c5 is ready. } 5. Be2 c5 { Black's main break in the Advance: hit d4, the base of White's chain. If d4 goes, e5 loses its support. } 6. Be3 { White adds a defender to d4 and gets ready to meet ...cxd4 with a piece. } cxd4 { Releasing the tension forces the f3-knight to recapture, so it no longer guards e5. } 7. Nxd4 Ne7 { This knight is going to c6 or f5, where it hits d4 and e5. If White takes on f5, ...Nxf5 recaptures with an attack on the e3-bishop. } 8. c4 { White hits d5 to open lines while Black's king is still in the centre. } Nbc6 { Both knights now press on d4 and e5. If White takes on c6, recapture with the e7-knight to keep hitting e5. } 9. Qa4 { Pins the c6-knight against the king. } a6 { Prepares ...b5 to kick the queen and break the pin, and stops Nb5. }"
+				},
+				{
+					"id": "advance-short-nxf5",
+					"name": "Short System: 8.Nxf5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. Nf3 { The Short System: quiet development and castling, with c3 or c4 decided later. } e6 { Opens the f8-bishop and supports d5. Now ...c5 is ready. } 5. Be2 c5 { Black's main break in the Advance: hit d4, the base of White's chain. If d4 goes, e5 loses its support. } 6. Be3 { White adds a defender to d4 and gets ready to meet ...cxd4 with a piece. } cxd4 { Releasing the tension forces the f3-knight to recapture, so it no longer guards e5. } 7. Nxd4 Ne7 { This knight is going to c6 or f5, where it hits d4 and e5. If White takes on f5, ...Nxf5 recaptures with an attack on the e3-bishop. } 8. Nxf5 { Wins the bishop pair, but helps Black develop. } Nxf5 { Recapture with the knight: it hits the e3-bishop at once, and e5 no longer has a knight defending it. } 9. Bd2 Nc6 { Now e5 is attacked and has no defender. White must spend more moves to hold it while Black develops smoothly. }"
+				},
+				{
+					"id": "advance-short-castles",
+					"name": "Short System: 6.O-O",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. Nf3 { The Short System: quiet development and castling, with c3 or c4 decided later. } e6 { Opens the f8-bishop and supports d5. Now ...c5 is ready. } 5. Be2 c5 { Black's main break in the Advance: hit d4, the base of White's chain. If d4 goes, e5 loses its support. } 6. O-O { White leaves d4 alone for now and simply castles. } Nc6 { Adds pressure on d4 before deciding anything else. } 7. c3 Bg4 { The f3-knight is d4's main defender, so Black pins it, ready to take it. Black's remaining dark-squared bishop works well with pawns on light squares. } 8. Nbd2 cxd4 { Release now: after cxd4 the d4 pawn can only be defended by pieces, and the c-file is open for Black's rook. } 9. cxd4 Nge7 { Heading for f5 to hit d4 again. Black's plan is ...Nf5, ...Qb6 and ...Bxf3 to win or tie down the d4 pawn. }"
+				},
+				{
+					"id": "advance-short-dxc5",
+					"name": "Short System: 6.dxc5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. Nf3 { The Short System: quiet development and castling, with c3 or c4 decided later. } e6 { Opens the f8-bishop and supports d5. Now ...c5 is ready. } 5. Be2 c5 { Black's main break in the Advance: hit d4, the base of White's chain. If d4 goes, e5 loses its support. } 6. dxc5 { White gives up the d4 pawn, hoping to use d4 as a square for pieces. } Bxc5 { Black regains the pawn with a developing move. Without the d4 pawn, e5 is weak and can be attacked by ...Nc6, ...Nd7 and ...Qc7. } 7. O-O Ne7 { Heads for c6 to hit e5, and covers d5 and f5. } 8. c4 O-O { Black is fully developed and comfortable. If White opens the centre, Black's pieces are ready. }"
+				},
+				{
+					"id": "advance-bayonet",
+					"name": "Bayonet: 7.h4 h5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. Nc3 { White prepares g4 to chase the bishop. This leads to the sharpest positions in the Advance. } e6 5. g4 { The Bayonet: White grabs space on the kingside and kicks the bishop. } Bg6 { The bishop stays on the b1-h7 diagonal. Don't try ...Be4?, which just loses the bishop to Nxe4. } 6. Nge2 { The knight heads for f4 to hunt the bishop, and h4-h5 is coming. } c5 { Hit back in the centre while White's pieces are busy on the kingside. Against the Bayonet, Black must create counterplay fast. } 7. h4 { Threatens h5, trapping the bishop on g6. } h5 { Stops h4-h5 for good. If White wins this pawn, Black gets quick play against d4. } 8. Nf4 Bh7 { The bishop is safe on h7 and still controls the b1-h7 diagonal. } 9. Nxh5 { White wins a pawn, but the knight on h5 is far from the centre. } Nc6 { Now d4 is attacked twice and is hard to hold. Central pressure is worth more than the h-pawn. } 10. dxc5 { White gives up d4 rather than let it be taken with interest. } Bxc5 { Black has active pieces and a strong centre, and White's king has no safe home because both flanks are loosened. }"
+				},
+				{
+					"id": "advance-bayonet-be3",
+					"name": "Bayonet: 7.Be3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. Nc3 { White prepares g4 to chase the bishop. This leads to the sharpest positions in the Advance. } e6 5. g4 { The Bayonet: White grabs space on the kingside and kicks the bishop. } Bg6 { The bishop stays on the b1-h7 diagonal. Don't try ...Be4?, which just loses the bishop to Nxe4. } 6. Nge2 { The knight heads for f4 to hunt the bishop, and h4-h5 is coming. } c5 { Hit back in the centre while White's pieces are busy on the kingside. Against the Bayonet, Black must create counterplay fast. } 7. Be3 { White defends d4 and plans Qd2 and long castling. } Nc6 { More pressure on d4. Black develops before deciding on ...h5. } 8. dxc5 { White gives up the centre to free the d4 square for a knight. } h5 { Now Black attacks the g4 pawn and opens the h-file while White is not ready to answer with h4. } 9. Nf4 Bh7 { Keeps the bishop away from Nxg6. Next Black takes on g4 or develops with ...Nge7, and the c5 pawn is won back later. }"
+				},
+				{
+					"id": "advance-bayonet-h4",
+					"name": "Bayonet: 6.h4",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. Nc3 { White prepares g4 to chase the bishop. This leads to the sharpest positions in the Advance. } e6 5. g4 { The Bayonet: White grabs space on the kingside and kicks the bishop. } Bg6 { The bishop stays on the b1-h7 diagonal. Don't try ...Be4?, which just loses the bishop to Nxe4. } 6. h4 { White pushes the h-pawn before developing the knight, threatening h5. } h5 { Same answer: stop h4-h5 and put pressure on g4. } 7. Bg5 { Develops the bishop actively and eyes the d8-h4 diagonal. } Be7 { Offer to trade White's active bishop. Black's dark squares are then safe, and White's are weakened. } 8. Bxe7 Qxe7 { The queen eyes b4 and the g5 square, and ...hxg4 is in the air. Black is already comfortable. }"
+				},
+				{
+					"id": "advance-c3",
+					"name": "4.c3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. c3 { A solid but slow move: White just supports d4. } e6 { Same set-up as always: ...e6, then ...c5. } 5. Be2 c5 { Even against c3, the break comes: d4 is the target. } 6. Nf3 Nc6 7. O-O Bg4 { The f3-knight is d4's main defender, so Black pins it, ready to take it. Black's remaining dark-squared bishop works well with pawns on light squares. }"
+				},
+				{
+					"id": "advance-be3-qd2",
+					"name": "4.Be3 Qb6 5.Qd2?",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. Be3 { White guards d4 early but leaves b2 without protection. } Qb6 { Attacks b2. Many players defend it awkwardly or forget about it altogether. } 5. Qd2 { Looks natural, but the queen does not defend b2. } Qxb2 { Take it! The queen is not trapped: if Qc3, Black trades queens and also wins the c2 pawn. } 6. Qc3 Qxc3+ 7. Nxc3 Bxc2 { Black is two pawns up with no weaknesses. }"
+				},
+				{
+					"id": "advance-be3-b3",
+					"name": "4.Be3 Qb6 5.b3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. Be3 { White guards d4 early but leaves b2 without protection. } Qb6 { Attacks b2. Many players defend it awkwardly or forget about it altogether. } 5. b3 { The proper way to protect b2, though it weakens the long diagonal and c3. } e6 6. Nf3 c5 { The usual break. With b3 played, ...Qa5 and pressure on c3 become extra ideas. } 7. c3 Nc6 { Black develops with pressure on d4 and has an easy game. }"
+				},
+				{
+					"id": "advance-h4",
+					"name": "4.h4",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. h4 { White wants h5 to gain space and harass the bishop with g4. } h5 { Stops h4-h5 and keeps g4 as a square for the bishop. } 5. c4 { White switches to the centre, hitting d5. } e6 6. Nc3 dxc4 { Take on c4 so the bishop has to spend a move recapturing; d5 becomes a fine square for Black's pieces. } 7. Bxc4 Nd7 { Develops and prepares ...Nb6 to hit c4 and ...Ne7-d5. Black controls the light squares. }"
+				},
+				{
+					"id": "advance-bd3",
+					"name": "4.Bd3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. e5 { The Advance. White gains space and takes f6 away from Black's knight, but the d4 pawn at the base of the chain becomes a target. } Bf5 { The key Caro-Kann idea: the light-squared bishop gets outside the pawn chain before ...e6. Then ...e6 and ...c5 attack d4. } 4. Bd3 { White offers to trade bishops. This is a very common amateur reply. } Bxd3 { Take: Black's 'problem' bishop is traded for White's good bishop, and the light squares in White's camp get weaker. } 5. Qxd3 e6 6. Nf3 c5 { With the bishops off, the usual break against d4 is even stronger. } 7. c3 Nc6 8. O-O cxd4 9. cxd4 Qb6 { Black hits d4 and b2 at once, and ...Nge7-f5 will add more pressure on d4. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. e5 Bf5 4. Nf3 e6 5. Be2",
+					"question": "What is Black's main pawn break against the Advance?",
+					"options": [
+						"...f6, attacking e5 from the side",
+						"...c5, attacking the base of the chain on d4",
+						"...g5, gaining space on the kingside",
+						"...b5, gaining space on the queenside"
+					],
+					"answer": 1,
+					"explanation": "The d4 pawn holds the whole chain together. ...c5, backed by ...Nc6 and ...Qb6, attacks it directly; if d4 falls, e5 becomes weak too."
+				},
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. e5 Bf5 4. Nc3 e6 5. g4 Bg6 6. Nge2 c5 7. h4",
+					"question": "White threatens h4-h5. What should Black do?",
+					"options": [
+						"Play ...h5 to stop the pawn",
+						"Develop with ...Nd7 and ignore it",
+						"Develop with ...Nc6 and ignore it",
+						"Play ...Be4 to escape"
+					],
+					"answer": 0,
+					"explanation": "...h5 stops the trap for good. If White wins the h5 pawn, the knight ends up offside and Black gets strong play against d4."
+				},
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. e5 Bf5 4. Nf3 e6 5. Be2 c5 6. O-O Nc6 7. c3",
+					"question": "Why is ...Bg4 a good idea here?",
+					"options": [
+						"It attacks the e2-bishop",
+						"It pins and threatens to remove the f3-knight, the main defender of d4 and e5",
+						"It prepares ...Bh5-g6",
+						"It stops White from castling"
+					],
+					"answer": 1,
+					"explanation": "The f3-knight holds d4 and e5. Taking it weakens White's centre, and Black's remaining dark-squared bishop is the good one in this structure."
+				}
+			]
+		},
+		{
+			"id": "exchange",
+			"name": "Exchange Variation",
+			"moves": "3.exd5 cxd5 4.Bd3",
+			"intro": "After 3.exd5 cxd5 the pawns are symmetrical, and the game is about piece activity. Black develops with ...Nc6 and ...Nf6, then brings the light-squared bishop to g4 before playing ...e6, so it never gets stuck behind the pawns. Next Black offers to trade White's strong f4-bishop with ...Bd6, castles, and uses the half-open c-file. A typical long-term plan is the minority attack ...b5-b4 to create a weak pawn on c3. If White plays slowly, the freeing break ...e5 is often possible.",
+			"lines": [
+				{
+					"id": "exchange-qb3",
+					"name": "Main line: 7.Qb3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. Bd3 { The bishop aims at h7 and stops Black's bishop from coming to f5. } Nc6 { Develops with pressure on d4. The knight also covers e5 and b4. } 5. c3 { Supports d4 and gives the queen the b3 square to hit b7. } Nf6 6. Bf4 { White's most active set-up: the bishop takes control of e5 and b8. } Bg4 { Black's light-squared bishop still gets out before ...e6, here by attacking the queen and preparing to pin a knight on f3. } 7. Qb3 { Hits b7 and adds pressure on d5. } Qd7 { The simplest defence of b7. Black is not afraid of a queen trade. } 8. Nd2 e6 { Now the f8-bishop can develop, and Black's structure is very solid. } 9. Ngf3 Bd6 { Offer to trade White's best minor piece, the f4-bishop. } 10. Bxd6 Qxd6 11. O-O O-O { Black is comfortable. Typical plans: ...Rab8 and ...b5-b4 (the minority attack) to make c3 weak, or ...Bxf3 and ...e5 in the centre. }"
+				},
+				{
+					"id": "exchange-nf3",
+					"name": "7.Nf3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. Bd3 { The bishop aims at h7 and stops Black's bishop from coming to f5. } Nc6 { Develops with pressure on d4. The knight also covers e5 and b4. } 5. c3 { Supports d4 and gives the queen the b3 square to hit b7. } Nf6 6. Bf4 { White's most active set-up: the bishop takes control of e5 and b8. } Bg4 { Black's light-squared bishop still gets out before ...e6, here by attacking the queen and preparing to pin a knight on f3. } 7. Nf3 { Natural development, but now the knight can be pinned and traded. } e6 8. Nbd2 Bd6 { Same idea: trade off the f4-bishop, which is White's best piece. } 9. Bxd6 Qxd6 10. O-O O-O { Equal and easy to play. Black can use the c-file with ...Rac8 or start ...Rab8 and ...b5-b4. }"
+				},
+				{
+					"id": "exchange-f3",
+					"name": "7.f3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. Bd3 { The bishop aims at h7 and stops Black's bishop from coming to f5. } Nc6 { Develops with pressure on d4. The knight also covers e5 and b4. } 5. c3 { Supports d4 and gives the queen the b3 square to hit b7. } Nf6 6. Bf4 { White's most active set-up: the bishop takes control of e5 and b8. } Bg4 { Black's light-squared bishop still gets out before ...e6, here by attacking the queen and preparing to pin a knight on f3. } 7. f3 { Kicks the bishop, but weakens e3 and the a7-g1 diagonal, and takes f3 away from the knight. } Bh5 8. Ne2 e6 { Develops; the bishop will drop back to g6 to trade White's dangerous d3-bishop. } 9. Nd2 Bg6 { Swap off White's attacking bishop. After Bxg6 hxg6 the h-file is half-open for Black's rook. } 10. Bxg6 hxg6 { Black's structure is fine, and White's f3 pawn leaves holes on e3 and g3. }"
+				},
+				{
+					"id": "exchange-h3",
+					"name": "6.h3 e5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. Bd3 { The bishop aims at h7 and stops Black's bishop from coming to f5. } Nc6 { Develops with pressure on d4. The knight also covers e5 and b4. } 5. c3 { Supports d4 and gives the queen the b3 square to hit b7. } Nf6 6. h3 { Stops ...Bg4, but it is a slow move. } e5 { Strike in the centre while White is a tempo behind. Black's pieces become very active. } 7. dxe5 Nxe5 { Now ...Nxd3+ would take White's bishop pair. } 8. Nf3 Nxd3+ 9. Qxd3 Bd6 10. O-O O-O { Black has an isolated pawn on d5 but very active pieces and the two bishops. The game is level. }"
+				},
+				{
+					"id": "exchange-nf3-bb5",
+					"name": "4.Nf3 Nc6 5.Bb5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. Nf3 Nc6 { Same development: pressure on d4. } 5. Bb5 { Pins the knight. White often plans to take on c6 and put a knight on e5. } Nf6 6. O-O Bg4 { The bishop comes out actively, pinning the f3-knight and stopping Ne5 for now. }"
+				},
+				{
+					"id": "exchange-bf4",
+					"name": "4.Bf4 and 6.Nf3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. Bf4 { White develops this bishop first and keeps Bd3 or Nf3 flexible. } Nc6 5. c3 Nf6 6. Nf3 Bg4 { Same set-up: the bishop gets out before ...e6. } 7. Nbd2 e6 8. Be2 Bd6 { Trade off the f4-bishop again. Without it White has no grip on e5. } 9. Bxd6 Qxd6 10. O-O O-O { Black has a solid position and easy plans: ...Rac8 or ...Rab8 and ...b5. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. exd5 cxd5 4. Bd3 Nc6 5. c3 Nf6 6. Bf4",
+					"question": "What is Black's main idea with the light-squared bishop here?",
+					"options": [
+						"Keep it on c8 and play ...e6 first",
+						"Bring it out to g4 before playing ...e6",
+						"Fianchetto it with ...b6 and ...Bb7",
+						"Trade it with ...Bd7-b5"
+					],
+					"answer": 1,
+					"explanation": "If Black plays ...e6 first, the bishop is shut in. ...Bg4 develops it actively, and only then does ...e6 follow."
+				},
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. exd5 cxd5 4. Bd3 Nc6 5. c3 Nf6 6. Bf4 Bg4 7. Nf3 e6 8. Nbd2 Bd6 9. Bxd6 Qxd6 10. O-O O-O",
+					"question": "What is a typical long-term plan for Black in this structure?",
+					"options": [
+						"Push ...g5 and ...g4 to attack the king",
+						"The minority attack: ...Rab8, ...b5 and ...b4 to create a weak pawn on c3",
+						"Play ...f6 and ...e5 at once",
+						"Keep all the pieces and wait"
+					],
+					"answer": 1,
+					"explanation": "Black has fewer pawns on the queenside, and pushing them with ...b5-b4 makes White take or allow ...bxc3, leaving a weak pawn on c3 or d4."
+				}
+			]
+		},
+		{
+			"id": "panov",
+			"name": "Panov Attack",
+			"moves": "3.exd5 cxd5 4.c4",
+			"intro": "The Panov Attack usually gives White an isolated pawn on d4 after cxd5 or ...dxc4. That pawn gives White space and active pieces, but it is also a long-term weakness. Black's recipe: blockade the square in front of it with a knight on d5, attack d4 with ...Nc6 and ...Bf6, and trade pieces, because every trade makes the isolated pawn weaker. If White instead closes the position with c5, Black attacks the c5-b4 chain with ...b6 and ...a5.",
+			"lines": [
+				{
+					"id": "panov-main",
+					"name": "Main line: 7.cxd5 Nxd5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. c4 { The Panov Attack. White attacks d5 and is ready to accept an isolated d-pawn in return for open lines and active pieces. } Nf6 { Develop and defend d5. Black does not rush to take on c4. } 5. Nc3 e6 { A solid choice: d5 is supported and the f8-bishop can develop. If White takes on d5, Black recaptures with the knight. } 6. Nf3 Be7 { Quiet development: castle first, then decide how to fight the d4 pawn. } 7. cxd5 Nxd5 { Recapture with the knight: it sits on d5, right in front of the isolated pawn, the perfect blockade square. } 8. Bd3 Nc6 { Attack d4. Trades favour Black, because an isolated pawn gets weaker as pieces come off. } 9. O-O O-O 10. Re1 Bf6 { More pressure on d4. Black follows up with ...b6, ...Bb7 and ...Rc8, trading pieces and then going after the lone d-pawn. }"
+				},
+				{
+					"id": "panov-bd3",
+					"name": "7.Bd3 dxc4",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. c4 { The Panov Attack. White attacks d5 and is ready to accept an isolated d-pawn in return for open lines and active pieces. } Nf6 { Develop and defend d5. Black does not rush to take on c4. } 5. Nc3 e6 { A solid choice: d5 is supported and the f8-bishop can develop. If White takes on d5, Black recaptures with the knight. } 6. Nf3 Be7 { Quiet development: castle first, then decide how to fight the d4 pawn. } 7. Bd3 { White develops but leaves c4 to be taken. } dxc4 { Take now: White's bishop has to move a second time to recapture, so Black gains a tempo. } 8. Bxc4 O-O 9. O-O Nc6 { A typical isolated-pawn position. Black aims for ...b6, ...Bb7 and a knight on d5, and trades pieces whenever possible. }"
+				},
+				{
+					"id": "panov-c5",
+					"name": "7.c5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. c4 { The Panov Attack. White attacks d5 and is ready to accept an isolated d-pawn in return for open lines and active pieces. } Nf6 { Develop and defend d5. Black does not rush to take on c4. } 5. Nc3 e6 { A solid choice: d5 is supported and the f8-bishop can develop. If White takes on d5, Black recaptures with the knight. } 6. Nf3 Be7 { Quiet development: castle first, then decide how to fight the d4 pawn. } 7. c5 { White releases the tension and grabs queenside space, planning b4-b5. } O-O { Castle first. The c5 pawn can only be supported by b4, so Black will attack it soon. } 8. Bd3 b6 { Hit the head of the pawn chain right away. } 9. b4 a5 { Undermine b4, the pawn that supports c5. Taking the wrong way can lose White material on the a-file. } 10. Na4 Nbd7 { A third attacker on c5. Black opens lines with ...axb4 or ...bxc5 and can follow with ...e5 in the centre. }"
+				},
+				{
+					"id": "panov-c5-a3",
+					"name": "7.c5 with 10.a3?",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. c4 { The Panov Attack. White attacks d5 and is ready to accept an isolated d-pawn in return for open lines and active pieces. } Nf6 { Develop and defend d5. Black does not rush to take on c4. } 5. Nc3 e6 { A solid choice: d5 is supported and the f8-bishop can develop. If White takes on d5, Black recaptures with the knight. } 6. Nf3 Be7 { Quiet development: castle first, then decide how to fight the d4 pawn. } 7. c5 { White releases the tension and grabs queenside space, planning b4-b5. } O-O { Castle first. The c5 pawn can only be supported by b4, so Black will attack it soon. } 8. Bd3 b6 { Hit the head of the pawn chain right away. } 9. b4 a5 { Undermine b4, the pawn that supports c5. Taking the wrong way can lose White material on the a-file. } 10. a3 { Natural, but it loses material. } axb4 { Now the a-file opens, and after axb4 Black's rook takes on a1. } 11. axb4 Rxa1 { Black wins a whole rook: White's queen cannot recapture because the c1-bishop is in the way. }"
+				},
+				{
+					"id": "panov-cxd5",
+					"name": "6.cxd5 Nxd5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. c4 { The Panov Attack. White attacks d5 and is ready to accept an isolated d-pawn in return for open lines and active pieces. } Nf6 { Develop and defend d5. Black does not rush to take on c4. } 5. Nc3 e6 { A solid choice: d5 is supported and the f8-bishop can develop. If White takes on d5, Black recaptures with the knight. } 6. cxd5 { White exchanges at once. } Nxd5 { Blockade from the start, just like the main line. } 7. Nf3 Be7 { Develop and castle. The knight on d5 is Black's key piece, so keep it there. } 8. Bc4 { The bishop hits the d5-knight from a new angle. } O-O { Black just castles: the knight on d5 is well protected and the blockade holds. } 9. O-O Nc6 { Attack d4. Same plans: ...Bf6, ...b6, ...Bb7 and trades. }"
+				},
+				{
+					"id": "panov-bg5",
+					"name": "6.Bg5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. exd5 { The Exchange Variation. White opens the e-file and hopes for quick development, often with Bd3 aiming at h7. } cxd5 { Always recapture with the c-pawn: Black keeps a pawn in the centre and gets the half-open c-file. } 4. c4 { The Panov Attack. White attacks d5 and is ready to accept an isolated d-pawn in return for open lines and active pieces. } Nf6 { Develop and defend d5. Black does not rush to take on c4. } 5. Nc3 e6 { A solid choice: d5 is supported and the f8-bishop can develop. If White takes on d5, Black recaptures with the knight. } 6. Bg5 { Pins the knight, adding pressure on d5. } Be7 { Unpins at once. If White takes on f6, Black recaptures with the bishop and d4 comes under fire. } 7. Nf3 O-O 8. Bd3 dxc4 { Again Black takes when the bishop has to move twice. } 9. Bxc4 Nc6 { Standard isolated-pawn plans: pressure on d4, ...b6 and ...Bb7, and trade pieces. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 e6 6. Nf3 Be7 7. cxd5 Nxd5 8. Bd3 Nc6 9. O-O O-O",
+					"question": "White has an isolated pawn on d4. What should Black generally aim for?",
+					"options": [
+						"Avoid trades and attack the king",
+						"Trade pieces and blockade d5, then attack the weak pawn",
+						"Push ...e5 as soon as possible",
+						"Play ...g5 to gain space"
+					],
+					"answer": 1,
+					"explanation": "The isolated pawn gives White activity in the middlegame, but it becomes a weakness in simpler positions. A knight on d5 blocks it, and trades take away White's attacking chances."
+				},
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 e6 6. Nf3 Be7 7. c5 O-O 8. Bd3",
+					"question": "White has closed the centre with c5. How does Black fight back?",
+					"options": [
+						"...b6 to attack the c5 pawn",
+						"...Nc6 and ...Na5",
+						"...h6 and ...g5",
+						"Wait with ...a6"
+					],
+					"answer": 0,
+					"explanation": "With c5 White has given up pressure on d5. ...b6 (and ...a5 against b4) attacks the head and the base of the chain, and opens lines for Black's pieces."
+				}
+			]
+		},
+		{
+			"id": "classical",
+			"name": "Classical Variation",
+			"moves": "3.Nc3 (3.Nd2) dxe4 4.Nxe4 Bf5",
+			"intro": "Against 3.Nc3 or 3.Nd2 Black takes on e4 and develops the bishop to f5 with tempo. White chases it with Ng3 and h4-h5; Black answers ...Bg6, ...h6 and ...Bh7, then trades it on d3. With pawns on c6 and e6 and pieces on d7, f6 and e7, Black's position is very solid. Later Black castles and frees the game with ...c5 or ...e5. Watch for tricks against White's early sidelines: Nc5 and Bd3 often leave a pawn or a piece loose.",
+			"lines": [
+				{
+					"id": "classical-main",
+					"name": "Main line: 11.Bd2",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Nc3 { The main line. White defends e4 with a piece instead of a pawn. } dxe4 { Black gives up the centre for free piece play. The c8-bishop will come out with tempo. } 4. Nxe4 Bf5 { Develops with an attack on the e4-knight. } 5. Ng3 { The knight hits the bishop again. } Bg6 { The bishop stays on the long diagonal. White will try to harass it with h4-h5. } 6. h4 { Threatens h5, which would trap the bishop on g6. } h6 { Gives the bishop the h7 square, so h4-h5 no longer traps it. } 7. Nf3 Nd7 { Stops Ne5, which would hit the bishop, and prepares ...Ngf6 and ...e6. } 8. h5 Bh7 9. Bd3 { Offers to trade bishops. } Bxd3 { Take: Black's bishop has nowhere better to go, and after the trade Black has no bad bishop at all. } 10. Qxd3 e6 { Black's set-up is rock solid: pawns on c6 and e6, then ...Ngf6, ...Be7 and castling. } 11. Bd2 Ngf6 12. O-O-O { White castles long and hopes for a kingside attack later. } Be7 { Simple development: castle next, then play ...c5 or ...Qc7. } 13. Kb1 O-O { Black's king is safe and the position is solid. Plans: ...Qc7, ...Rad8 and ...c5 to hit d4. }"
+				},
+				{
+					"id": "classical-ne4",
+					"name": "Main line: 13.Ne4",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Nc3 { The main line. White defends e4 with a piece instead of a pawn. } dxe4 { Black gives up the centre for free piece play. The c8-bishop will come out with tempo. } 4. Nxe4 Bf5 { Develops with an attack on the e4-knight. } 5. Ng3 { The knight hits the bishop again. } Bg6 { The bishop stays on the long diagonal. White will try to harass it with h4-h5. } 6. h4 { Threatens h5, which would trap the bishop on g6. } h6 { Gives the bishop the h7 square, so h4-h5 no longer traps it. } 7. Nf3 Nd7 { Stops Ne5, which would hit the bishop, and prepares ...Ngf6 and ...e6. } 8. h5 Bh7 9. Bd3 { Offers to trade bishops. } Bxd3 { Take: Black's bishop has nowhere better to go, and after the trade Black has no bad bishop at all. } 10. Qxd3 e6 { Black's set-up is rock solid: pawns on c6 and e6, then ...Ngf6, ...Be7 and castling. } 11. Bd2 Ngf6 12. O-O-O { White castles long and hopes for a kingside attack later. } Be7 { Simple development: castle next, then play ...c5 or ...Qc7. } 13. Ne4 { Offers a knight trade to reduce Black's defenders. } Nxe4 14. Qxe4 Nf6 { Develops with tempo on the queen. } 15. Qe2 Qd5 { An active, central queen: it eyes a2 and h5 and can offer a trade with ...Qe4. }"
+				},
+				{
+					"id": "classical-bf4",
+					"name": "Main line: 11.Bf4",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Nc3 { The main line. White defends e4 with a piece instead of a pawn. } dxe4 { Black gives up the centre for free piece play. The c8-bishop will come out with tempo. } 4. Nxe4 Bf5 { Develops with an attack on the e4-knight. } 5. Ng3 { The knight hits the bishop again. } Bg6 { The bishop stays on the long diagonal. White will try to harass it with h4-h5. } 6. h4 { Threatens h5, which would trap the bishop on g6. } h6 { Gives the bishop the h7 square, so h4-h5 no longer traps it. } 7. Nf3 Nd7 { Stops Ne5, which would hit the bishop, and prepares ...Ngf6 and ...e6. } 8. h5 Bh7 9. Bd3 { Offers to trade bishops. } Bxd3 { Take: Black's bishop has nowhere better to go, and after the trade Black has no bad bishop at all. } 10. Qxd3 e6 { Black's set-up is rock solid: pawns on c6 and e6, then ...Ngf6, ...Be7 and castling. } 11. Bf4 { A more active post: the bishop eyes d6 and c7. } Ngf6 12. O-O-O Be7 13. Kb1 O-O { Same set-up as against Bd2. Black is solid and will play ...Qa5 or ...c5 next. }"
+				},
+				{
+					"id": "classical-nd2-nf3",
+					"name": "3.Nd2 with 6.Nf3 and 7.Bd3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Nd2 { Same idea as 3.Nc3 but keeps the c-pawn free. Black answers the same way. } dxe4 4. Nxe4 Bf5 { Develops with an attack on the e4-knight. } 5. Ng3 { The knight hits the bishop again. } Bg6 { The bishop stays on the long diagonal. White will try to harass it with h4-h5. } 6. Nf3 Nd7 { Cover e5 before White's knight can land there and hit the bishop. } 7. Bd3 e6 { Don't take on d3 here: if White takes on g6, ...hxg6 gives Black a half-open h-file and a safe king. } 8. O-O Ngf6 9. c4 Be7 { Calm development. Black castles next and later frees the game with ...c5 or ...Qc7 and ...e5. }"
+				},
+				{
+					"id": "classical-n1e2",
+					"name": "6.N1e2",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Nc3 { The main line. White defends e4 with a piece instead of a pawn. } dxe4 { Black gives up the centre for free piece play. The c8-bishop will come out with tempo. } 4. Nxe4 Bf5 { Develops with an attack on the e4-knight. } 5. Ng3 { The knight hits the bishop again. } Bg6 { The bishop stays on the long diagonal. White will try to harass it with h4-h5. } 6. N1e2 { The knight heads for f4 to hunt the bishop. } Nf6 7. Nf4 e5 { A neat freeing move: it hits d4 and the f4-knight at once. } 8. Nxg6 hxg6 { Recapture with the h-pawn: Black's rook gets the half-open h-file. } 9. dxe5 Qa5+ { Wins the pawn back with check. } 10. Bd2 Qxe5+ 11. Qe2 Qxe2+ 12. Bxe2 Nbd7 { A level endgame where Black has easy development and the h-file. }"
+				},
+				{
+					"id": "classical-bc4",
+					"name": "6.Bc4",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Nc3 { The main line. White defends e4 with a piece instead of a pawn. } dxe4 { Black gives up the centre for free piece play. The c8-bishop will come out with tempo. } 4. Nxe4 Bf5 { Develops with an attack on the e4-knight. } 5. Ng3 { The knight hits the bishop again. } Bg6 { The bishop stays on the long diagonal. White will try to harass it with h4-h5. } 6. Bc4 { Aims at e6 and f7. } e6 { Blunts the bishop and develops. } 7. N1e2 Nf6 8. Nf4 Bd6 { Develops and challenges the f4-knight. If it takes on g6, Black gets the half-open h-file. } 9. Nxg6 hxg6 { Black is solid and well developed. }"
+				},
+				{
+					"id": "classical-nc5-dxe5",
+					"name": "5.Nc5 e5 6.dxe5?",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Nc3 { The main line. White defends e4 with a piece instead of a pawn. } dxe4 { Black gives up the centre for free piece play. The c8-bishop will come out with tempo. } 4. Nxe4 Bf5 { Develops with an attack on the e4-knight. } 5. Nc5 { Hits b7, but the knight is loose on c5: only the d4 pawn holds it. } e5 { Strike at d4 at once. Because the c5-knight depends on d4, this leads to tactics in Black's favour. } 6. dxe5 { A natural capture that loses a piece. } Qxd1+ 7. Kxd1 Bxc5 { Black wins the knight: after dxe5 nothing protects c5 any more. }"
+				},
+				{
+					"id": "classical-nc5-nxb7",
+					"name": "5.Nc5 e5 6.Nxb7",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Nc3 { The main line. White defends e4 with a piece instead of a pawn. } dxe4 { Black gives up the centre for free piece play. The c8-bishop will come out with tempo. } 4. Nxe4 Bf5 { Develops with an attack on the e4-knight. } 5. Nc5 { Hits b7, but the knight is loose on c5: only the d4 pawn holds it. } e5 { Strike at d4 at once. Because the c5-knight depends on d4, this leads to tactics in Black's favour. } 6. Nxb7 { Grabs a pawn, but the knight gets stuck. } Qb6 { Attacks the knight and d4. The b7-knight has no good way home. } 7. Nc5 Bxc5 8. dxc5 Qxc5 { Black has the pawn back and leads in development. }"
+				},
+				{
+					"id": "classical-qf3",
+					"name": "5.Qf3 e6 6.Bd3?",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Nc3 { The main line. White defends e4 with a piece instead of a pawn. } dxe4 { Black gives up the centre for free piece play. The c8-bishop will come out with tempo. } 4. Nxe4 Bf5 { Develops with an attack on the e4-knight. } 5. Qf3 { Defends the knight with the queen, but leaves d4 with fewer defenders. } e6 { Simple development. The queen on f3 has no real target. } 6. Bd3 { Natural, but it drops the d4 pawn. } Qxd4 { With the queen gone from d1 and the bishop on d3, nothing defends d4. Black is a clean pawn up. } 7. Ne2 Bxe4 { Trade first, removing the knight that could jump into d6 or f6. } 8. Bxe4 Qd8 { Retreat to safety. Black is a pawn up with no weaknesses. }"
+				},
+				{
+					"id": "classical-bd3",
+					"name": "5.Bd3?",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Nc3 { The main line. White defends e4 with a piece instead of a pawn. } dxe4 { Black gives up the centre for free piece play. The c8-bishop will come out with tempo. } 4. Nxe4 Bf5 { Develops with an attack on the e4-knight. } 5. Bd3 { Offers a pawn, usually by accident. } Qxd4 { Take it: White has no real compensation. } 6. Nf3 Qd8 { Back to safety. Black will develop with ...e6, ...Nd7 and ...Ngf6. } 7. Qe2 e6 8. O-O Nd7 { A pawn up and solid. Trading on e4 later removes White's most active piece. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. h4",
+					"question": "White threatens h4-h5. What is Black's best answer?",
+					"options": [
+						"...Nf6, developing and ignoring it",
+						"...h6, giving the bishop h7",
+						"...e5, counter-attacking in the centre",
+						"...Qd5, centralising the queen"
+					],
+					"answer": 1,
+					"explanation": "The knight on g3 covers f5 and e4, so after h5 the bishop would have no square. ...h6 gives it h7, and the advanced h5 pawn can later become a target."
+				},
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Nc5 e5",
+					"question": "Why is 6.dxe5 a mistake here?",
+					"options": [
+						"It loses the e5 pawn back",
+						"After the queen trade, nothing protects the c5-knight and Black wins it",
+						"It allows ...Bb4+",
+						"It gives Black the d-file"
+					],
+					"answer": 1,
+					"explanation": "The c5-knight was only held by the d4 pawn. After 6.dxe5 Qxd1+ 7.Kxd1 Bxc5 Black is a piece up."
+				},
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. h4 h6 7. Nf3 Nd7 8. h5 Bh7 9. Bd3 Bxd3 10. Qxd3 e6",
+					"question": "Black has finished the opening. What is a typical way to free the position?",
+					"options": [
+						"...c5 or ...e5 after castling",
+						"...g5 at once",
+						"...b5 and ...a5",
+						"...f5 and ...f4"
+					],
+					"answer": 0,
+					"explanation": "Black's set-up is solid but a little passive. Once castled, ...c5 (or ...e5 with good preparation) challenges d4 and frees the pieces."
+				}
+			]
+		},
+		{
+			"id": "fantasy",
+			"name": "Fantasy Variation",
+			"moves": "3.f3 e6",
+			"intro": "With 3.f3 White props up e4 and dreams of a big pawn centre. Black stays solid with ...e6, keeping d5 strong, and develops the bishop to b4 to pin the c3-knight. Plans are ...c5 against d4, ...Ne7 and quick castling, and ...dxe4 when it opens lines for Black's pieces. Remember that f3 weakens the e1-h4 diagonal: ...Qh4+ tricks appear when White plays fxe4 carelessly. Also watch b2 after Be3: ...Qb6 often wins a pawn.",
+			"lines": [
+				{
+					"id": "fantasy-fxe4-g3",
+					"name": "5.a3 Bxc3+ 6.bxc3 dxe4 7.fxe4? Qh4+ 8.g3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. f3 { The Fantasy Variation. White props up e4 with a pawn, but f3 takes the best square from the knight and weakens the e1-h4 diagonal and the e3 square. } e6 { Solid: d5 stays strong and the f8-bishop is ready for b4. Black plans ...c5 against the centre. } 4. Nc3 Bb4 { Pins the knight that defends e4. Black is happy to give this bishop for the knight to damage White's pawns. } 5. a3 { Asks the bishop to decide. } Bxc3+ { Doubles White's c-pawns. Black's next move hits the centre while White's pawns are clumsy. } 6. bxc3 dxe4 { Now fxe4 opens the e1-h4 diagonal and leaves the e4 pawn loose. } 7. fxe4 { Natural, but it runs into a check. } Qh4+ { The check that f3 allowed: Black attacks e4 as well. } 8. g3 { Blocks the check, but the rook on h1 is now loose. } Qxe4+ { A fork: check, and the queen also attacks the h1-rook. } 9. Qe2 Qxh1 { Black is a rook and a pawn up. }"
+				},
+				{
+					"id": "fantasy-fxe4-ke2",
+					"name": "7.fxe4? Qh4+ 8.Ke2",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. f3 { The Fantasy Variation. White props up e4 with a pawn, but f3 takes the best square from the knight and weakens the e1-h4 diagonal and the e3 square. } e6 { Solid: d5 stays strong and the f8-bishop is ready for b4. Black plans ...c5 against the centre. } 4. Nc3 Bb4 { Pins the knight that defends e4. Black is happy to give this bishop for the knight to damage White's pawns. } 5. a3 { Asks the bishop to decide. } Bxc3+ { Doubles White's c-pawns. Black's next move hits the centre while White's pawns are clumsy. } 6. bxc3 dxe4 { Now fxe4 opens the e1-h4 diagonal and leaves the e4 pawn loose. } 7. fxe4 { Natural, but it runs into a check. } Qh4+ { The check that f3 allowed: Black attacks e4 as well. } 8. Ke2 { Keeps the rook, but the king is now exposed. } Qxe4+ { Takes the pawn with check. } 9. Kf2 Qh4+ 10. g3 Qd8 { Black is a pawn up, White's king is airy and the c-pawns are doubled. Develop with ...Nf6 and ...Nbd7 next. }"
+				},
+				{
+					"id": "fantasy-bf4",
+					"name": "5.Bf4",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. f3 { The Fantasy Variation. White props up e4 with a pawn, but f3 takes the best square from the knight and weakens the e1-h4 diagonal and the e3 square. } e6 { Solid: d5 stays strong and the f8-bishop is ready for b4. Black plans ...c5 against the centre. } 4. Nc3 Bb4 { Pins the knight that defends e4. Black is happy to give this bishop for the knight to damage White's pawns. } 5. Bf4 { Develops and eyes the d6 and b8 squares. } Ne7 { Develops and keeps f6 free for the f-pawn or the queen. The knight can go to g6 to hit f4. } 6. a3 Ba5 { Keep the pin. Black can give the bishop for the knight later. } 7. Ne2 dxe4 { Open the position now that White's pieces are tangled. } 8. fxe4 Ng6 { Hits the f4-bishop. } 9. Bg3 e5 { Black strikes at White's centre with every piece ready. }"
+				},
+				{
+					"id": "fantasy-bf4-e5",
+					"name": "5.Bf4 Ne7 6.e5?",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. f3 { The Fantasy Variation. White props up e4 with a pawn, but f3 takes the best square from the knight and weakens the e1-h4 diagonal and the e3 square. } e6 { Solid: d5 stays strong and the f8-bishop is ready for b4. Black plans ...c5 against the centre. } 4. Nc3 Bb4 { Pins the knight that defends e4. Black is happy to give this bishop for the knight to damage White's pawns. } 5. Bf4 { Develops and eyes the d6 and b8 squares. } Ne7 { Develops and keeps f6 free for the f-pawn or the queen. The knight can go to g6 to hit f4. } 6. e5 { Closes the centre, but it leaves d4 short of defenders. } c5 { Strike the base at once. The knight on c3 is pinned and cannot help. } 7. a3 Ba5 8. dxc5 d4 { Pushes past the pinned knight and wins back the pawn with a strong position. }"
+				},
+				{
+					"id": "fantasy-e5",
+					"name": "5.e5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. f3 { The Fantasy Variation. White props up e4 with a pawn, but f3 takes the best square from the knight and weakens the e1-h4 diagonal and the e3 square. } e6 { Solid: d5 stays strong and the f8-bishop is ready for b4. Black plans ...c5 against the centre. } 4. Nc3 Bb4 { Pins the knight that defends e4. Black is happy to give this bishop for the knight to damage White's pawns. } 5. e5 { White closes the centre, leaving a French-type structure with f3 played. } c5 { Attack d4 at once, as in the French. With the pawn on f3, White's g1-knight cannot come to f3 to defend d4. } 6. a3 Bxc3+ 7. bxc3 Ne7 { Heads for c6 or f5 to pressure d4. Black will follow with ...Nbc6 and ...Qa5. }"
+				},
+				{
+					"id": "fantasy-be3-qd2",
+					"name": "4.Be3 Qb6 5.Qd2?",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. f3 { The Fantasy Variation. White props up e4 with a pawn, but f3 takes the best square from the knight and weakens the e1-h4 diagonal and the e3 square. } e6 { Solid: d5 stays strong and the f8-bishop is ready for b4. Black plans ...c5 against the centre. } 4. Be3 { Defends d4, but leaves b2 without protection. } Qb6 { Hits b2. White must defend it carefully. } 5. Qd2 { This does not protect b2. } Qxb2 { Take it! } 6. c3 Qxa1 { Black wins the rook. The queen in the corner is safe: ...Ba3 will open an exit. } 7. Qc2 Ba3 { Covers b2 so the queen can get out. Black is a rook and a pawn up. }"
+				},
+				{
+					"id": "fantasy-be3-b3",
+					"name": "4.Be3 Qb6 5.b3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. f3 { The Fantasy Variation. White props up e4 with a pawn, but f3 takes the best square from the knight and weakens the e1-h4 diagonal and the e3 square. } e6 { Solid: d5 stays strong and the f8-bishop is ready for b4. Black plans ...c5 against the centre. } 4. Be3 { Defends d4, but leaves b2 without protection. } Qb6 { Hits b2. White must defend it carefully. } 5. b3 { The proper way to protect b2. } Nd7 { Develops and prepares ...c5 or ...e5. Black keeps the queen on b6 to pressure d4. } 6. Nc3 dxe4 { Release the centre so the knight on c3 has to recapture. } 7. Nxe4 Ngf6 { Trade off White's active knight. Black is comfortable. }"
+				},
+				{
+					"id": "fantasy-bd3",
+					"name": "4.Bd3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. f3 { The Fantasy Variation. White props up e4 with a pawn, but f3 takes the best square from the knight and weakens the e1-h4 diagonal and the e3 square. } e6 { Solid: d5 stays strong and the f8-bishop is ready for b4. Black plans ...c5 against the centre. } 4. Bd3 { Defends e4 with a piece. } c5 { Attack d4. With the pawn on f3, White's g1-knight cannot use f3 to defend it. } 5. c3 Nc6 6. Ne2 Be7 { Calm development. Black castles and keeps the option of ...dxe4 and ...cxd4 to open the centre. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. f3 e6 4. Nc3 Bb4 5. a3 Bxc3+ 6. bxc3 dxe4 7. fxe4",
+					"question": "White has just recaptured on e4. What is Black's strongest move?",
+					"options": [
+						"...Nf6",
+						"...Qh4+",
+						"...c5",
+						"...e5"
+					],
+					"answer": 1,
+					"explanation": "The f-pawn left the e1-h4 diagonal open. ...Qh4+ wins the e4 pawn, and after g3 Qxe4+ the rook on h1 falls too."
+				},
+				{
+					"pgn": "1. e4 c6 2. d4 d5 3. f3 e6 4. Be3",
+					"question": "White has developed the bishop to e3. What is a typical way to exploit it?",
+					"options": [
+						"...Qb6, hitting the unprotected b2 pawn",
+						"...Bd6 and ...Ne7",
+						"...g6 and ...Bg7",
+						"...f5"
+					],
+					"answer": 0,
+					"explanation": "With the bishop gone from c1, nothing defends b2. ...Qb6 forces White to deal with it, and natural moves like Qd2 simply lose the pawn."
+				}
+			]
+		},
+		{
+			"id": "anti-caro",
+			"name": "Anti-Caro Sidelines",
+			"moves": "2.Nc3, 2.c4, 2.d3, 2.Nf3 and others",
+			"intro": "Many players avoid the main lines on move two. Against 2.Nc3 and 2.Nf3 Black plays ...d5 and, after Nf3 and Nc3, pins with ...Bg4, takes on f3 and builds a solid ...e6 and ...Nf6 set-up. Against 2.c4 Black plays ...d5 and wins the pawn back with ...Nf6xd5, often reaching Panov positions. Against the King's Indian set-up with 2.d3, Black takes the whole centre with ...d5 and ...e5. Many of these lines transpose into earlier chapters, so look for familiar positions.",
+			"lines": [
+				{
+					"id": "anti-two-knights-d4",
+					"name": "Two Knights: 6.d4 Nf6 7.Bd3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. Nc3 { White develops first and keeps d4 in reserve. } d5 3. Nf3 { The Two Knights. White wants quick development and tricks against an early ...dxe4. } Bg4 { Pin the knight, ready to take it. Black gets the bishop out before ...e6 and gives White's queen an awkward square. } 4. h3 Bxf3 { Take rather than retreat: White's queen recaptures, but it can easily become a target there. } 5. Qxf3 e6 { Solid. Black's pawns go on light squares, so the remaining dark-squared bishop is the good one. } 6. d4 { White sets up a big centre and plans Bd3 and quick castling. } Nf6 7. Bd3 { White offers the d4 pawn for faster development. } dxe4 8. Nxe4 Qxd4 { Black accepts: White gets some activity, but the pawn is real. } 9. c3 Qd8 { The queen goes home safely. Black will play ...Nbd7, ...Be7 and castle, staying a pawn up. } 10. O-O Nbd7 { Solid development. If White trades on f6, Black recaptures with the knight and stays very safe. }"
+				},
+				{
+					"id": "anti-two-knights-e5",
+					"name": "Two Knights: 6.d4 Nf6 7.e5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. Nc3 { White develops first and keeps d4 in reserve. } d5 3. Nf3 { The Two Knights. White wants quick development and tricks against an early ...dxe4. } Bg4 { Pin the knight, ready to take it. Black gets the bishop out before ...e6 and gives White's queen an awkward square. } 4. h3 Bxf3 { Take rather than retreat: White's queen recaptures, but it can easily become a target there. } 5. Qxf3 e6 { Solid. Black's pawns go on light squares, so the remaining dark-squared bishop is the good one. } 6. d4 { White sets up a big centre and plans Bd3 and quick castling. } Nf6 7. e5 { Closes the centre, gaining space and kicking the knight. } Nfd7 { The knight goes to d7, ready to support ...c5. } 8. Be2 c5 { Strike at d4 at once, like in the French. Without its light-squared bishop and knight, White struggles to support d4. }"
+				},
+				{
+					"id": "anti-two-knights-d3",
+					"name": "Two Knights: 6.d3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. Nc3 { White develops first and keeps d4 in reserve. } d5 3. Nf3 { The Two Knights. White wants quick development and tricks against an early ...dxe4. } Bg4 { Pin the knight, ready to take it. Black gets the bishop out before ...e6 and gives White's queen an awkward square. } 4. h3 Bxf3 { Take rather than retreat: White's queen recaptures, but it can easily become a target there. } 5. Qxf3 e6 { Solid. Black's pawns go on light squares, so the remaining dark-squared bishop is the good one. } 6. d3 { A quiet set-up keeping the pawn on e4. } Nf6 7. Be2 Nbd7 8. O-O Bd6 { Black develops naturally and keeps ...d4 or ...dxe4 and ...e5 as ideas. The position is equal and solid. }"
+				},
+				{
+					"id": "anti-two-knights-exd5",
+					"name": "Two Knights: 4.exd5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. Nc3 { White develops first and keeps d4 in reserve. } d5 3. Nf3 { The Two Knights. White wants quick development and tricks against an early ...dxe4. } Bg4 { Pin the knight, ready to take it. Black gets the bishop out before ...e6 and gives White's queen an awkward square. } 4. exd5 { White opens the centre first. } cxd5 { Same rule as always: recapture with the c-pawn and keep a central pawn. } 5. Bb5+ Nc6 { Blocks the check and develops. } 6. h3 Bxf3 7. Qxf3 e6 { Solid. The c6-knight is defended by the b-pawn, and Black follows with ...Nf6 and ...Be7. }"
+				},
+				{
+					"id": "anti-nf3-nc3",
+					"name": "2.Nf3 d5 3.Nc3 (transposes)",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. Nf3 { Develops first. Black still plays ...d5. } d5 3. Nc3 { This is the Two Knights position by another move order. } Bg4 { Pin the knight, ready to take it. Black gets the bishop out before ...e6 and gives White's queen an awkward square. } 4. Be2 { White develops without asking the bishop. } e6 { Solid: if White plays d4, Black has a French-like position where the bishop is already outside the chain. } 5. d4 Nf6 6. e5 Nfd7 { The knight heads for d7 to support ...c5, the usual break against d4. }"
+				},
+				{
+					"id": "anti-nf3-e5",
+					"name": "2.Nf3 d5 3.e5",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. Nf3 { Develops first. Black still plays ...d5. } d5 3. e5 { Closes the centre before d4. } Bf5 { Same as the Advance: bishop out first. } 4. d4 { This transposes into the Advance Short System. } e6 { Opens the f8-bishop and supports d5. Now ...c5 is ready. } 5. Be2 c5 { Black's main break in the Advance: hit d4, the base of White's chain. If d4 goes, e5 loses its support. } 6. O-O { White leaves d4 alone for now and simply castles. } Nc6 { Adds pressure on d4 before deciding anything else. }"
+				},
+				{
+					"id": "anti-c4-main",
+					"name": "2.c4 d5: Accelerated Panov",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. c4 { The Accelerated Panov: White hits d5 before playing d4. } d5 { Same idea as always: challenge e4 at once. } 3. exd5 cxd5 4. cxd5 Nf6 { Black wins the d5 pawn back with a piece instead of the queen, so the queen is not chased around. } 5. Nc3 Nxd5 6. Nf3 e6 { Solid. After d4 the game transposes into the Panov chapter. } 7. d4 Be7 { Develop and castle. The knight on d5 is Black's key piece, so keep it there. } 8. Bd3 Nc6 { Attack d4. Trades favour Black, because an isolated pawn gets weaker as pieces come off. } 9. O-O O-O"
+				},
+				{
+					"id": "anti-c4-bb5",
+					"name": "2.c4 d5: 5.Bb5+",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. c4 { The Accelerated Panov: White hits d5 before playing d4. } d5 { Same idea as always: challenge e4 at once. } 3. exd5 cxd5 4. cxd5 Nf6 { Black wins the d5 pawn back with a piece instead of the queen, so the queen is not chased around. } 5. Bb5+ { Tries to keep the extra pawn on d5. } Nbd7 { Blocks with the knight, not the bishop. The knight can come to b6 to win d5 back. } 6. Nc3 a6 { Asks the bishop to decide. After it retreats, ...Nb6 or ...Nxd5 regains the pawn. } 7. Be2 g6 { Black develops the bishop to g7 first; the d5 pawn cannot be held for long. }"
+				},
+				{
+					"id": "anti-d3",
+					"name": "2.d3: KIA set-up",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d3 { The King's Indian Attack set-up: White keeps the centre closed and plans g3, Bg2 and castling. } d5 3. Nd2 { Supports e4 and prepares g3 and Bg2. } e5 { Black takes the whole centre: pawns on d5 and e5 give Black more space. } 4. Ngf3 Bd6 { Defends e5 and gets ready to castle. } 5. g3 Nf6 6. Bg2 O-O 7. O-O Re8 { The rook defends e5 and prepares for any opening of the centre. Black has a pleasant position. }"
+				},
+				{
+					"id": "anti-d3-nf3",
+					"name": "2.d3 d5 3.Nf3",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d3 { The King's Indian Attack set-up: White keeps the centre closed and plans g3, Bg2 and castling. } d5 3. Nf3 { Allows a queen trade that costs White the right to castle. } dxe4 { Opens the d-file while White's king is still in the centre. } 4. dxe4 Qxd1+ 5. Kxd1 Nf6 { White can no longer castle. Black develops quickly and the endgame is easy to play. } 6. Nbd2 g6 { The bishop goes to g7 or h6, and Black has a comfortable game. }"
+				},
+				{
+					"id": "anti-bd3",
+					"name": "2.d4 d5 3.Bd3?!",
+					"pgn": "1. e4 c6 { The Caro-Kann. Black prepares ...d5 with a pawn that leaves the c8-bishop free, so the bishop can come out before ...e6 shuts it in. } 2. d4 d5 { Black hits e4 straight away. Because c6 backs up d5, Black keeps a solid pawn in the centre whatever White does next. } 3. Bd3 { Defends e4 with the bishop, but the bishop becomes a target. } dxe4 4. Bxe4 Nf6 { Develops with tempo on the bishop. } 5. Bd3 { Retreats, but now nothing defends d4. } Qxd4 { A free pawn: the queen on d1 is blocked by the bishop on d3. } 6. Nf3 Qd6 { Black is a clean pawn up. Develop with ...g6 or ...e6 and castle. }"
+				}
+			],
+			"quiz": [
+				{
+					"pgn": "1. e4 c6 2. Nc3 d5 3. Nf3",
+					"question": "What is Black's main plan against the Two Knights?",
+					"options": [
+						"...d4 and ...c5 at once",
+						"...Bg4, taking on f3 and setting up ...e6 and ...Nf6",
+						"...f6 and ...e5",
+						"...Qb6 and ...Qxb2"
+					],
+					"answer": 1,
+					"explanation": "Pinning and taking the f3-knight develops the bishop before ...e6 and leaves White's queen on f3, where it can be harassed."
+				},
+				{
+					"pgn": "1. e4 c6 2. d3 d5 3. Nd2",
+					"question": "White plays a King's Indian Attack set-up. What is a good plan for Black?",
+					"options": [
+						"Take the centre with ...e5",
+						"Play ...dxe4 at once",
+						"Push ...h5-h4",
+						"Play ...Qb6 and ...Qxb2"
+					],
+					"answer": 0,
+					"explanation": "White is playing slowly, so Black can claim the centre with pawns on d5 and e5 and develop with ...Bd6, ...Nf6 and ...O-O."
+				}
+			]
+		}
+	]
+}
