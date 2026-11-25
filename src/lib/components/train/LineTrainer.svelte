@@ -3,7 +3,8 @@
 	import { untrack } from 'svelte';
 	import { Chess } from 'chess.js';
 	import Board, { type Arrow, type Marker } from '#lib/components/Board.svelte';
-	import { START_FEN, type Uci } from '#lib/chess/types.ts';
+	import { START_FEN, type Fen, type Uci } from '#lib/chess/types.ts';
+	import { judgeWrongMove, type WrongMoveVerdict } from '#lib/chess/explain.ts';
 	import type { Course, CoursePly, Line } from '#lib/courses/types.ts';
 	import type { TrainerMode } from '#lib/train/types.ts';
 	import { startLine, step } from '#lib/train/reducer.ts';
@@ -30,11 +31,12 @@
 	let muted = $state(isMuted());
 	let flash = $state<Marker | undefined>();
 	let shake = $state(false);
-	let wrongSan = $state<string | undefined>();
+	let wrong = $state<{ san: string; fen: Fen; uci: Uci; verdict: WrongMoveVerdict } | undefined>();
 	let feedEl = $state<HTMLDivElement>();
 
 	const index = $derived(run.state.kind === 'done' ? line.plies.length : run.state.index);
-	const fen = $derived(index === 0 ? START_FEN : line.plies[index - 1].fenAfter);
+	const lineFen = $derived(index === 0 ? START_FEN : line.plies[index - 1].fenAfter);
+	const fen = $derived(run.state.kind === 'wrong' && wrong ? wrong.fen : lineFen);
 	const current = $derived<CoursePly | undefined>(line.plies[index]);
 	const last = $derived(index ? line.plies[index - 1] : undefined);
 	const orientation = $derived(course.side === 'w' ? 'white' : 'black');
@@ -44,8 +46,16 @@
 	const studentDone = $derived(line.plies.slice(0, index).filter((p) => p.student).length);
 
 	const arrows = $derived.by((): Arrow[] =>
-		revealed && current ? [{ from: current.uci.slice(0, 2), to: current.uci.slice(2, 4), brush: 'accent' }] : []
+		run.state.kind === 'student' && revealed && current ? [{ from: current.uci.slice(0, 2), to: current.uci.slice(2, 4), brush: 'accent' }] : []
 	);
+	const marker = $derived<Marker | undefined>(
+		run.state.kind === 'wrong' && wrong ? { square: wrong.uci.slice(2, 4), glyph: '?', color: 'var(--bad)', label: 'Not the line' } : flash
+	);
+	const lastMove = $derived.by((): [string, string] | undefined => {
+		if (run.state.kind === 'wrong' && wrong) return [wrong.uci.slice(0, 2), wrong.uci.slice(2, 4)];
+		return last ? [last.uci.slice(0, 2), last.uci.slice(2, 4)] : undefined;
+	});
+	const opponentName = $derived(course.side === 'w' ? 'Black' : 'White');
 
 	/** Notes for moves already on the board, newest last. In practice, notes appear only after a mistake or at the end. */
 	const feed = $derived(
@@ -62,7 +72,7 @@
 
 	function sanOf(uci: string): string {
 		try {
-			return new Chess(fen).move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || undefined }).san;
+			return new Chess(lineFen).move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || undefined }).san;
 		} catch {
 			return uci;
 		}
@@ -95,21 +105,23 @@
 	});
 
 	function onmove(uci: string) {
-		if (run.state.kind !== 'student' && run.state.kind !== 'wrong') return;
+		if (run.state.kind !== 'student') return;
 		const expected = current;
-		if (run.state.kind === 'wrong') run = step(run, { type: 'retry' });
 		const before = run.mistakes;
+		const from = lineFen as Fen;
 		const played = sanOf(uci);
 		run = step(run, { type: 'studentMoved', uci: uci as Uci });
 		if (run.mistakes > before) {
-			wrongSan = played;
+			const after = new Chess(from);
+			after.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || undefined });
+			wrong = { san: played, fen: after.fen() as Fen, uci: uci as Uci, verdict: judgeWrongMove(from, uci as Uci) };
 			shake = true;
 			setTimeout(() => (shake = false), 420);
 			play('wrong');
 			onmistake?.();
 			return;
 		}
-		wrongSan = undefined;
+		wrong = undefined;
 		if (expected) {
 			cueFor(expected);
 			if (mode !== 'learn') {
@@ -123,8 +135,15 @@
 		if (run.state.kind === 'student' && !run.state.revealed) run = step(run, { type: 'hint' });
 	}
 
+	function takeBack() {
+		if (run.state.kind !== 'wrong') return;
+		run = step(run, { type: 'retry' });
+		wrong = undefined;
+	}
+
 	function onkey(e: KeyboardEvent) {
 		if (e.key === 'h' && mode !== 'learn') hint();
+		if (e.key === 'Backspace' || e.key === 'ArrowLeft') takeBack();
 	}
 
 	async function toggleSound() {
@@ -164,10 +183,10 @@
 			<Board
 				{fen}
 				{orientation}
-				movable={run.state.kind === 'student' || run.state.kind === 'wrong' ? course.side : 'none'}
-				lastMove={last ? [last.uci.slice(0, 2), last.uci.slice(2, 4)] : undefined}
+				movable={run.state.kind === 'student' ? course.side : 'none'}
+				{lastMove}
 				{arrows}
-				marker={flash}
+				{marker}
 				{onmove}
 			/>
 		</section>
@@ -193,9 +212,21 @@
 							What does your repertoire play here?
 						{/if}
 					</p>
-				{:else if run.state.kind === 'wrong' && current}
+				{:else if run.state.kind === 'wrong' && wrong}
 					<span class="dot bad"></span>
-					<p><b>{wrongSan ?? 'That'} is not the line.</b> Play <span class="san">{moveLabel(index)}{current.san}</span>.</p>
+					<div class="wrong-body">
+						<p>
+							<b>{wrong.san} is not the line.</b>
+							{#if wrong.verdict.kind === 'mated'}
+								It allows mate: {opponentName} plays <span class="san">{wrong.verdict.reply}</span>.
+							{:else if wrong.verdict.kind === 'loses'}
+								It drops {wrong.verdict.material >= 3 && wrong.verdict.piece === 'pawn' ? 'material' : `a ${wrong.verdict.piece}`}: {opponentName} answers <span class="san">{wrong.verdict.reply}</span>.
+							{:else}
+								It doesn't lose anything right away, but your repertoire plays something else here.
+							{/if}
+						</p>
+						<button class="btn sm btn-surface takeback" onclick={takeBack}>Take back</button>
+					</div>
 				{:else if run.state.kind === 'done'}
 					<span class="dot good"></span>
 					<p><b>{run.mistakes === 0 ? 'Line complete.' : `Line complete, ${run.mistakes} ${run.mistakes === 1 ? 'mistake' : 'mistakes'}.`}</b></p>
@@ -295,6 +326,11 @@
 	.prompt.wrong {
 		border-color: rgba(255, 90, 82, 0.4);
 		background: linear-gradient(180deg, rgba(255, 90, 82, 0.1), rgba(255, 90, 82, 0.03)), var(--surface-2);
+	}
+	.wrong-body {
+		display: grid;
+		gap: 10px;
+		justify-items: start;
 	}
 	.dot {
 		width: 10px;
