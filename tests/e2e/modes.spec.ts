@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 
 test('open Arena and Puzzles from the Drill hub with learned lines', async ({ page }) => {
 	await page.goto('/drill');
-	await page.waitForFunction(async () => {
+	await expect.poll(() => page.evaluate(async () => {
 		const stored = (await indexedDB.databases()).find((db) => db.name === 'chessmode' && (db.version ?? 0) >= 30);
 		if (!stored) return false;
 		const db = await new Promise<IDBDatabase>((resolve, reject) => {
@@ -15,7 +15,7 @@ test('open Arena and Puzzles from the Drill hub with learned lines', async ({ pa
 		const ready = db.objectStoreNames.contains('progress');
 		db.close();
 		return ready;
-	});
+	})).toBe(true);
 	const card = createEmptyCard();
 	await page.evaluate(async (card) => {
 		const request = indexedDB.open('chessmode');

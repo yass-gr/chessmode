@@ -33,6 +33,6 @@ export function courseScope(course: Course, choice: DepthChoice, progress: Reado
  const tier = Math.max(0, Math.min(Number.isInteger(choice.tier) ? choice.tier : 0, tiers.length - 1));
  const selected = new Set(ordered.slice(0, counts[tier]).map(line => line.key));
  for (const key of choice.pinned) if (course.lines.some(line => line.key === key)) selected.add(key);
- const lines = ordered.filter(line => selected.has(line.key));
+ const lines = course.lines.filter(line => selected.has(line.key));
  return { tiers, tier, lines, beyond: ordered.filter(line => !selected.has(line.key)), total: lines.length, learned: lines.filter(line => progress.has(line.key)).length, perfected: lines.filter(line => progress.get(line.key)?.clean).length, next: lines.find(line => !progress.has(line.key)) };
 }
