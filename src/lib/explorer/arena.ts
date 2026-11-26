@@ -2,6 +2,7 @@ import { Chess } from 'chess.js';
 import { posKey, START_FEN, type Color, type Fen, type Uci } from '#lib/chess/types.ts';
 import type { Course } from '#lib/courses/types.ts';
 import type { Explorer, MoveCount } from '#lib/explorer/types.ts';
+import { clampStoredRating } from '#lib/ratings.ts';
 
 export const ARENA_START = 950;
 export const ARENA_UNLOCK_LINES = 2;
@@ -42,10 +43,10 @@ export function adjudicate(startCp: number, finalCp: number): ArenaResult {
 	return delta > ARENA_MARGIN_CP ? 'win' : delta < -ARENA_MARGIN_CP ? 'loss' : 'draw';
 }
 
-/** Elo against an opponent pool sampled at the player's own rating. */
+/** Elo against an opponent pool sampled at the player's own rating. Stored ratings stay inside 100–3000. */
 export function updateRating(rating: number, result: ArenaResult, k = 32): number {
 	const score = result === 'win' ? 1 : result === 'draw' ? 0.5 : 0;
-	return Math.round(rating + k * (score - 0.5));
+	return clampStoredRating(rating + k * (score - 0.5));
 }
 
 export type ArenaState =
@@ -53,12 +54,16 @@ export type ArenaState =
 	| { kind: 'opponent'; fen: Fen; moves: Uci[] }
 	/** The players' data ran out: the UI asks the engine for the final evaluation. */
 	| { kind: 'judging'; fen: Fen; moves: Uci[] }
+	/** The engine failed. The game is not scored until a later judged event. */
+	| { kind: 'judgeError'; fen: Fen; moves: Uci[] }
 	| { kind: 'done'; fen: Fen; moves: Uci[]; result: ArenaResult; startCp: number; finalCp: number };
 
 export type ArenaEvent =
 	| { type: 'move'; uci: Uci }
 	| { type: 'outOfData' }
-	| { type: 'judged'; startCp: number; finalCp: number };
+	| { type: 'judged'; startCp: number; finalCp: number }
+	| { type: 'judgeFailed' }
+	| { type: 'retryJudge' };
 
 /** The moves every line of the course begins with; Arena games start after them. */
 export function sharedPrefix(course: Course): { fen: Fen; moves: Uci[] } {
@@ -92,6 +97,8 @@ export function arenaStep(state: ArenaState, event: ArenaEvent): ArenaState {
 		return state.kind === 'student' ? { kind: 'opponent', fen, moves } : { kind: 'student', fen, moves };
 	}
 	if (event.type === 'outOfData' && state.kind === 'opponent') return { kind: 'judging', fen: state.fen, moves: state.moves };
+	if (event.type === 'judgeFailed' && state.kind === 'judging') return { kind: 'judgeError', fen: state.fen, moves: state.moves };
+	if (event.type === 'retryJudge' && state.kind === 'judgeError') return { kind: 'judging', fen: state.fen, moves: state.moves };
 	if (event.type === 'judged' && state.kind === 'judging')
 		return { ...state, kind: 'done', result: adjudicate(event.startCp, event.finalCp), startCp: event.startCp, finalCp: event.finalCp };
 	return state;

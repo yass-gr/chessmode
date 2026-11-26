@@ -76,6 +76,8 @@ describe('arena', () => {
 		expect(updateRating(950, 'win')).toBe(966);
 		expect(updateRating(950, 'draw')).toBe(950);
 		expect(updateRating(950, 'loss')).toBe(934);
+		expect(updateRating(100, 'loss')).toBe(100);
+		expect(updateRating(3000, 'win')).toBe(3000);
 	});
 
 	it('starts after the moves every course line shares', () => {
@@ -98,5 +100,16 @@ describe('arena', () => {
 		expect(s.kind).toBe('judging');
 		s = arenaStep(s, { type: 'judged', startCp: -20, finalCp: 50 });
 		expect(s).toMatchObject({ kind: 'done', result: 'win', moves: ['e2e4', 'c7c6'] });
+		expect(arenaStep(s, { type: 'judged', startCp: 0, finalCp: -400 })).toBe(s);
+	});
+
+	it('keeps a failed adjudication unscored until the engine succeeds once', () => {
+		let s: ArenaState = { kind: 'judging', fen: START_FEN, moves: [] };
+		s = arenaStep(s, { type: 'judgeFailed' });
+		expect(s.kind).toBe('judgeError');
+		expect(arenaStep(s, { type: 'judged', startCp: 0, finalCp: 80 }).kind).toBe('judgeError');
+		s = arenaStep(s, { type: 'retryJudge' });
+		s = arenaStep(s, { type: 'judged', startCp: 0, finalCp: 80 });
+		expect(s).toMatchObject({ kind: 'done', result: 'win' });
 	});
 });

@@ -12,6 +12,7 @@
 	import { readOnboarding } from '#lib/onboarding/store.ts';
 	import { RATING_BRACKETS, type OnboardingProfile } from '#lib/onboarding/types.ts';
 	import Heatmap from '#lib/components/activity/Heatmap.svelte';
+	import Switch from '#lib/components/Switch.svelte';
 
 	let sessions = $state<SessionLog[]>([]);
 	let progress = $state<LineProgress[]>([]);
@@ -80,8 +81,8 @@
 		return bracket ? `Rating saved: ${bracket.label}` : 'Rating saved';
 	}
 
-	async function toggleSound() {
-		muted = !muted;
+	async function toggleSound(soundOn: boolean) {
+		muted = !soundOn;
 		await setMuted(muted);
 	}
 
@@ -218,7 +219,7 @@
 		</a>
 		<div class="setting">
 			<span class="t"><b>Sound</b><span>Move and feedback sounds</span></span>
-			<button class="switch" type="button" role="switch" aria-checked={!muted} aria-label="Sound" onclick={toggleSound}><i></i></button>
+			<Switch checked={!muted} label="Sound" onchange={toggleSound} />
 		</div>
 		<div class="setting">
 			<span class="t"><b>Backup</b><span>One file with progress, settings, courses and reviews</span></span>
@@ -401,32 +402,6 @@
 		width: 64px;
 		height: 6px;
 	}
-	.switch {
-		width: 50px;
-		height: 30px;
-		border-radius: 999px;
-		background: var(--surface-4);
-		position: relative;
-		transition: background var(--dur-press) var(--ease-out);
-		flex: 0 0 auto;
-	}
-	.switch i {
-		position: absolute;
-		top: 3px;
-		left: 3px;
-		width: 24px;
-		height: 24px;
-		border-radius: 50%;
-		background: #fff;
-		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-		transition: transform var(--dur-press) var(--ease-out);
-	}
-	.switch[aria-checked='true'] {
-		background: var(--accent);
-	}
-	.switch[aria-checked='true'] i {
-		transform: translateX(20px);
-	}
 	.confirm {
 		display: flex;
 		gap: 6px;
@@ -470,12 +445,6 @@
 		}
 		.tile:last-child:nth-child(odd) {
 			grid-column: auto;
-		}
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.switch,
-		.switch i {
-			transition: none;
 		}
 	}
 </style>
