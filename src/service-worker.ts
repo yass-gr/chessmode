@@ -30,7 +30,6 @@ sw.addEventListener('activate', (event) => {
 
 async function respond(request: Request): Promise<Response> {
 	const cache = await caches.open(CACHE);
-	const url = new URL(request.url);
 
 	if (request.mode === 'navigate') {
 		try {
@@ -42,10 +41,11 @@ async function respond(request: Request): Promise<Response> {
 		return (await cache.match(SHELL)) ?? Response.error();
 	}
 
-	const hit = await cache.match(url.pathname);
+	// Key on the full URL. Vite serves the component and its CSS from one path with different queries.
+	const hit = await cache.match(request);
 	if (hit) return hit;
 	const fresh = await fetch(request);
-	if (fresh.ok && fresh.type === 'basic') void cache.put(url.pathname, fresh.clone());
+	if (fresh.ok && fresh.type === 'basic') void cache.put(request, fresh.clone());
 	return fresh;
 }
 

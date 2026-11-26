@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseCourse } from '#lib/courses/parse.ts';
-import { buildCourse, readPgnTree } from '#lib/courses/pgn-tree.ts';
+import { buildCourse, buildPgnCourse, readPgnTree } from '#lib/courses/pgn-tree.ts';
 
 const london = `[Event "My London"]
 [Site "?"]
@@ -49,7 +49,7 @@ describe('buildCourse', () => {
 
 	it('keeps the first student move where the PGN offers two, and reports it', () => {
 		const { file, conflicts } = buildCourse(readPgnTree('1. e4 (1. d4 d5) e5 *').tree, { id: 'x', name: 'x', side: 'w' });
-		expect(conflicts).toEqual(['the start: e4, d4']);
+		expect(conflicts).toEqual(['At the start: e4 or d4']);
 		expect(file.chapters[0].lines.map((l) => l.pgn)).toEqual(['1. e4 e5']);
 	});
 
@@ -58,9 +58,41 @@ describe('buildCourse', () => {
 	});
 });
 
+const caro = `[Event "Main"]
+
+1. e4 c6 2. d4 d5 3. e5 { [%cal Gc8f5] Develop the bishop first. } 3... Bf5 (3... c5 4. dxc5) 4. Nf3 e6 *
+
+[Event "Exchange"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. Bd3 Nc6 *
+`;
+
+describe('chapter conflicts', () => {
+	it('builds both chapters and reports the extra black move as text', () => {
+		const { file, conflicts } = buildPgnCourse(caro, { id: 'caro', name: 'My Caro', side: 'b' });
+		expect(file.chapters.map((chapter) => chapter.name)).toEqual(['Main', 'Exchange']);
+		expect(file.chapters.map((chapter) => chapter.lines)).toHaveLength(2);
+		expect(conflicts).toEqual(['After 1.e4 c6 2.d4 d5 3.e5: Bf5 or c5']);
+		expect(file.chapters[0].lines[0].pgn).toContain('Bf5');
+		expect(file.chapters[0].lines[0].pgn).not.toContain('c5');
+		expect(() => parseCourse(file)).not.toThrow();
+	});
+
+	it('keeps the first white move when two chapters disagree, without a FEN error', () => {
+		const { file, conflicts } = buildPgnCourse(caro, { id: 'caro', name: 'My Caro', side: 'w' });
+		expect(conflicts).toEqual(['After 1.e4 c6 2.d4 d5: e5 or exd5']);
+		expect(file.chapters.map((chapter) => chapter.name)).toEqual(['Main']);
+		expect(file.chapters[0].lines[0].pgn).toContain('e5');
+		expect(file.chapters.some((chapter) => chapter.lines.some((line) => line.pgn.includes('exd5')))).toBe(false);
+		expect(() => parseCourse(file)).not.toThrow();
+	});
+});
+
 describe('line names', () => {
-	it('calls a line with no branches the main line', () => {
-		const { file } = buildCourse(readPgnTree('1. e4 c6 2. d4 d5 *').tree, { id: 'x', name: 'x', side: 'b' });
-		expect(file.chapters[0].lines[0].name).toBe('Main line');
+	it('names a chapter main line after the chapter and a branch after its branch point', () => {
+		const pgn = `[Chapter "Exchange"]\n\n1. e4 e5 2. Nf3 Nc6 *\n\n[Chapter "Open"]\n\n1. e4 e5 (1... c5 2. Nf3) 2. Nf3 *`;
+		const { file } = buildPgnCourse(pgn, { id: 'x', name: 'x', side: 'w' });
+		expect(file.chapters[0].lines.map((line) => line.name)).toEqual(['Exchange']);
+		expect(file.chapters[1].lines.map((line) => line.name)).toEqual(['1…e5 2.Nf3', '1…c5 2.Nf3']);
 	});
 });

@@ -1,39 +1,201 @@
 <script lang="ts">
 	import { seg } from '#lib/components/seg.ts';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { finishLearn } from '#lib/srs.ts';
+	import { parseCourse } from '#lib/courses/parse.ts';
+	import { db } from '#lib/db.ts';
+	import type { CourseFile } from '#lib/courses/types.ts';
 	import type { Color } from '#lib/chess/types.ts';
-	import { newCustomId, saveCustomCourse } from '#lib/courses/custom.ts';
-	import { buildCourse, readPgnTree, type BuiltCourse } from '#lib/courses/pgn-tree.ts';
+	import { copyCourse, diffReimport, newCustomId, saveCustomCourse, type ReimportLine } from '#lib/courses/custom.ts';
+	import CoveragePanel from '#lib/components/courses/CoveragePanel.svelte';
+	import CourseEditor from './CourseEditor.svelte';
+	import { courseCoverage, type Gap } from '#lib/explorer/coverage.ts';
+	import { loadExplorer, type Explorer } from '#lib/explorer/types.ts';
+	import { courses } from '#lib/courses/index.ts';
+	import { buildPgnCourse, exportCoursePgn } from '#lib/courses/pgn-tree.ts';
 
 	let source = $state<'pgn' | 'study'>('study');
 	let pgn = $state('');
+	let pgnEcho = $state('');
 	let url = $state('');
 	let name = $state('');
 	let side = $state<Color>('w');
 	let fetching = $state(false);
 	let fetchError = $state('');
 	let saving = $state(false);
-	const id = newCustomId();
+	let id = $state(newCustomId());
+	let previous = $state<CourseFile | undefined>();
+	let draft = $state<CourseFile | undefined>();
+	let generation = $state(0);
+	let skipped = $state(0);
+	let conflicts = $state<string[]>([]);
+	let parseError = $state('');
+	let progressKeys = $state<string[]>([]);
+	let explorer = $state<Explorer | undefined>();
+	let coverageSource = $state('');
+	let focusFen = $state('');
+	let focusToken = $state(0);
+	let loadError = $state('');
+	let dropping = $state(false);
+	let fileInput = $state<HTMLInputElement | undefined>();
+	let dragDepth = 0;
 
-	const built = $derived.by((): { ok: BuiltCourse; skipped: number } | { error: string } | undefined => {
-		if (!pgn.trim()) return undefined;
+	const titled = $derived({ id, name: name.trim() || 'My course', side });
+	const lineCount = $derived(draft?.chapters.reduce((total, chapter) => total + chapter.lines.length, 0) ?? 0);
+	const ready = $derived(draft ? { ...draft, ...titled } : undefined);
+	const structureError = $derived.by(() => {
+		if (!ready || !lineCount) return '';
 		try {
-			const { tree, skipped } = readPgnTree(pgn);
-			return { ok: buildCourse(tree, { id, name: name.trim() || 'My course', side }), skipped };
+			parseCourse(ready);
+			return '';
 		} catch (error) {
-			return { error: error instanceof Error ? error.message : String(error) };
+			return error instanceof Error ? error.message : String(error);
 		}
 	});
+	const report = $derived.by(() => {
+		if (!previous || !ready || structureError || parseError) return undefined;
+		try {
+			return diffReimport(previous, ready, progressKeys);
+		} catch {
+			return undefined;
+		}
+	});
+	const coverage = $derived.by(() => {
+		if (!explorer || !ready || structureError) return undefined;
+		try {
+			return courseCoverage(parseCourse(ready), explorer);
+		} catch {
+			return undefined;
+		}
+	});
+
+	function listed(items: ReimportLine[]) {
+		const shown = items.slice(0, 8).map((line) => line.name);
+		return items.length > 8 ? `${shown.join(', ')} and ${items.length - 8} more` : shown.join(', ');
+	}
+
+	function count(total: number, one: string, many: string) {
+		return `${total} ${total === 1 ? one : many}`;
+	}
+
+	function ingest(text: string, chosen = side) {
+		pgn = text;
+		if (!text.trim()) {
+			parseError = 'The PGN has no moves.';
+			return;
+		}
+		const meta = { id, name: name.trim() || 'My course', side: chosen };
+		try {
+			const result = buildPgnCourse(text, meta);
+			parseCourse(result.file);
+			draft = { ...result.file, ...meta };
+			skipped = result.skipped;
+			conflicts = result.conflicts;
+			parseError = '';
+			pgnEcho = text;
+			generation += 1;
+		} catch (error) {
+			parseError = error instanceof Error ? error.message : String(error);
+		}
+	}
+
+	function chooseSide(next: Color) {
+		side = next;
+		if (pgn.trim()) ingest(pgn, next);
+	}
+
+	function onDraft(file: CourseFile) {
+		draft = { ...file, ...titled };
+		parseError = '';
+		conflicts = [];
+		const exported = exportCoursePgn(draft);
+		pgn = exported;
+		pgnEcho = exported;
+	}
+
+	async function loadProgress(courseId: string) {
+		progressKeys = (await db.progress.where('courseId').equals(courseId).toArray()).map((row) => row.key);
+	}
+
+	onMount(async () => {
+		const edit = new URLSearchParams(location.search).get('edit');
+		if (!edit) return;
+		const row = await db.customCourses.get(edit);
+		if (!row) {
+			loadError = 'Course not found on this device.';
+			return;
+		}
+		previous = row.file;
+		id = row.id;
+		name = row.file.name;
+		side = row.file.side;
+		source = 'pgn';
+		draft = row.file;
+		pgn = exportCoursePgn(row.file);
+		pgnEcho = pgn;
+		generation += 1;
+		await loadProgress(row.id);
+	});
+
+	async function readFile(file: File | undefined) {
+		if (!file) return;
+		source = 'pgn';
+		ingest(await file.text());
+	}
+
+	function openFile() {
+		fileInput?.click();
+	}
+
+	function onFile(event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		void readFile(input.files?.[0]);
+		input.value = '';
+	}
+
+	function dragEnter(event: DragEvent) {
+		event.preventDefault();
+		dragDepth += 1;
+		dropping = true;
+	}
+
+	function dragOver(event: DragEvent) {
+		event.preventDefault();
+		if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+	}
+
+	function dragLeave() {
+		dragDepth = Math.max(0, dragDepth - 1);
+		dropping = dragDepth > 0;
+	}
+
+	function onDrop(event: DragEvent) {
+		event.preventDefault();
+		dragDepth = 0;
+		dropping = false;
+		void readFile(event.dataTransfer?.files[0]);
+	}
+
+	function download() {
+		if (!ready) return;
+		const linkUrl = URL.createObjectURL(new Blob([exportCoursePgn(ready)], { type: 'application/x-chess-pgn' }));
+		const link = document.createElement('a');
+		link.href = linkUrl;
+		link.download = 'repertoire.pgn';
+		link.click();
+		URL.revokeObjectURL(linkUrl);
+	}
 
 	const studyId = $derived(url.match(/lichess\.org\/study\/([A-Za-z0-9]{8})/)?.[1]);
 
 	/** Lichess exports name the study and the board orientation in each chapter's headers. */
 	function adopt(text: string) {
-		pgn = text;
 		const study = text.match(/^\[StudyName "(.+)"\]$/m)?.[1];
 		if (study && !name) name = study;
 		const orientation = text.match(/^\[Orientation "(white|black)"\]$/m)?.[1];
 		if (orientation) side = orientation === 'white' ? 'w' : 'b';
+		ingest(text);
 	}
 
 	async function fetchStudy() {
@@ -51,11 +213,49 @@
 		}
 	}
 
+	async function selectCoverage(value: string) {
+		coverageSource = value;
+		explorer = value ? await loadExplorer(value) : undefined;
+	}
+
+	function openGap(gap: Gap) {
+		focusFen = gap.fen;
+		focusToken += 1;
+	}
+
+	async function copy() {
+		if (!previous) {
+			loadError = 'Nothing saved to copy yet.';
+			return;
+		}
+		try {
+			const file = copyCourse(previous);
+			await saveCustomCourse(file);
+			location.assign(`/create?edit=${file.id}`);
+		} catch (error) {
+			loadError = error instanceof Error ? error.message : String(error);
+		}
+	}
+
+	async function markLearned() {
+		if (!previous || !confirm('Mark every saved line as learned?')) return;
+		for (const line of parseCourse(previous).lines) await finishLearn(line.key, previous.id);
+		await loadProgress(previous.id);
+		loadError = 'All saved lines are marked learned.';
+	}
+
 	async function create() {
-		if (!built || !('ok' in built)) return;
+		if (!ready || structureError || parseError || !lineCount) return;
 		saving = true;
-		await saveCustomCourse(built.ok.file);
-		await goto(`/course/${id}`);
+		try {
+			const file = { ...ready, tagline: `${count(lineCount, 'line', 'lines')} imported from PGN.` };
+			await saveCustomCourse(file);
+			await goto(`/course/${id}`);
+		} catch (error) {
+			parseError = error instanceof Error ? error.message : String(error);
+		} finally {
+			saving = false;
+		}
 	}
 </script>
 
@@ -66,14 +266,26 @@
 		<a class="icon-btn" href="/courses" aria-label="Back">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
 		</a>
-		<h1 class="h-title">Create a course</h1>
+		<h1 class="h-title">{previous ? 'Edit course' : 'Create a course'}</h1>
 	</header>
 
+	{#if loadError}<p class="error">{loadError}</p>{/if}
+	{#if previous}
+		<p class="muted">Saving replaces this course. Unchanged move sequences keep their progress. Changed and removed lines lose it.</p>
+		<div class="actions">
+			<button class="btn btn-surface" onclick={copy}>Copy saved course</button>
+			<button class="btn btn-surface" onclick={markLearned}>Mark saved lines learned</button>
+		</div>
+	{/if}
 	<p class="muted lead">Turn your own repertoire into a course. Every branch becomes a line you learn, practice and drill like any other.</p>
 
-	<div class="seg" use:seg role="group" aria-label="Source">
-		<button aria-pressed={source === 'study'} onclick={() => (source = 'study')}>Lichess study</button>
-		<button aria-pressed={source === 'pgn'} onclick={() => (source = 'pgn')}>Paste PGN</button>
+	<div class="source-head">
+		<div class="seg" use:seg role="group" aria-label="Source">
+			<button aria-pressed={source === 'study'} onclick={() => (source = 'study')}>Lichess study</button>
+			<button aria-pressed={source === 'pgn'} onclick={() => (source = 'pgn')}>Paste PGN</button>
+		</div>
+		<button class="btn btn-surface" type="button" onclick={openFile}>Open PGN file</button>
+		<input class="sr-only" bind:this={fileInput} type="file" accept=".pgn,text/plain" tabindex="-1" aria-label="PGN file" onchange={onFile} />
 	</div>
 
 	{#if source === 'study'}
@@ -84,12 +296,13 @@
 			<button class="btn btn-surface" disabled={!studyId || fetching} onclick={fetchStudy}>{fetching ? 'Loading…' : 'Load'}</button>
 		</div>
 		{#if fetchError}<p class="error">{fetchError}</p>{:else if url && !studyId}<p class="hint muted">Paste a public study link, for example lichess.org/study/abcd1234.</p>{/if}
-		{#if pgn && source === 'study'}<p class="hint muted">Loaded {pgn.match(/^\[Event /gm)?.length ?? 1} chapters.</p>{/if}
+		{#if pgn && source === 'study'}<p class="hint muted">Loaded {count(pgn.match(/^\[Event /gm)?.length ?? 1, 'chapter', 'chapters')}.</p>{/if}
 	{:else}
-		<label class="field area">
-			<textarea rows="8" placeholder={'1. e4 c6 2. d4 d5 (2... g6) 3. e5 Bf5 *'} bind:value={pgn} aria-label="PGN" spellcheck={false}></textarea>
+		<label class="field area" class:dropping ondragenter={dragEnter} ondragover={dragOver} ondragleave={dragLeave} ondrop={onDrop}>
+			<textarea rows="8" placeholder={'1. e4 c6 2. d4 d5 (2... g6) 3. e5 Bf5 *'} bind:value={pgn} aria-label="PGN" spellcheck={false} oninput={() => { if (pgn !== pgnEcho) ingest(pgn); }}></textarea>
+			{#if dropping}<span class="drop">Drop the PGN file</span>{/if}
 		</label>
-		<p class="hint muted">Variations become separate lines. Comments on your moves are kept as notes.</p>
+		<p class="hint muted">Paste or drop a PGN. Chapters, notes and arrows are kept. Each variation becomes its own line.</p>
 	{/if}
 
 	<label class="field">
@@ -97,35 +310,71 @@
 	</label>
 
 	<div class="seg" use:seg role="group" aria-label="You play">
-		<button aria-pressed={side === 'w'} onclick={() => (side = 'w')}>I play White</button>
-		<button aria-pressed={side === 'b'} onclick={() => (side = 'b')}>I play Black</button>
+		<button aria-pressed={side === 'w'} onclick={() => chooseSide('w')}>I play White</button>
+		<button aria-pressed={side === 'b'} onclick={() => chooseSide('b')}>I play Black</button>
 	</div>
 
-	{#if built && 'error' in built}
-		<p class="error">{built.error}</p>
-	{:else if built}
-		{@const lines = built.ok.file.chapters[0].lines}
+	{#if parseError}<p class="error">{parseError}</p>{/if}
+	{#if structureError}<p class="error">{structureError}</p>{/if}
+
+	{#if ready && lineCount}
 		<section class="card result">
-			<p><b>{lines.length} {lines.length === 1 ? 'line' : 'lines'}</b> for {side === 'w' ? 'White' : 'Black'}.</p>
-			<ol class="mono">
-				{#each lines.slice(0, 5) as line (line.id)}<li>{line.name}</li>{/each}
-				{#if lines.length > 5}<li class="muted">and {lines.length - 5} more</li>{/if}
-			</ol>
-			{#if built.skipped}
-				<p class="warn">Skipped {built.skipped} {built.skipped === 1 ? 'chapter that starts' : 'chapters that start'} from a set-up position or another variant.</p>
+			<p><b>{count(lineCount, 'line', 'lines')}</b> for {side === 'w' ? 'White' : 'Black'}.</p>
+			{#if skipped}
+				<p class="warn">Skipped {count(skipped, 'chapter that starts', 'chapters that start')} from a set-up position or another variant.</p>
 			{/if}
-			{#if built.ok.conflicts.length}
-				<p class="warn">Your PGN gives two moves for you in {built.ok.conflicts.length === 1 ? 'one position' : `${built.ok.conflicts.length} positions`}. A course needs one answer, so the first is kept.</p>
+			{#if conflicts.length}
+				<p class="warn">Your PGN gives two moves for you in {conflicts.length === 1 ? 'one position' : `${conflicts.length} positions`}. A course needs one answer, so the first is kept.</p>
 				<ul class="mono conflicts">
-					{#each built.ok.conflicts.slice(0, 4) as c (c)}<li>{c}</li>{/each}
+					{#each conflicts.slice(0, 4) as conflict (conflict)}<li>{conflict}</li>{/each}
 				</ul>
 			{/if}
+			{#each ready.chapters as chapter}
+				<p><b>{chapter.name}</b> · {count(chapter.lines.length, 'line', 'lines')}</p>
+			{/each}
+			<button class="btn btn-surface" onclick={download}>Export preview as PGN</button>
 		</section>
+	{/if}
+
+	{#if report}
+		<section class="card result">
+			<h2>Reimport</h2>
+			{#if report.progressTotal === 0}
+				<p>No learned lines yet, so there is no progress to keep.</p>
+			{:else}
+				<p><b>{report.progressKept} of {report.progressTotal}</b> learned {report.progressTotal === 1 ? 'line keeps its progress' : 'lines keep their progress'}.</p>
+			{/if}
+			<p>Added {count(report.added.length, 'line', 'lines')}{report.added.length ? `: ${listed(report.added)}` : ''}</p>
+			<p>Changed {count(report.changed.length, 'line', 'lines')}{report.changed.length ? `: ${report.changed.slice(0, 8).map((line) => `${line.previousName} → ${line.name}`).join(', ')}` : ''}</p>
+			<p>Removed {count(report.removed.length, 'line', 'lines')}{report.removed.length ? `: ${listed(report.removed)}` : ''}</p>
+		</section>
+	{/if}
+
+	{#if ready}
+		<div class="editor-wide">
+			<div class="editor-frame">
+				<CourseEditor file={ready} {side} {generation} {focusFen} {focusToken} onchange={onDraft} />
+			</div>
+		</div>
+	{/if}
+
+	{#if ready && lineCount}
+		<label class="field choice">
+			<span class="label">Compare coverage with a local opening sample</span>
+			<span class="select">
+				<select aria-label="Compare coverage with a local opening sample" value={coverageSource} onchange={(event) => selectCoverage(event.currentTarget.value)}>
+					<option value="">Choose a sample</option>
+					{#each courses.filter((course) => !course.id.startsWith('custom-')) as course}<option value={course.id}>{course.name}</option>{/each}
+				</select>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+			</span>
+		</label>
+		{#if coverage && explorer}<CoveragePanel {coverage} {explorer} onselect={openGap} />{/if}
 	{/if}
 </main>
 
 <div class="cta">
-	<button class="btn btn-primary block" disabled={!built || !('ok' in built) || saving} onclick={create}>Create course</button>
+	<button class="btn btn-primary block" disabled={!ready || !!structureError || !!parseError || !lineCount || saving} onclick={create}>{previous ? 'Save changes' : 'Create course'}</button>
 </div>
 
 <style>
@@ -141,9 +390,41 @@
 	}
 	.page {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 12px;
 		align-content: start;
-		padding-bottom: 140px;
+		padding-bottom: calc(var(--tabbar-h) + 26px + 52px + 36px + var(--safe-bottom));
+	}
+	.editor-wide {
+		min-width: 0;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+	.editor-frame {
+		flex: 0 0 auto;
+		width: min(980px, calc(100vw - 36px));
+		container-type: inline-size;
+	}
+	.source-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+	}
+	.source-head .seg {
+		flex: 1 1 220px;
+		min-width: 0;
+	}
+	.source-head .btn {
+		flex: 1 1 160px;
+		height: 48px;
+		padding: 0 16px;
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
 	}
 	.study {
 		display: flex;
@@ -154,12 +435,30 @@
 		min-width: 0;
 	}
 	.area {
+		position: relative;
 		height: auto;
+		align-items: stretch;
 		padding: 12px 16px;
 	}
 	.area textarea {
 		resize: vertical;
 		font: 16px/1.5 var(--mono);
+	}
+	.area.dropping {
+		border-color: var(--accent-line);
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(255, 107, 44, 0.12);
+	}
+	.drop {
+		position: absolute;
+		inset: 8px;
+		display: grid;
+		place-items: center;
+		border: 1px dashed var(--accent);
+		border-radius: 12px;
+		background: var(--accent-soft);
+		color: var(--accent-hi);
+		font-weight: 600;
+		pointer-events: none;
 	}
 	.hint,
 	.error,
@@ -180,7 +479,9 @@
 		display: grid;
 		gap: 8px;
 	}
-	.result ol,
+	.result h2 {
+		font-size: 16px;
+	}
 	.result ul {
 		margin: 0;
 		padding-left: 18px;
@@ -191,6 +492,46 @@
 	}
 	.conflicts {
 		color: var(--text-3);
+	}
+	.choice {
+		height: auto;
+		align-items: stretch;
+		padding: 10px 16px;
+		display: grid;
+		gap: 4px;
+	}
+	.choice .label {
+		color: var(--text-2);
+	}
+	.select {
+		position: relative;
+		display: block;
+		min-width: 0;
+	}
+	.select select {
+		width: 100%;
+		height: 36px;
+		padding-right: 28px;
+		appearance: none;
+		color: var(--text);
+		background: transparent;
+		border: 0;
+		font: 500 16px var(--font);
+		cursor: pointer;
+	}
+	.select select option {
+		background: var(--surface-1);
+		color: var(--text);
+	}
+	.select svg {
+		position: absolute;
+		top: 50%;
+		right: 0;
+		width: 16px;
+		height: 16px;
+		transform: translateY(-50%);
+		color: var(--text-3);
+		pointer-events: none;
 	}
 	.cta {
 		position: fixed;

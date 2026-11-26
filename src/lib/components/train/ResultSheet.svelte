@@ -1,20 +1,29 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import Mascot, { type MascotExpression } from '#lib/components/Mascot.svelte';
 
 	interface Props {
 		image?: string;
+		expression?: MascotExpression;
 		eyebrow?: string;
 		title: string;
 		subtitle?: string;
 		stats?: { label: string; value: string | number; tone?: 'good' | 'bad' | 'accent' }[];
 		actions: Snippet;
 	}
-	let { image = '/img/node-done.webp', eyebrow, title, subtitle, stats = [], actions }: Props = $props();
+	let { image, expression, eyebrow, title, subtitle, stats = [], actions }: Props = $props();
+	const coach = $derived(expression ?? (image ? undefined : 'celebrating'));
 </script>
 
 <div class="scrim" role="presentation"></div>
 <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="result-title">
-	<img src={image} alt="" />
+	<div class="art">
+		{#if coach}
+			<Mascot expression={coach} size={132} alt="" />
+		{:else if image}
+			<img src={image} alt="" />
+		{/if}
+	</div>
 	{#if eyebrow}<p class="label">{eyebrow}</p>{/if}
 	<h2 id="result-title" class="h-display">{title}</h2>
 	{#if subtitle}<p class="muted sub">{subtitle}</p>{/if}
@@ -57,13 +66,17 @@
 		text-align: center;
 		animation: up 0.46s var(--ease-drawer) both;
 	}
-	img {
+	.art {
+		width: 132px;
+		height: 132px;
+		margin: -64px auto 0;
+		filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.6));
+	}
+	.art :global(img) {
 		width: 132px;
 		height: 132px;
 		object-fit: contain;
-		margin: -64px auto 0;
 		display: block;
-		filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.6));
 	}
 	.label {
 		margin-top: 2px;

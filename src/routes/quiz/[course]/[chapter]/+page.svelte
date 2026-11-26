@@ -109,7 +109,7 @@
 
 	{#if finished}
 		<ResultSheet
-			image="/img/king.webp"
+			image="/img/result/quiz.webp"
 			eyebrow="Quiz complete · +{correct * 3} XP"
 			title="{correct} of {total} correct"
 			subtitle={correct === total ? 'You know the plans in this chapter.' : 'Read the chapter ideas again, then retry.'}

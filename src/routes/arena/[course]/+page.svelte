@@ -291,9 +291,9 @@
 		<h1 class="h-title">Arena is locked</h1>
 		<p class="muted">
 			{#if !explorer}
-				There is no player data for this course yet.
+				Player games for this opening aren't in yet.
 			{:else}
-				Learn {ARENA_UNLOCK_LINES - learned} more {ARENA_UNLOCK_LINES - learned === 1 ? 'line' : 'lines'} of {course.name} to play it in the Arena.
+				Learn {ARENA_UNLOCK_LINES - learned} more {ARENA_UNLOCK_LINES - learned === 1 ? 'line' : 'lines'} of {course.name}. You'll be playing them here soon.
 			{/if}
 		</p>
 		<a class="btn btn-primary" href="/course/{course.id}">Back to the course</a>
@@ -418,7 +418,8 @@
 	{#if game.kind === 'done' && !reviewing}
 		{@const delta = record.rating - before}
 		<ResultSheet
-			image={game.result === 'win' ? '/img/result/win.webp' : game.result === 'draw' ? '/img/result/draw.webp' : '/img/result/loss.webp'}
+			image={game.result === 'win' ? '/img/result/win.webp' : game.result === 'draw' ? '/img/result/draw.webp' : undefined}
+			expression={game.result === 'loss' ? 'wince' : undefined}
 			eyebrow="Arena · {course.name}"
 			title={game.result === 'win' ? 'You won the opening' : game.result === 'draw' ? 'An even opening' : 'You lost the opening'}
 			subtitle={deviation?.kind === 'you'
@@ -559,6 +560,8 @@
 		gap: 12px;
 	}
 	.locked img {
-		width: 160px;
+		width: 120px;
+		height: 120px;
+		object-fit: contain;
 	}
 </style>
