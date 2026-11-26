@@ -1,16 +1,21 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { onMount, untrack } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { Chess } from 'chess.js';
 	import Board, { type Arrow, type Marker } from '#lib/components/Board.svelte';
 	import Mascot, { type MascotExpression } from '#lib/components/Mascot.svelte';
+	import LinePicker from '#lib/components/courses/LinePicker.svelte';
 	import Sheet from '#lib/components/Sheet.svelte';
 	import SettingsPanel from '#lib/components/settings/SettingsPanel.svelte';
 	import ResetCourse from '#lib/components/train/ResetCourse.svelte';
 	import EvalBar from '#lib/components/review/EvalBar.svelte';
 	import { START_FEN, type Fen, type Uci } from '#lib/chess/types.ts';
 	import { judgeWrongMove, type WrongMoveVerdict } from '#lib/chess/explain.ts';
-	import type { Course, CoursePly, Line } from '#lib/courses/types.ts';
+	import { courseScope } from '#lib/courses/depth.ts';
+	import type { Course, CoursePly, Line, LineKey } from '#lib/courses/types.ts';
+	import type { LineProgress } from '#lib/db.ts';
+	import { loadDepth, loadProgress } from '#lib/train/data.ts';
 	import { getEngine } from '#lib/engine/stockfish.ts';
 	import { reducedMotion } from '#lib/motion.ts';
 	import type { Score } from '#lib/review/types.ts';
@@ -74,6 +79,9 @@
 	let feedEl = $state<HTMLDivElement>();
 	let settingsOpen = $state(false);
 	let leaving = $state(false);
+	let pickerOpen = $state(false);
+	let lineProgress = $state<LineProgress[]>([]);
+	let pickerSelection = $state<ReadonlySet<LineKey> | undefined>();
 	let premoveEpoch = $state(0);
 	let evaluation = $state<Score | undefined>();
 
@@ -176,13 +184,18 @@
 
 	onMount(() => {
 		let current = true;
-		void Promise.all([readPreferences(), readCoursePreferences(course.id)]).then(([prefs, coursePrefs]) => {
-			if (!current) return;
-			preferences = prefs;
-			coursePreferences = coursePrefs;
-			muted = !prefs.sound;
-			prefsReady = true;
-		});
+		void Promise.all([readPreferences(), readCoursePreferences(course.id), loadProgress(), loadDepth(course.id)]).then(
+			([prefs, coursePrefs, progress, depth]) => {
+				if (!current) return;
+				preferences = prefs;
+				coursePreferences = coursePrefs;
+				muted = !prefs.sound;
+				prefsReady = true;
+				lineProgress = [...progress.values()];
+				const scope = courseScope(course, depth, progress);
+				pickerSelection = scope.tiers.length > 1 ? new Set(scope.lines.map((item) => item.key)) : undefined;
+			}
+		);
 		return () => {
 			current = false;
 		};
@@ -319,6 +332,10 @@
 	function onkey(event: KeyboardEvent) {
 		const target = event.target;
 		if (target instanceof HTMLElement && target.closest('input, textarea, select, [contenteditable="true"]')) return;
+		if (pickerOpen) {
+			if (event.key === 'Escape') pickerOpen = false;
+			return;
+		}
 		if (settingsOpen || leaving) return;
 		if (event.key === 'ArrowLeft') {
 			event.preventDefault();
@@ -345,6 +362,14 @@
 		if (!active) return;
 		event.preventDefault();
 		leaving = true;
+	}
+
+	async function chooseLine(next: Line, dest: 'learn' | 'practice') {
+		pickerOpen = false;
+		const same = next.key === line.key && (dest === 'learn' ? mode === 'learn' : mode === 'practice');
+		if (same) return;
+		const href = dest === 'practice' ? `/practice/run?line=${encodeURIComponent(next.key)}` : `/learn/${course.id}/${next.id}`;
+		await goto(href);
 	}
 
 	async function toggleSound() {
@@ -412,8 +437,20 @@
 				{#if returnHref}<a class="back-lesson" href={returnHref}>{returnLabel}</a>{/if}
 			</div>
 
-			<!-- CR-16: mount LinePicker from #lib/components/courses/LinePicker.svelte in this slot. -->
-			<div class="picker-slot" data-line-picker></div>
+			<div class="picker-slot" data-line-picker>
+				{#if pickerOpen}
+					<LinePicker
+						{course}
+						current={line.key}
+						progress={lineProgress}
+						selected={pickerSelection}
+						onselect={chooseLine}
+						onclose={() => (pickerOpen = false)}
+					/>
+				{:else}
+					<button class="btn sm btn-surface block" type="button" onclick={() => (pickerOpen = true)}>Choose a line</button>
+				{/if}
+			</div>
 
 			<div class="prompt card" class:wrong={run.state.kind === 'wrong'} aria-live="polite">
 				{#if run.view !== null}
