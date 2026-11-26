@@ -1,11 +1,15 @@
+import type { Color } from '#lib/chess/types.ts';
 import { getSetting, setSetting } from '#lib/db.ts';
 import {
 	DEFAULT_COURSE_PREFERENCES,
 	DEFAULT_PREFERENCES,
+	DEFAULT_REVIEW_PREFERENCES,
 	PIECE_SETS,
+	REVIEW_PREFERENCES_KEY,
 	type CoursePreferences,
 	type PieceSet,
 	type Preferences,
+	type ReviewPreferences,
 	type SettingsMode
 } from '#lib/settings/types.ts';
 
@@ -64,6 +68,27 @@ export async function readPreferences(): Promise<Preferences> {
 export async function writePreferences(value: Preferences): Promise<void> {
 	await setSetting('trainer-preferences', value);
 	await setSetting('muted', !value.sound);
+}
+
+export function parseReviewPreferences(value: unknown, userColor?: Color): ReviewPreferences {
+	const stored = record(value);
+	const defaults = DEFAULT_REVIEW_PREFERENCES;
+	return {
+		perspective: choice(stored.perspective, ['w', 'b', 'both'] as const, userColor ?? defaults.perspective),
+		overlays: choice(stored.overlays, ['none', 'played', 'best', 'both'] as const, defaults.overlays),
+		autoplay: bool(stored.autoplay, defaults.autoplay),
+		voice: bool(stored.voice, defaults.voice),
+		coach: bool(stored.coach, defaults.coach),
+		glyphs: bool(stored.glyphs, defaults.glyphs)
+	};
+}
+
+export async function readReviewPreferences(userColor?: Color): Promise<ReviewPreferences> {
+	return parseReviewPreferences(await getSetting<unknown>(REVIEW_PREFERENCES_KEY, null), userColor);
+}
+
+export async function writeReviewPreferences(value: ReviewPreferences): Promise<void> {
+	await setSetting(REVIEW_PREFERENCES_KEY, value);
 }
 
 export async function readCoursePreferences(courseId: string): Promise<CoursePreferences> {
