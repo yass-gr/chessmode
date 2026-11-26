@@ -717,3 +717,10 @@ button.chip:active,
 		transition: none;
 	}
 }
+
+@media (min-width: 1024px) {
+	.page {
+		max-width: 1200px;
+		padding-bottom: 48px;
+	}
+}

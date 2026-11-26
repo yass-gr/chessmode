@@ -78,6 +78,7 @@
 <svelte:head><title>Chessmode</title></svelte:head>
 
 <main class="page home">
+	<div class="home-content">
 	<header class="top">
 		<button class="switch" onclick={() => (switcher = !switcher)} aria-expanded={switcher} aria-haspopup="listbox">
 			<span class="side" class:black={course?.side === 'b'}></span>
@@ -193,6 +194,9 @@
 			</section>
 		{/each}
 
+	{/if}
+	</div>
+	{#if course && loaded && stats && scope}
 		<div class="cta">
 			<div class="top-row">
 				<div>
@@ -612,5 +616,28 @@
 		background: conic-gradient(#fff calc(var(--p) * 360deg), rgba(255, 255, 255, 0.3) 0);
 		-webkit-mask: radial-gradient(circle, transparent 14px, #000 15px);
 		mask: radial-gradient(circle, transparent 14px, #000 15px);
+	}
+	@media (min-width: 1024px) {
+		.home {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) 360px;
+			gap: 40px;
+			align-items: start;
+			padding-bottom: 48px;
+		}
+		.top {
+			position: relative;
+		}
+		.streak {
+			display: none;
+		}
+		.cta {
+			position: sticky;
+			top: 92px;
+			left: auto;
+			transform: none;
+			width: 100%;
+			margin-top: 24px;
+		}
 	}
 </style>
