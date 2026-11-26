@@ -31,6 +31,7 @@ class Stockfish implements Engine {
 	private failure = new AbortController();
 	private initialised: Promise<void>;
 	private queue = Promise.resolve();
+	private multiPv = 1;
 
 	constructor() {
 		const threaded = globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== 'undefined';
@@ -127,8 +128,10 @@ class Stockfish implements Engine {
 		const stop = () => this.worker.postMessage('stop');
 		signal?.addEventListener('abort', stop, { once: true });
 		try {
+			const options = this.multiPv === multiPv ? [] : ['setoption name MultiPV value ' + multiPv];
+			this.multiPv = multiPv;
 			await this.collect([
-				'setoption name MultiPV value ' + multiPv,
+				...options,
 				'position fen ' + fen,
 				goCommand(depth, opts.movetime) + restriction
 			], message => {

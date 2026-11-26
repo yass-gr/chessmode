@@ -35,7 +35,7 @@ try {
    throw new Error('Review did not complete within five minutes');
   });
   const ms = Math.round(performance.now() - start);
-  const commands = await page.evaluate(() => [...new Set(window.benchmarkCommands)]);
+  const commands = await page.evaluate(() => window.benchmarkCommands);
   results.push({ game: index + 1, ms, environment, commands, review });
   await writeFile(process.argv[2] ?? 'tests/fixtures/review-baseline.json', JSON.stringify(results, null, 2) + '\n');
   console.error(`game ${index + 1}/${games.length}: ${ms} ms`);
