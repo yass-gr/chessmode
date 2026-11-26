@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import MiniBoard from '#lib/components/MiniBoard.svelte';
+	import { seg } from '#lib/components/seg.ts';
 	import Switch from '#lib/components/Switch.svelte';
 	import { START_FEN } from '#lib/chess/types.ts';
 	import { boardColors, pieceLabel, themeLabel } from '#lib/settings/appearance.ts';
@@ -33,6 +34,11 @@
 	let course = $state<CoursePreferences>({ ...DEFAULT_COURSE_PREFERENCES });
 	let ready = $state(false);
 	const themes: BoardTheme[] = ['default', 'green', 'brown', 'blue', 'dark-blue'];
+	const textSizes: { value: Preferences['textSize']; label: string }[] = [
+		{ value: 'default', label: 'Default' },
+		{ value: 'large', label: 'Large' },
+		{ value: 'xl', label: 'Extra large' }
+	];
 
 	onMount(async () => {
 		[preferences, course] = await Promise.all([readPreferences(), readCoursePreferences(courseId)]);
@@ -112,14 +118,14 @@
 		<span>Haptics</span>
 		<Switch checked={preferences.haptics} label="Haptics" onchange={(value) => setPreference('haptics', value)} />
 	</div>
-	<label>
-		Text size
-		<select bind:value={preferences.textSize} onchange={save}>
-			<option value="default">Default</option>
-			<option value="large">Large</option>
-			<option value="xl">Extra large</option>
-		</select>
-	</label>
+	<div class="text-size">
+		<p class="label" id="text-size-label">Text size</p>
+		<div class="seg" use:seg role="group" aria-labelledby="text-size-label">
+			{#each textSizes as size (size.value)}
+				<button type="button" aria-pressed={preferences.textSize === size.value} onclick={() => { preferences.textSize = size.value; save(); }}>{size.label}</button>
+			{/each}
+		</div>
+	</div>
 
 	<div class="preview" aria-hidden="true">
 		<MiniBoard fen={START_FEN} size={200} theme={preferences.theme} pieces={preferences.pieces} />
@@ -182,6 +188,10 @@
 	.toggle {
 		display: flex;
 		align-items: center;
+		gap: 8px;
+	}
+	.text-size {
+		display: grid;
 		gap: 8px;
 	}
 	.toggle {
