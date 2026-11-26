@@ -108,12 +108,29 @@ function readSessions(value: unknown): SessionLog[] | ArchiveResult {
 		}
 		if (item.score !== undefined && finite(item.score) === null) return fail('A session in this backup is incomplete.');
 		if (item.reps !== undefined && whole(item.reps) === null) return fail('A session in this backup is incomplete.');
-		if (item.scoreVersion !== undefined && item.scoreVersion !== 'lines' && item.scoreVersion !== 'moves') {
+		const metric = item.metric;
+		const legacy = item.scoreVersion;
+		if ((metric !== undefined && metric !== 'lines' && metric !== 'moves') || (legacy !== undefined && legacy !== 'lines' && legacy !== 'moves')) {
 			return fail('A session in this backup is incomplete.');
 		}
+		if (metric !== undefined && legacy !== undefined && metric !== legacy) return fail('A session in this backup is incomplete.');
 		if (item.courseId !== undefined && !text(item.courseId)) return fail('A session in this backup is incomplete.');
 		if (item.id !== undefined && (whole(item.id) === null || item.id === 0)) return fail('A session in this backup is incomplete.');
-		sessions.push(item as unknown as SessionLog);
+		const session: SessionLog = {
+			at: item.at as number,
+			day,
+			mode: mode as SessionLog['mode'],
+			lines: item.lines as number,
+			mistakes: item.mistakes as number,
+			xp: item.xp as number
+		};
+		if (item.id !== undefined) session.id = item.id as number;
+		if (typeof item.courseId === 'string') session.courseId = item.courseId;
+		if (item.score !== undefined) session.score = item.score as number;
+		if (item.reps !== undefined) session.reps = item.reps as number;
+		const unit = metric ?? legacy;
+		if (unit === 'lines' || unit === 'moves') session.metric = unit;
+		sessions.push(session);
 	}
 	return unique(sessions.flatMap((row) => (row.id === undefined ? [] : [String(row.id)])), 'session') ?? sessions;
 }

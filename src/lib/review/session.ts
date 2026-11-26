@@ -72,6 +72,7 @@ export function isRetryable(move: MoveReview) {
 
 export const BRANCH_INTERVAL_MS = 1000;
 export const RETRY_REWIND_MS = 500;
+export const GUIDED_STEP_MS = 200;
 
 export type Hint = 'clear' | 'origin' | 'arrow';
 export type RetryFeedback = { accepted: boolean; move: LineMove; score: MoveReview['best']['score'] };

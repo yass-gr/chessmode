@@ -67,7 +67,7 @@
 
 	function recordLabel(row: RecordLine): string {
 		if (row.mode === 'drill') return 'Drill';
-		return row.scoreVersion === 'moves' ? 'Move points' : 'Line score';
+		return row.metric === 'moves' ? 'Move points' : 'Line score';
 	}
 
 	function show(score: number | null): string {
@@ -181,7 +181,7 @@
 					<div class="record">
 						<b>{courseName(courseId)}</b>
 						<div class="record-head" aria-hidden="true"><span></span><span>Today</span><span>Week</span><span>Month</span><span>All</span></div>
-						{#each lines as line (`${line.mode}-${line.scoreVersion}`)}
+						{#each lines as line (`${line.mode}-${line.metric}`)}
 							<div class="record-row">
 								<span>{recordLabel(line)}</span>
 								<span class="num">{show(line.day)}</span>

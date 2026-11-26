@@ -14,7 +14,7 @@ export interface RepSession {
 	mode: string;
 	lines: number;
 	reps?: number;
-	scoreVersion?: string;
+	metric?: string;
 }
 
 export interface CourseLines {
@@ -54,16 +54,16 @@ export interface ScoreSession {
 	mode: string;
 	courseId?: string;
 	score?: number;
-	scoreVersion?: string;
+	metric?: string;
 }
 
-export type ScoreVersion = 'lines' | 'moves';
+export type ScoreMetric = 'lines' | 'moves';
 
 /** Best score inside each local window. `null` means that window has no attempt. */
 export interface RecordLine {
 	mode: 'drill' | 'time';
 	courseId: string;
-	scoreVersion: ScoreVersion;
+	metric: ScoreMetric;
 	day: number | null;
 	week: number | null;
 	month: number | null;

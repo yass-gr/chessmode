@@ -9,7 +9,7 @@ import type {
 	RecordLine,
 	RepSession,
 	ScoreSession,
-	ScoreVersion
+	ScoreMetric
 } from '#lib/activity/types.ts';
 
 const LINE_MODES = new Set(['learn', 'practice', 'drill', 'time']);
@@ -24,15 +24,16 @@ function whole(value: number): number {
 
 /**
  * Reps from one finished session.
- * Learn and practice count finished lines. Drill and Time count finished lines, or one run when the
- * log stored no lines. A Time log scored in move points counts as one run so points are not reps.
- * Quiz and puzzle sessions are one attempt each, plus any extra lines the log recorded.
- * An explicit `reps` field always wins. Review and arena are not reps.
+ * Learn and practice count finished lines. Drill and Time use `reps` when the run stored how many
+ * lines finished. A Time log scored in move points (`metric` `moves`) with no `reps` counts as one
+ * run, because those older rows kept the point total in `lines`. Other Drill and Time logs count
+ * `lines`, or one run when that count is zero. Quiz and puzzle sessions are one attempt each, plus
+ * any extra lines the log recorded. An explicit `reps` field always wins. Review and arena are not reps.
  */
 export function sessionReps(session: RepSession): number {
 	if (typeof session.reps === 'number') return whole(session.reps);
 	if (LINE_MODES.has(session.mode)) {
-		if (session.mode === 'time' && session.scoreVersion === 'moves') return 1;
+		if (session.mode === 'time' && session.metric === 'moves') return 1;
 		const lines = whole(session.lines);
 		if (session.mode === 'drill' || session.mode === 'time') return lines > 0 ? lines : 1;
 		return lines;
@@ -131,8 +132,9 @@ export function profileActivity(catalog: readonly CourseLines[], progress: reado
 	};
 }
 
-export function scoreVersionOf(session: ScoreSession): ScoreVersion {
-	return session.mode === 'time' && session.scoreVersion === 'moves' ? 'moves' : 'lines';
+/** Move-point Time scores stay in their own bucket. Drill, and older Time rows with no metric, are line scores. */
+export function metricOf(session: ScoreSession): ScoreMetric {
+	return session.mode === 'time' && session.metric === 'moves' ? 'moves' : 'lines';
 }
 
 export function personalRecords(sessions: readonly ScoreSession[], today: Date): RecordLine[] {
@@ -144,14 +146,14 @@ export function personalRecords(sessions: readonly ScoreSession[], today: Date):
 	for (const session of sessions) {
 		if (!SCORED_MODES.has(session.mode) || !session.courseId || !DAY.test(session.day)) continue;
 		if (typeof session.score !== 'number' || !Number.isFinite(session.score)) continue;
-		const scoreVersion = scoreVersionOf(session);
-		const id = `${session.mode}/${scoreVersion}/${session.courseId}`;
+		const metric = metricOf(session);
+		const id = `${session.mode}/${metric}/${session.courseId}`;
 		let row = groups.get(id);
 		if (!row) {
 			row = {
 				mode: session.mode as 'drill' | 'time',
 				courseId: session.courseId,
-				scoreVersion,
+				metric,
 				day: null,
 				week: null,
 				month: null,
@@ -174,13 +176,13 @@ export function personalRecords(sessions: readonly ScoreSession[], today: Date):
 
 	return [...groups.values()]
 		.map(({ at: _at, ...row }) => row)
-		.sort((a, b) => a.courseId.localeCompare(b.courseId) || a.mode.localeCompare(b.mode) || a.scoreVersion.localeCompare(b.scoreVersion));
+		.sort((a, b) => a.courseId.localeCompare(b.courseId) || a.mode.localeCompare(b.mode) || a.metric.localeCompare(b.metric));
 }
 
-export function bestAllTime(rows: readonly RecordLine[], mode: 'drill' | 'time', version: ScoreVersion = 'lines'): number | null {
+export function bestAllTime(rows: readonly RecordLine[], mode: 'drill' | 'time', version: ScoreMetric = 'lines'): number | null {
 	let best: number | null = null;
 	for (const row of rows) {
-		if (row.mode !== mode || row.scoreVersion !== version || row.all === null) continue;
+		if (row.mode !== mode || row.metric !== version || row.all === null) continue;
 		best = best === null ? row.all : Math.max(best, row.all);
 	}
 	return best;

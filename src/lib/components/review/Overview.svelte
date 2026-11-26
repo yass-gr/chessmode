@@ -15,5 +15,29 @@
 	<button class="btn btn-primary" type="button" onclick={onstart}>Start review</button>
 </div>
 <style>
-	.overview { display: grid; gap: 12px; } .coach-slot { color: var(--text-2); font-size: 14px; } .coach-slot p { margin: 0; } .result { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; color: var(--text-2); font-size: 13px; text-align: center; } .result b { color: var(--text); font-family: var(--mono); }
+	.overview {
+		display: grid;
+		gap: 12px;
+	}
+	.coach-slot {
+		color: var(--text-2);
+		font-size: 14px;
+	}
+	.coach-slot p {
+		margin: 0;
+	}
+	.result {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		color: var(--text-2);
+		font-size: 13px;
+		text-align: center;
+	}
+	.result b {
+		color: var(--text);
+		font-family: var(--mono);
+	}
 </style>

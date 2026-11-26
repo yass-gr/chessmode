@@ -42,7 +42,7 @@ function sample(): UserArchive {
 				lines: 40,
 				mistakes: 1,
 				score: 40,
-				scoreVersion: 'moves',
+				metric: 'moves',
 				reps: 1,
 				xp: 8
 			}
@@ -101,6 +101,17 @@ describe('parseArchive', () => {
 		expect(parsed.archive.progress[0]?.card.due).toEqual(new Date('2026-02-01T15:00:00.000Z'));
 		expect(parsed.archive.progress[0]?.card.last_review).toEqual(new Date('2026-01-28T15:00:00.000Z'));
 		expect(JSON.parse(serializeArchive(parsed.archive))).toEqual(JSON.parse(serializeArchive(sample())));
+	});
+
+	it('maps an older scoreVersion onto metric', () => {
+		const raw = JSON.parse(serializeArchive(sample())) as { sessions: Record<string, unknown>[] };
+		raw.sessions[0].scoreVersion = raw.sessions[0].metric;
+		delete raw.sessions[0].metric;
+		const parsed = parseArchive(JSON.stringify(raw));
+		expect(parsed.ok).toBe(true);
+		if (!parsed.ok) return;
+		expect(parsed.archive.sessions[0]?.metric).toBe('moves');
+		expect(parsed.archive.sessions[0]).not.toHaveProperty('scoreVersion');
 	});
 
 	it('rejects a file that is not this backup version', () => {

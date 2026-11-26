@@ -17,13 +17,13 @@ describe('sessionReps', () => {
 		expect(sessionReps({ day: '2026-11-26', mode: 'practice', lines: 4 })).toBe(4);
 		expect(sessionReps({ day: '2026-11-26', mode: 'drill', lines: 0 })).toBe(1);
 		expect(sessionReps({ day: '2026-11-26', mode: 'drill', lines: 6 })).toBe(6);
-		expect(sessionReps({ day: '2026-11-26', mode: 'time', lines: 3, scoreVersion: 'lines' })).toBe(3);
-		expect(sessionReps({ day: '2026-11-26', mode: 'time', lines: 40, scoreVersion: 'moves' })).toBe(1);
+		expect(sessionReps({ day: '2026-11-26', mode: 'time', lines: 3, metric: 'lines' })).toBe(3);
+		expect(sessionReps({ day: '2026-11-26', mode: 'time', lines: 40, metric: 'moves' })).toBe(1);
 		expect(sessionReps({ day: '2026-11-26', mode: 'quiz', lines: 0 })).toBe(1);
 		expect(sessionReps({ day: '2026-11-26', mode: 'puzzles', lines: 2 })).toBe(2);
 		expect(sessionReps({ day: '2026-11-26', mode: 'arena', lines: 1 })).toBe(0);
 		expect(sessionReps({ day: '2026-11-26', mode: 'review', lines: 1 })).toBe(0);
-		expect(sessionReps({ day: '2026-11-26', mode: 'time', lines: 40, reps: 7, scoreVersion: 'moves' })).toBe(7);
+		expect(sessionReps({ day: '2026-11-26', mode: 'time', lines: 40, reps: 7, metric: 'moves' })).toBe(7);
 	});
 });
 
@@ -104,7 +104,7 @@ describe('profileActivity', () => {
 describe('personalRecords', () => {
 	const today = new Date(2026, 10, 25, 15);
 
-	it('keeps daily, weekly, monthly and all-time bests per course without mixing time score versions', () => {
+	it('keeps daily, weekly, monthly and all-time bests per course without mixing time score units', () => {
 		expect(weekKey('2026-11-25')).toBe('2026-11-23');
 		const rows = personalRecords(
 			[
@@ -112,18 +112,18 @@ describe('personalRecords', () => {
 				{ at: 2, day: '2026-11-23', mode: 'drill', courseId: 'italian', score: 4 },
 				{ at: 3, day: '2026-11-25', mode: 'drill', courseId: 'italian', score: 4 },
 				{ at: 4, day: '2026-10-02', mode: 'drill', courseId: 'italian', score: 7 },
-				{ at: 5, day: '2026-11-25', mode: 'time', courseId: 'italian', score: 100, scoreVersion: 'lines' },
-				{ at: 6, day: '2026-11-25', mode: 'time', courseId: 'italian', score: 12, scoreVersion: 'moves' },
-				{ at: 7, day: '2026-11-25', mode: 'time', courseId: 'caro', score: 3, scoreVersion: 'moves' },
+				{ at: 5, day: '2026-11-25', mode: 'time', courseId: 'italian', score: 100, metric: 'lines' },
+				{ at: 6, day: '2026-11-25', mode: 'time', courseId: 'italian', score: 12, metric: 'moves' },
+				{ at: 7, day: '2026-11-25', mode: 'time', courseId: 'caro', score: 3, metric: 'moves' },
 				{ at: 8, day: '2026-11-25', mode: 'arena', courseId: 'italian', score: 50 }
 			],
 			today
 		);
 		expect(rows).toEqual([
-			{ mode: 'time', courseId: 'caro', scoreVersion: 'moves', day: 3, week: 3, month: 3, all: 3 },
-			{ mode: 'drill', courseId: 'italian', scoreVersion: 'lines', day: 4, week: 4, month: 9, all: 9 },
-			{ mode: 'time', courseId: 'italian', scoreVersion: 'lines', day: 100, week: 100, month: 100, all: 100 },
-			{ mode: 'time', courseId: 'italian', scoreVersion: 'moves', day: 12, week: 12, month: 12, all: 12 }
+			{ mode: 'time', courseId: 'caro', metric: 'moves', day: 3, week: 3, month: 3, all: 3 },
+			{ mode: 'drill', courseId: 'italian', metric: 'lines', day: 4, week: 4, month: 9, all: 9 },
+			{ mode: 'time', courseId: 'italian', metric: 'lines', day: 100, week: 100, month: 100, all: 100 },
+			{ mode: 'time', courseId: 'italian', metric: 'moves', day: 12, week: 12, month: 12, all: 12 }
 		]);
 		expect(bestAllTime(rows, 'time', 'lines')).toBe(100);
 		expect(bestAllTime(rows, 'time', 'moves')).toBe(12);

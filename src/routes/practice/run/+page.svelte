@@ -1,116 +1,179 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { courses } from '#lib/courses/index.ts';
-	import type { Course, Line } from '#lib/courses/types.ts';
+	import { courses, getCourse } from '#lib/courses/index.ts';
+	import { courseScope } from '#lib/courses/depth.ts';
+	import type { Course, Line, LineKey } from '#lib/courses/types.ts';
 	import LineTrainer from '#lib/components/train/LineTrainer.svelte';
 	import ResultSheet from '#lib/components/train/ResultSheet.svelte';
-	import { db } from '#lib/db.ts';
+	import { readCoursePreferences } from '#lib/settings/preferences.ts';
 	import { finishPractice } from '#lib/srs.ts';
-	import { selectDue } from '#lib/train/session.ts';
-	import { logSession } from '#lib/progress.ts';
+	import { enterFromTrainer, loadDepth, loadProgress } from '#lib/train/data.ts';
+	import { commonPrefix, openingSkip } from '#lib/train/lines.ts';
+	import { selectPractice, type PracticeCandidate } from '#lib/train/session.ts';
 	import { relativeTime } from '#lib/train/stats.ts';
+	import type { AttemptResult } from '#lib/train/types.ts';
+	import { logSession } from '#lib/progress.ts';
 
-	type Item = { course: Course; line: Line };
-	type Outcome = { mistakes: number; hints: number; due: number };
+	type Item = PracticeCandidate & { course: Course; line: Line; startAt: number; shared: boolean };
+	type Outcome = AttemptResult & { due: number; confidence: number; name: string };
 
-	let queue = $state<Item[]>([]);
+	let item = $state<Item | undefined>();
 	let loaded = $state(false);
-	let at = $state(0);
+	let empty = $state(false);
+	let due = $state(0);
 	let outcome = $state<Outcome | undefined>();
-	let outcomes = $state<Outcome[]>([]);
-	let logged = false;
+	let round = $state(0);
+	let finished = $state(0);
 
-	const AHEAD_LIMIT = 10;
+	const scopeId = $derived(page.url.searchParams.get('course') ?? '');
+	const requested = $derived(page.url.searchParams.get('line'));
 
-	onMount(async () => {
-		const params = page.url.searchParams;
-		const scope = params.get('course');
-		const only = params.get('line');
-		const ahead = params.get('ahead') === '1';
+	async function pool(now: number): Promise<Item[]> {
+		const progress = await loadProgress();
+		const rows: Item[] = [];
+		for (const course of courses) {
+			if (scopeId && course.id !== scopeId) continue;
+			const [depth, prefs] = await Promise.all([loadDepth(course.id), readCoursePreferences(course.id)]);
+			const scope = courseScope(course, depth, progress);
+			const shared = scope.lines.length >= 2 && commonPrefix(scope.lines) >= 2;
+			for (const line of scope.lines) {
+				const saved = progress.get(line.key);
+				if (!saved) continue;
+				rows.push({
+					key: line.key,
+					due: saved.card?.due ? new Date(saved.card.due).getTime() : null,
+					perfected: !!saved.clean,
+					course,
+					line,
+					shared,
+					startAt: openingSkip({ mode: 'practice', enabled: prefs.skipSharedStart, lines: scope.lines, line, firstLearn: false })
+				});
+			}
+		}
+		due = rows.filter((row) => row.due == null || row.due <= now).length;
+		return rows;
+	}
+
+	async function explicit(key: string): Promise<Item | undefined> {
+		const progress = await loadProgress();
+		for (const course of courses) {
+			const line = course.lines.find((item) => item.key === key);
+			const saved = progress.get(key as LineKey);
+			if (!line || !saved) continue;
+			await enterFromTrainer(course.id, line.key);
+			const [depth, prefs] = await Promise.all([loadDepth(course.id), readCoursePreferences(course.id)]);
+			const scope = courseScope(course, depth, progress);
+			return {
+				key,
+				due: saved.card?.due ? new Date(saved.card.due).getTime() : null,
+				perfected: !!saved.clean,
+				course,
+				line,
+				shared: scope.lines.length >= 2 && commonPrefix(scope.lines) >= 2,
+				startAt: openingSkip({ mode: 'practice', enabled: prefs.skipSharedStart, lines: scope.lines, line, firstLearn: false })
+			};
+		}
+	}
+
+	async function choose(current?: string, prefer?: string) {
 		const now = Date.now();
-		const rows = (await db.progress.toArray())
-			.filter((p) => (!scope || p.courseId === scope) && (!only || p.key === only))
-			.sort((a, b) => +new Date(a.card.due) - +new Date(b.card.due));
-		const picked = only ? rows : ahead ? rows.slice(0, AHEAD_LIMIT) : selectDue(rows, now);
-		queue = picked.flatMap((p) => {
-			const course = courses.find((c) => c.id === p.courseId);
-			const line = course?.lines.find((l) => l.key === p.key);
-			return course && line ? [{ course, line }] : [];
-		});
+		if (prefer) {
+			const picked = await explicit(prefer);
+			item = picked;
+			empty = !picked;
+			loaded = true;
+			return;
+		}
+		const rows = await pool(now);
+		const picked = selectPractice(rows, now, current);
+		item = picked;
+		empty = !picked;
 		loaded = true;
+	}
+
+	onMount(() => {
+		if (scopeId) void enterFromTrainer(scopeId);
+		void choose(undefined, requested ?? undefined);
 	});
 
-	const item = $derived(queue[at]);
-	const finished = $derived(loaded && at >= queue.length);
-	const clean = $derived(outcomes.filter((o) => o.mistakes === 0 && o.hints === 0).length);
-
-	async function onfinish(r: { mistakes: number; hints: number }) {
-		if (!item) return;
-		const updated = await finishPractice(item.line.key, r.mistakes, r.hints);
-		outcome = { ...r, due: updated ? new Date(updated.card.due).getTime() : Date.now() };
-		outcomes = [...outcomes, outcome];
+	async function onfinish(attempt: AttemptResult) {
+		if (!item || outcome) return;
+		const updated = await finishPractice(item.line.key, attempt.mistakes, attempt.hints);
+		await logSession({ mode: 'practice', courseId: item.course.id, lines: 1, mistakes: attempt.mistakes });
+		await pool(Date.now());
+		finished += 1;
+		outcome = {
+			...attempt,
+			name: item.line.name,
+			due: updated ? new Date(updated.card.due).getTime() : Date.now(),
+			confidence: updated?.confidence ?? 5
+		};
 	}
 
 	function next() {
+		const current = item?.key;
 		outcome = undefined;
-		at += 1;
+		round += 1;
+		void choose(current);
 	}
-
-	$effect(() => {
-		if (finished && outcomes.length && !logged) {
-			logged = true;
-			void logSession({
-				mode: 'practice',
-				courseId: page.url.searchParams.get('course') ?? undefined,
-				lines: outcomes.length,
-				mistakes: outcomes.reduce((s, o) => s + o.mistakes, 0)
-			});
-		}
-	});
 </script>
 
 <svelte:head><title>Practice · Chessmode</title></svelte:head>
 
-{#if item && !finished}
-	{#key at}
-		<LineTrainer course={item.course} line={item.line} mode="practice" closeHref="/practice" {onfinish}>
+{#if item && !empty}
+	{#key `${item.key}:${round}`}
+		<LineTrainer
+			course={item.course}
+			line={item.line}
+			mode="practice"
+			startAt={item.startAt}
+			sharedStartAvailable={item.shared}
+			closeHref="/practice"
+			onfinish={onfinish}
+			onreset={() => { outcome = undefined; round += 1; void choose(item?.key); }}
+		>
 			{#snippet heading()}
-				<p class="session label">Review {at + 1} of {queue.length}</p>
+				<p class="session label">{due ? `${due} due` : 'None due'} · line {finished + 1}</p>
 			{/snippet}
 		</LineTrainer>
 	{/key}
 	{#if outcome}
 		<ResultSheet
 			image={outcome.mistakes ? '/img/node-locked.webp' : '/img/node-done.webp'}
-			eyebrow={outcome.mistakes ? 'Needs another look' : outcome.hints ? 'Done with a hint' : 'Clean'}
-			title={item.line.name}
-			subtitle="Next review {relativeTime(outcome.due)}."
+			eyebrow={outcome.mistakes >= 2 || outcome.hints >= 2 ? 'Needs another look' : outcome.mistakes || outcome.hints ? 'With help' : 'Clean'}
+			title={outcome.name}
+			subtitle="Next review {relativeTime(outcome.due)}. Confidence {outcome.confidence} of 10."
 			stats={[
 				{ label: 'Mistakes', value: outcome.mistakes, tone: outcome.mistakes ? 'bad' : 'good' },
 				{ label: 'Hints', value: outcome.hints },
-				{ label: 'Left', value: queue.length - at - 1 }
+				{ label: 'Due', value: due }
 			]}
 		>
 			{#snippet actions()}
-				<button class="btn btn-primary block" onclick={next}>{at + 1 < queue.length ? 'Next line' : 'Finish'}</button>
+				<button class="btn btn-primary block" type="button" onclick={next}>Next line</button>
 			{/snippet}
 		</ResultSheet>
 	{/if}
-{:else if finished}
+{:else if loaded}
 	<main class="page done">
-		{#if outcomes.length}
-			<img src="/img/node-active.webp" alt="" />
-			<p class="label">Practice complete · +{outcomes.length * 5} XP</p>
-			<h1 class="h-display">{clean} of {outcomes.length} clean</h1>
-			<p class="muted">Missed lines come back soon. Clean ones wait longer each time.</p>
+		<img src={finished ? '/img/node-active.webp' : '/img/node-locked.webp'} alt="" />
+		{#if finished}
+			<p class="label">Practice · +{finished * 5} XP</p>
+			<h1 class="h-display">{finished} {finished === 1 ? 'line' : 'lines'}</h1>
+			<p class="muted">Nothing else in this depth is learned yet.</p>
+		{:else if requested}
+			<h1 class="h-display">Learn it first</h1>
+			<p class="muted">Practice recalls lines you have already learned.</p>
+			{#if getCourse(requested.split('/')[0])}
+				<a class="btn btn-primary block" href="/learn/{requested.split('/')[0]}/{requested.split('/')[1]}">Learn this line</a>
+			{/if}
 		{:else}
-			<img src="/img/node-done.webp" alt="" />
-			<h1 class="h-display">Nothing due</h1>
-			<p class="muted">You are up to date. Learn a new line or review ahead.</p>
+			<h1 class="h-display">Nothing to practise yet</h1>
+			<p class="muted">Learn a line in this depth. It will show up here, due or not.</p>
 		{/if}
 		<div class="actions">
-			<a class="btn btn-primary block" href="/">Back home</a>
+			<a class="btn btn-primary block" href={scopeId ? `/course/${scopeId}` : '/'}>{scopeId ? 'Back to the course' : 'Learn a line'}</a>
 			<a class="btn btn-surface block" href="/practice">Practice menu</a>
 		</div>
 	</main>

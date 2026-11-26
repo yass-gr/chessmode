@@ -2,38 +2,66 @@
 	import { seg } from '#lib/components/seg.ts';
 	import { page } from '$app/state';
 	import Board, { type Arrow, type Marker } from '#lib/components/Board.svelte';
+	import Coach from '#lib/components/review/Coach.svelte';
+	import EvalBar from '#lib/components/review/EvalBar.svelte';
 	import EvalGraph from '#lib/components/review/EvalGraph.svelte';
 	import Label from '#lib/components/review/Label.svelte';
-	import Summary from '#lib/components/review/Summary.svelte';
-	import { START_FEN, other, type Color, type Ply, type Uci } from '#lib/chess/types.ts';
+	import Overview from '#lib/components/review/Overview.svelte';
+	import ReviewLoading from '#lib/components/review/ReviewLoading.svelte';
+	import { lineAction, overviewVerdict, type CoachPhase, type RetryMood } from '#lib/components/review/coach.ts';
+	import { START_FEN, other, turnOf, type Color, type Ply, type Uci } from '#lib/chess/types.ts';
 	import { db, getSetting, setSetting } from '#lib/db.ts';
 	import { readPgn } from '#lib/import/pgn.ts';
-	import { DEFAULT_DEPTH, DEPTHS, DEPTH_SETTING, reviewGame, type ReviewDepth, type ReviewProgress } from '#lib/review/analyse.ts';
-	import { CLASSIFICATIONS, expectedPoints } from '#lib/review/classify.ts';
-	import { isRetryable, lineMoves, retryMove, transition, type ReviewState } from '#lib/review/session.ts';
-	import type { GameRecord, GameReview, Score } from '#lib/review/types.ts';
 	import { courses } from '#lib/courses/index.ts';
+	import { reducedMotion } from '#lib/motion.ts';
+	import { DEFAULT_DEPTH, DEPTHS, DEPTH_SETTING, reviewCacheKey, reviewGame, type ReviewDepth, type ReviewProgress } from '#lib/review/analyse.ts';
+	import { CLASSIFICATIONS } from '#lib/review/classify.ts';
+	import { keyMomentPlies, nextGuidedDestination } from '#lib/review/moments.ts';
+	import { playReviewEvent } from '#lib/review/review-audio.ts';
 	import { findDeviation } from '#lib/review/repertoire.ts';
+	import {
+		BRANCH_INTERVAL_MS, GUIDED_STEP_MS, RETRY_REWIND_MS, decisionTransition, evaluateRetry, isRetryable, lineMoves, retryQueue,
+		type DecisionSession
+	} from '#lib/review/session.ts';
+	import type { Classification, GameRecord, GameReview, MoveReview, ReviewBranchStep, Score } from '#lib/review/types.ts';
+	import { readReviewPreferences, writeReviewPreferences } from '#lib/settings/preferences.ts';
+	import { DEFAULT_REVIEW_PREFERENCES, type ReviewPreferences } from '#lib/settings/types.ts';
+
+	type Screen = 'loading' | 'overview' | 'review';
+	type CoachView = { phase: CoachPhase; classification?: Classification; retry?: RetryMood; headline: string; detail?: string };
 
 	let game = $state<GameRecord>();
 	let plies = $state<Ply[]>([]);
 	let review = $state<GameReview>();
 	let progress = $state<ReviewProgress>();
-	let session = $state<ReviewState>({ kind: 'analysing', ply: 0 });
+	let screen = $state<Screen>('loading');
+	let fading = $state(false);
 	let depth = $state<ReviewDepth>(DEFAULT_DEPTH);
 	let orientation = $state<Color>('w');
-	let retrySide = $state<Color>('w');
-	let tab = $state<'moves' | 'summary'>('moves');
+	let prefs = $state<ReviewPreferences>({ ...DEFAULT_REVIEW_PREFERENCES });
+	let decision = $state<DecisionSession>({ kind: 'mainline', ply: 0, generation: 0 });
+	let activeBranch = $state<{ role: 'played' | 'recommended'; steps: ReviewBranchStep[] } | undefined>();
+	let branchImmediate = $state(false);
+	let concluded = $state(false);
+	let promo = $state<string | undefined>();
 	let status = $state('');
 	let error = $state('');
 	let analysis: AbortController | undefined;
-	let retryCheck: AbortController | undefined;
+	let retryAbort: AbortController | undefined;
+	let guidedToken = 0;
+	let guidedTimer: ReturnType<typeof setTimeout> | undefined;
+	let fadeTimer: ReturnType<typeof setTimeout> | undefined;
 	let touch: { x: number; y: number } | undefined;
 	let moveList = $state<HTMLDivElement>();
-	const promotions = [{ piece: 'Queen', key: 'q' }, { piece: 'Rook', key: 'r' }, { piece: 'Bishop', key: 'b' }, { piece: 'Knight', key: 'n' }];
+	const promotions = [
+		{ piece: 'Queen', key: 'q' },
+		{ piece: 'Rook', key: 'r' },
+		{ piece: 'Bishop', key: 'b' },
+		{ piece: 'Knight', key: 'n' }
+	];
 
 	let studied = $state.raw(new Set<string>());
-	void db.progress.toArray().then((rows) => (studied = new Set(rows.map((r) => r.courseId))));
+	void db.progress.toArray().then((rows) => (studied = new Set(rows.map((row) => row.courseId))));
 	const deviation = $derived(plies.length ? findDeviation(courses, plies, game?.userColor, studied) : undefined);
 	let deviationLearned = $state(false);
 	$effect(() => {
@@ -44,33 +72,78 @@
 	const deviationHref = $derived.by(() => {
 		if (!deviation) return '';
 		if (deviationLearned) return `/practice/run?line=${encodeURIComponent(deviation.line)}`;
-		const line = deviation.course.lines.find((l) => l.key === deviation.line);
+		const line = deviation.course.lines.find((item) => item.key === deviation.line);
 		return `/learn/${deviation.course.id}/${line?.id ?? ''}`;
 	});
-	const reviewed = $derived(progress?.moves ?? []);
-	const position = $derived(plies[session.ply - 1]);
-	const current = $derived(reviewed[session.ply - 1]);
-	const keyMoments = $derived(reviewed.filter(move => isRetryable(move) || move.classification === 'find' || move.classification === 'sharp'));
-	const retryable = $derived(review?.moves.filter(move => move.color === retrySide && isRetryable(move)) ?? []);
-	const started = $derived(session.kind === 'showingLine' || session.kind === 'retrying');
-	const variation = $derived(session.kind === 'showingLine' ? session.line[session.step - 1]
-		: session.kind === 'retrying' && session.attempt.kind === 'solved' ? session.attempt.move : undefined);
-	const fen = $derived(started && position ? variation?.fen ?? position.fenBefore : position?.fenAfter ?? plies[0]?.fenBefore ?? START_FEN);
-	const lastMove = $derived(squares(variation?.uci ?? (started ? undefined : position?.uci)));
-	const score = $derived(session.kind === 'showingLine' || session.kind === 'retrying' ? current?.best.score
-		: session.ply ? current?.scoreAfter : progress?.initialScore);
-	const win = $derived(score ? expectedPoints(score, orientation, started ? position?.color ?? 'w' : position ? other(position.color) : plies[0]?.color ?? 'w') * 100 : 50);
+
+	const moments = $derived(review ? keyMomentPlies(review.moves, prefs.perspective) : []);
+	const current = $derived(review?.moves[decision.ply - 1]);
+	const retrySide = $derived(prefs.perspective === 'both' ? (game?.userColor ?? orientation) : prefs.perspective);
+	const retryCount = $derived(review ? retryQueue(review.moves, retrySide).length : 0);
+	const exploring = $derived(decision.kind !== 'mainline');
+	const percent = $derived(plies.length ? ((progress?.ply ?? 0) / plies.length) * 100 : 0);
+	const graphMoves = $derived(review?.moves ?? progress?.moves ?? []);
+	const graphWin = $derived(progress?.win ?? []);
+	const bestLabel = $derived(current?.branches?.recommended.steps[0] ? lineAction(current.branches.recommended.steps[0].explanation, 'recommended') : '');
+	const followLabel = $derived(current?.branches && current.branches.played.steps.length > 1 ? lineAction(current.branches.played.steps[1].explanation, 'played') : '');
+	const primaryLabel = $derived.by(() => {
+		if (concluded) return 'Back to overview';
+		if (!review || decision.kind !== 'mainline') return 'Next';
+		const dest = nextGuidedDestination(moments, decision.ply, plies.length);
+		if (dest.kind === 'end' && dest.ply === decision.ply) return 'Finish review';
+		if (dest.kind === 'end') return 'Go to the end';
+		return 'Next';
+	});
+	const shown = $derived.by(() => {
+		const startFen = plies[0]?.fenBefore ?? START_FEN;
+		if (decision.kind === 'branch') {
+			const step = decision.step === 0 ? undefined : decision.line[decision.step - 1];
+			const score = decision.step === 0 ? (activeBranch?.role === 'played' ? current?.scoreAfter : current?.best.score) : undefined;
+			const fen = step?.fen ?? decision.baseFen;
+			return { fen, last: step ? squares(step.uci) : undefined, score, turn: turnOf(fen as typeof START_FEN), movable: 'none' as const };
+		}
+		if (decision.kind === 'feedback') {
+			return {
+				fen: decision.feedback.move.fen, last: squares(decision.feedback.move.uci), score: decision.feedback.score,
+				turn: other(decision.move.color), movable: 'none' as const
+			};
+		}
+		if (decision.kind === 'retry' && decision.status === 'checking' && decision.submission) {
+			const played = lineMoves(decision.move.fenBefore, [decision.submission])[0];
+			return { fen: played.fen, last: squares(played.uci), score: undefined, turn: other(decision.move.color), movable: 'none' as const };
+		}
+		if (decision.kind === 'rewinding' || decision.kind === 'retry') {
+			const playing = decision.kind === 'retry' && decision.status === 'playing';
+			return {
+				fen: decision.move.fenBefore, last: undefined, score: decision.move.best.score, turn: decision.move.color,
+				movable: playing ? decision.move.color : 'none' as const
+			};
+		}
+		if (!decision.ply) return { fen: startFen, last: undefined, score: progress?.initialScore, turn: plies[0]?.color ?? 'w', movable: 'none' as const };
+		const ply = plies[decision.ply - 1];
+		return { fen: ply?.fenAfter ?? startFen, last: squares(ply?.uci), score: current?.scoreAfter, turn: ply ? other(ply.color) : 'w', movable: 'none' as const };
+	});
+	const barResult = $derived(decision.kind === 'mainline' && decision.ply === plies.length && plies.length > 0 ? game?.result : undefined);
 	const marker = $derived.by((): Marker | undefined => {
-		if (!current || started) return;
+		if (!prefs.glyphs || decision.kind !== 'mainline' || !current) return;
 		const info = CLASSIFICATIONS[current.classification];
 		return { square: current.uci.slice(2, 4), glyph: info.glyph, color: info.color, label: info.label };
 	});
 	const arrows = $derived.by((): Arrow[] => {
-		if (started || !current || current.uci === current.best.uci) return [];
-		return [
-			{ from: current.uci.slice(0, 2), to: current.uci.slice(2, 4), brush: 'muted' },
-			{ from: current.best.uci.slice(0, 2), to: current.best.uci.slice(2, 4), brush: 'good' }
-		];
+		if (decision.kind === 'retry') {
+			const uci = decision.move.best.uci;
+			if (decision.hint === 'origin') return [{ from: uci.slice(0, 2), brush: 'accent' }];
+			if (decision.hint === 'arrow') return [{ from: uci.slice(0, 2), to: uci.slice(2, 4), brush: 'good' }];
+			return [];
+		}
+		if (decision.kind !== 'mainline' || !current) return [];
+		const played = { from: current.uci.slice(0, 2), to: current.uci.slice(2, 4), brush: 'muted' as const };
+		const best = { from: current.best.uci.slice(0, 2), to: current.best.uci.slice(2, 4), brush: 'good' as const };
+		const same = current.uci === current.best.uci;
+		if (prefs.overlays === 'none' || (prefs.overlays === 'best' && same)) return [];
+		if (prefs.overlays === 'played') return [played];
+		if (prefs.overlays === 'best') return [best];
+		return same ? [played] : [played, best];
 	});
 	const rows = $derived.by(() => {
 		const groups: { number: number; white?: number; black?: number }[] = [];
@@ -85,12 +158,55 @@
 		}
 		return groups;
 	});
+	const coach = $derived.by((): CoachView => {
+		if (screen === 'loading' || !review || !game) {
+			return { phase: 'loading', headline: 'Looking through the game…', detail: plies.length ? `${progress?.ply ?? 0} of ${plies.length} moves` : undefined };
+		}
+		if (screen === 'overview') return { phase: 'overview', ...overviewVerdict(game, review) };
+		if (concluded && decision.kind === 'mainline') {
+			return { phase: 'complete', headline: 'That is the whole game.', detail: 'Return to the overview, or step through any move.' };
+		}
+		if (decision.kind === 'rewinding') {
+			return { phase: 'retry', retry: 'playing', headline: 'Let’s look at that position again.', detail: `${decision.move.san} was ${CLASSIFICATIONS[decision.move.classification].label.toLowerCase()}.` };
+		}
+		if (decision.kind === 'retry') {
+			if (decision.status === 'checking') return { phase: 'retry', retry: 'playing', headline: 'Checking that move…' };
+			return { phase: 'retry', retry: 'playing', headline: 'Find a better move.', detail: promo ? 'Choose the piece to promote to.' : 'Use Hint if you want a nudge.' };
+		}
+		if (decision.kind === 'feedback') {
+			const { feedback, move } = decision;
+			if (feedback.accepted) {
+				const detail = feedback.move.uci === move.best.uci ? 'That is the best move.' : 'That stays within a strong margin of the best move.';
+				return { phase: 'retry', retry: 'right', headline: `${feedback.move.san} works.`, detail };
+			}
+			return { phase: 'retry', retry: 'wrong', headline: `${feedback.move.san} does not hold.`, detail: `The best move is ${move.best.san}.` };
+		}
+		if (decision.kind === 'branch') {
+			const step = decision.step === 0 ? undefined : activeBranch?.steps[decision.step - 1];
+			if (!step) {
+				const first = activeBranch?.steps[0]?.explanation;
+				const headline = activeBranch?.role === 'recommended' ? `The best move is ${current?.best.san ?? 'waiting'}.` : 'Here is the follow-up.';
+				return { phase: 'followup', headline, detail: first };
+			}
+			return { phase: 'followup', headline: step.explanation };
+		}
+		if (!current) return { phase: 'move', headline: 'Starting position.', detail: 'Next jumps to the first key moment.' };
+		return { phase: 'move', classification: current.classification, headline: current.explanation.headline, detail: current.explanation.detail };
+	});
 
 	$effect(() => {
 		const id = page.params.id;
 		const load = new AbortController();
 		game = undefined;
+		review = undefined;
+		progress = undefined;
 		error = '';
+		status = '';
+		screen = 'loading';
+		fading = false;
+		concluded = false;
+		activeBranch = undefined;
+		decision = { kind: 'mainline', ply: 0, generation: 0 };
 		void (async () => {
 			try {
 				const [record, preference] = await Promise.all([
@@ -102,13 +218,20 @@
 					error = 'This game is missing from your saved matches.';
 					return;
 				}
-				session = { kind: 'analysing', ply: 0 };
-				tab = 'moves';
 				game = record;
 				plies = readPgn(record.pgn).plies;
-				depth = DEPTHS.find(option => option.value === preference)?.value ?? DEFAULT_DEPTH;
+				depth = DEPTHS.find((option) => option.value === preference)?.value ?? DEFAULT_DEPTH;
 				orientation = record.userColor ?? 'w';
-				retrySide = orientation;
+				prefs = await readReviewPreferences(record.userColor);
+				if (load.signal.aborted) return;
+				const cached = await db.reviews.get(reviewCacheKey(record.id, depth));
+				if (load.signal.aborted) return;
+				if (cached) {
+					review = cached;
+					progress = progressFrom(cached);
+					screen = 'overview';
+					return;
+				}
 				await runAnalysis();
 			} catch (cause) {
 				if (!load.signal.aborted) error = cause instanceof Error ? cause.message : 'Could not open this game.';
@@ -117,13 +240,39 @@
 		return () => {
 			load.abort();
 			analysis?.abort();
-			retryCheck?.abort();
+			retryAbort?.abort();
+			cancelGuided();
+			clearTimeout(fadeTimer);
+			if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
 		};
 	});
 
 	$effect(() => {
-		const active = session.ply;
-		if (!moveList || !active) return;
+		if (decision.kind !== 'branch' || !decision.autoplay || decision.step >= decision.line.length) return;
+		const generation = decision.generation;
+		const step = decision.step;
+		const san = decision.line[step]?.san;
+		const delay = step === 0 && branchImmediate ? 0 : BRANCH_INTERVAL_MS;
+		const timer = setTimeout(() => {
+			if (decision.kind !== 'branch' || decision.generation !== generation || decision.step !== step) return;
+			decision = decisionTransition(decision, { type: 'tick', generation });
+			if (san) playReviewEvent({ kind: 'animated-move', san });
+		}, delay);
+		return () => clearTimeout(timer);
+	});
+
+	$effect(() => {
+		if (decision.kind !== 'rewinding') return;
+		const generation = decision.generation;
+		const timer = setTimeout(() => {
+			decision = decisionTransition(decision, { type: 'rewound', generation });
+		}, reducedMotion() ? 0 : RETRY_REWIND_MS);
+		return () => clearTimeout(timer);
+	});
+
+	$effect(() => {
+		const active = decision.ply;
+		if (!moveList || !active || screen !== 'review') return;
 		const selected = moveList.querySelector<HTMLButtonElement>('[aria-current="step"]');
 		if (!selected) return;
 		const bounds = moveList.getBoundingClientRect();
@@ -132,32 +281,64 @@
 		else if (row.top < bounds.top) moveList.scrollTop += row.top - bounds.top;
 	});
 
+	function progressFrom(value: GameReview): ReviewProgress {
+		const first = value.moves[0];
+		return {
+			ply: value.moves.length, total: value.moves.length, moves: value.moves, opening: value.opening,
+			win: first ? [first.winBefore, ...value.moves.map((move) => move.winAfter)] : [],
+			initialScore: first?.best.score ?? { cp: 0 }
+		};
+	}
+
+	function revealOverview() {
+		if (reducedMotion()) {
+			fading = false;
+			screen = 'overview';
+			return;
+		}
+		fading = true;
+		screen = 'overview';
+		clearTimeout(fadeTimer);
+		fadeTimer = setTimeout(() => { fading = false; }, 2500);
+	}
+
 	async function runAnalysis(chosen: ReviewDepth = depth) {
 		if (!game) return;
 		analysis?.abort();
 		const run = new AbortController();
 		analysis = run;
-		session = transition(session, { type: 'analysisStarted' });
+		cancelGuided();
+		retryAbort?.abort();
+		screen = 'loading';
+		fading = false;
+		review = undefined;
+		progress = undefined;
 		error = '';
 		status = '';
-		progress = undefined;
-		review = undefined;
 		try {
+			const cached = await db.reviews.get(reviewCacheKey(game.id, chosen));
+			if (run.signal.aborted) return;
+			if (cached) {
+				review = cached;
+				progress = progressFrom(cached);
+				screen = 'overview';
+				return;
+			}
 			const result = await reviewGame(game, {
 				depth: chosen, plies: $state.snapshot(plies), signal: run.signal,
-				onProgress: value => { if (!run.signal.aborted) progress = value; }
+				onProgress: (value) => { if (!run.signal.aborted) progress = value; }
 			});
-			if (!run.signal.aborted) review = result;
+			if (run.signal.aborted) return;
+			review = result;
+			revealOverview();
 		} catch (cause) {
 			if (!run.signal.aborted) error = cause instanceof Error ? cause.message : 'Analysis could not finish.';
-		} finally {
-			if (!run.signal.aborted) session = transition(session, { type: 'analysisEnded' });
 		}
 	}
 
 	async function changeDepth(value: string) {
-		const selected = DEPTHS.find(option => String(option.value) === value);
-		if (!selected || selected.value === depth) return;
+		const selected = DEPTHS.find((option) => String(option.value) === value);
+		if (!selected || selected.value === depth || exploring) return;
 		depth = selected.value;
 		const pending = runAnalysis(depth);
 		try {
@@ -169,14 +350,7 @@
 	}
 
 	function squares(uci?: Uci): [string, string] | undefined {
-		if (uci) return [uci.slice(0, 2), uci.slice(2, 4)];
-	}
-
-	function scoreLabel(value?: Score) {
-		if (!value) return '–';
-		if (value.mate !== undefined) return 'M' + Math.abs(value.mate);
-		const pawns = value.cp / 100;
-		return (pawns >= 0 ? '+' : '−') + Math.abs(pawns).toFixed(1);
+		if (uci && uci.length >= 4) return [uci.slice(0, 2), uci.slice(2, 4)];
 	}
 
 	function moveNumber(index: number) {
@@ -185,19 +359,146 @@
 		return move ? number + (move.color === 'w' ? '.' : '…') : '';
 	}
 
+	function savePrefs(patch: Partial<ReviewPreferences>) {
+		prefs = { ...prefs, ...patch };
+		// IndexedDB cannot clone a rune proxy.
+		const stored = $state.snapshot(prefs);
+		void writeReviewPreferences(stored).catch(() => { status = 'Could not remember that setting.'; });
+	}
+
+	function speakCoach() {
+		if (!prefs.voice || typeof speechSynthesis === 'undefined') return;
+		const text = [coach.headline, coach.detail].filter(Boolean).join(' ');
+		if (!text) return;
+		speechSynthesis.cancel();
+		speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+	}
+
+	function toggleVoice() {
+		const voice = !prefs.voice;
+		savePrefs({ voice });
+		if (!voice) {
+			if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
+			return;
+		}
+		speakCoach();
+	}
+
+	function cancelGuided() {
+		guidedToken += 1;
+		clearTimeout(guidedTimer);
+	}
+
+	function land(ply: number, mode: 'mainline' | 'playback' | 'retry') {
+		const move = review?.moves[ply - 1];
+		if (!move) return;
+		playReviewEvent({
+			kind: 'landing', classification: move.classification, color: move.color, playerColor: game?.userColor,
+			glyphs: prefs.glyphs, mode, changed: true
+		});
+	}
+
+	function stepAnimated(ply: number) {
+		const from = decision.ply;
+		decision = decisionTransition(decision, { type: 'select', ply });
+		const san = plies[Math.max(ply, from) - 1]?.san;
+		if (san) playReviewEvent({ kind: 'animated-move', san });
+		land(ply, 'mainline');
+	}
+
+	function playToward(target: number, conclude: boolean) {
+		cancelGuided();
+		const token = guidedToken;
+		const hop = () => {
+			if (token !== guidedToken || decision.kind !== 'mainline') return;
+			if (decision.ply === target) {
+				if (conclude) concluded = true;
+				speakCoach();
+				return;
+			}
+			if (reducedMotion()) {
+				const from = decision.ply;
+				decision = decisionTransition(decision, { type: 'select', ply: target });
+				if (target !== from) playReviewEvent({ kind: 'navigation' });
+				land(target, 'mainline');
+				if (conclude) concluded = true;
+				speakCoach();
+				return;
+			}
+			const next = decision.ply + Math.sign(target - decision.ply);
+			stepAnimated(next);
+			if (next === target) {
+				if (conclude) concluded = true;
+				speakCoach();
+				return;
+			}
+			guidedTimer = setTimeout(hop, GUIDED_STEP_MS);
+		};
+		hop();
+	}
+
 	function select(ply: number) {
-		if (ply < 0 || ply > plies.length) return;
-		retryCheck?.abort();
-		session = transition(session, { type: 'select', ply });
-		status = '';
+		if (!review || ply < 0 || ply > plies.length) return;
+		cancelGuided();
+		retryAbort?.abort();
+		promo = undefined;
+		fading = false;
+		const from = decision.ply;
+		const wasMain = decision.kind === 'mainline';
+		activeBranch = undefined;
+		screen = 'review';
+		concluded = false;
+		if (wasMain && ply === from) return;
+		const single = wasMain && Math.abs(ply - from) === 1;
+		decision = decisionTransition(decision, { type: 'select', ply });
+		if (single) {
+			const san = plies[Math.max(ply, from) - 1]?.san;
+			if (san) playReviewEvent({ kind: 'animated-move', san });
+		} else {
+			playReviewEvent({ kind: 'navigation' });
+		}
+		land(ply, 'mainline');
+		speakCoach();
+	}
+
+	function startPass() {
+		if (!review) return;
+		fading = false;
+		screen = 'review';
+		concluded = false;
+		activeBranch = undefined;
+		decision = decisionTransition(decision, { type: 'select', ply: 0 });
+		const dest = nextGuidedDestination(keyMomentPlies(review.moves, prefs.perspective), 0, review.moves.length);
+		playToward(dest.ply, dest.kind === 'end');
+	}
+
+	function primary() {
+		if (!review || decision.kind !== 'mainline') return;
+		if (concluded) {
+			screen = 'overview';
+			concluded = false;
+			return;
+		}
+		const dest = nextGuidedDestination(moments, decision.ply, plies.length);
+		if (dest.kind === 'end' && dest.ply === decision.ply) {
+			concluded = true;
+			speakCoach();
+			return;
+		}
+		playToward(dest.ply, dest.kind === 'end');
 	}
 
 	function navigate(direction: number) {
-		if (session.kind === 'showingLine') {
-			session = transition(session, { type: 'step', step: session.step + direction });
-		} else if (session.kind !== 'retrying') {
-			select(session.ply + direction);
+		if (decision.kind === 'branch') {
+			const previous = decision.step;
+			decision = decisionTransition(decision, { type: 'step', step: previous + direction });
+			if (decision.kind !== 'branch' || decision.step === previous) return;
+			const san = decision.line[Math.max(decision.step, previous) - 1]?.san;
+			if (san && Math.abs(decision.step - previous) === 1) playReviewEvent({ kind: 'animated-move', san });
+			else playReviewEvent({ kind: 'navigation' });
+			return;
 		}
+		if (decision.kind === 'mainline') select(decision.ply + direction);
 	}
 
 	function handleKeys(event: KeyboardEvent) {
@@ -206,9 +507,7 @@
 		if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
 			event.preventDefault();
 			navigate(event.key === 'ArrowLeft' ? -1 : 1);
-		} else if (event.key === 'Escape' && started) {
-			exitMode();
-		}
+		} else if (event.key === 'Escape' && exploring) exitMode();
 	}
 
 	function touchStart(event: TouchEvent) {
@@ -225,87 +524,188 @@
 		if (Math.abs(dx) >= 42 && Math.abs(dx) > Math.abs(dy) * 1.4) navigate(dx < 0 ? 1 : -1);
 	}
 
-	function showLine() {
-		if (!current) return;
-		const line = lineMoves(current.fenBefore, current.best.pv);
-		session = transition(session, { type: 'line', line });
+	function openBranch(role: 'played' | 'recommended') {
+		if (!current?.branches) return;
+		const steps = role === 'recommended' ? current.branches.recommended.steps : current.branches.played.steps.slice(1);
+		if (!steps.length) return;
+		cancelGuided();
+		retryAbort?.abort();
+		playReviewEvent({ kind: 'navigation' });
+		branchImmediate = role === 'played';
+		activeBranch = { role, steps };
+		decision = decisionTransition(decision, {
+			type: 'branch',
+			baseFen: role === 'played' ? current.fenAfter : current.fenBefore,
+			line: steps.map((step) => ({ fen: step.fenAfter, san: step.san, uci: step.uci })),
+			autoplay: prefs.autoplay
+		});
 	}
 
 	function exitMode() {
-		retryCheck?.abort();
-		session = transition(session, { type: 'return' });
+		cancelGuided();
+		retryAbort?.abort();
+		promo = undefined;
+		activeBranch = undefined;
+		playReviewEvent({ kind: 'navigation' });
+		decision = decisionTransition(decision, { type: 'exit' });
 	}
 
-	function startRetry(index = 0) {
-		const task = retryable[index];
-		if (!task) return;
-		session = transition(session, { type: 'retry', ply: task.ply, index, total: retryable.length });
-		orientation = retrySide;
-		tab = 'moves';
-		status = '';
+	function beginRetry(move: MoveReview, queue: number[]) {
+		cancelGuided();
+		promo = undefined;
+		activeBranch = undefined;
+		playReviewEvent({ kind: 'navigation' });
+		orientation = move.color;
+		screen = 'review';
+		decision = decisionTransition(decision, { type: 'retry', move, queue });
+	}
+
+	function retryHere() {
+		if (!current || !review || !isRetryable(current)) return;
+		const rest = retryQueue(review.moves, current.color).filter((item) => item.ply > current.ply).map((item) => item.ply);
+		beginRetry(current, rest);
+	}
+
+	function retryAll() {
+		if (!review) return;
+		const queue = retryQueue(review.moves, retrySide);
+		const first = queue[0];
+		if (!first) return;
+		beginRetry(first, queue.slice(1).map((item) => item.ply));
+	}
+
+	function afterRetry() {
+		if (decision.kind !== 'feedback' || !review) return;
+		const [next, ...rest] = decision.queue;
+		if (next === undefined) {
+			exitMode();
+			status = 'Retry complete. You found a better move for each position.';
+			return;
+		}
+		const move = review.moves[next - 1];
+		if (move) beginRetry(move, rest);
 	}
 
 	function boardMove(value: string) {
-		if (session.kind !== 'retrying' || session.attempt.kind !== 'playing') return;
-		if (value.length === 5) {
-			session = transition(session, { type: 'attempt', attempt: { kind: 'promoting', squares: value.slice(0, 4) } });
-		} else {
-			void playRetry(value);
+		if (decision.kind !== 'retry' || decision.status !== 'playing') return;
+		if (value.length >= 5) {
+			promo = value.slice(0, 4);
+			return;
 		}
+		void submitRetry(value);
 	}
 
-	async function playRetry(value: string) {
-		if (session.kind !== 'retrying' || !current) return;
+	async function submitRetry(value: string) {
+		if (decision.kind !== 'retry') return;
 		const uci = value as Uci;
-		const move = current;
+		const next = decisionTransition(decision, { type: 'submit', uci });
+		if (next.kind !== 'retry' || next.status !== 'checking') return;
+		const generation = next.generation;
+		const move = next.move;
+		decision = next;
+		promo = undefined;
 		const check = new AbortController();
-		retryCheck = check;
-		session = transition(session, { type: 'attempt', attempt: { kind: 'checking' } });
+		retryAbort = check;
 		try {
-			const accepted = await retryMove(move, uci, check.signal);
+			const feedback = await evaluateRetry(move, uci, check.signal);
 			if (check.signal.aborted) return;
-			const attempt = accepted ? { kind: 'solved', move: lineMoves(move.fenBefore, [uci])[0] } as const
-				: { kind: 'playing', message: 'Try another move.' } as const;
-			session = transition(session, { type: 'attempt', attempt });
-		} catch {
-			if (!check.signal.aborted) session = transition(session, { type: 'attempt', attempt: { kind: 'playing', message: 'Could not check that move. Try again.' } });
+			decision = decisionTransition(decision, { type: 'checked', generation, uci, feedback });
+			if (decision.kind === 'feedback') playReviewEvent({ kind: 'retry', correct: feedback.accepted });
+		} catch (cause) {
+			if (check.signal.aborted) return;
+			decision = decisionTransition(decision, { type: 'checkFailed', generation, uci });
+			status = cause instanceof Error ? cause.message : 'Could not check that move.';
 		}
 	}
 
-	function nextRetry() {
-		if (session.kind !== 'retrying') return;
-		if (session.index + 1 < session.total) startRetry(session.index + 1);
-		else {
-			exitMode();
-			status = 'Retry complete. You found a better move for each position.';
-		}
+	function setAutoplay(enabled: boolean) {
+		savePrefs({ autoplay: enabled });
+		if (decision.kind === 'branch') decision = decisionTransition(decision, { type: 'autoplay', enabled });
+	}
+
+	function setPerspective(value: string) {
+		if (value !== 'w' && value !== 'b' && value !== 'both') return;
+		cancelGuided();
+		savePrefs({ perspective: value });
+	}
+
+	function setOverlays(value: string) {
+		if (value !== 'none' && value !== 'played' && value !== 'best' && value !== 'both') return;
+		savePrefs({ overlays: value });
 	}
 </script>
 
 <svelte:head><title>Game review · Chessmode</title></svelte:head>
 <svelte:window onkeydown={handleKeys} />
 
+{#snippet coachBubble(size: 'compact' | 'large')}
+	<Coach phase={coach.phase} classification={coach.classification} retry={coach.retry} headline={coach.headline} detail={coach.detail} showMascot={prefs.coach} {size} />
+{/snippet}
+
 {#snippet playerCard(side: Color)}
 	{@const player = side === 'w' ? game?.white : game?.black}
+	{@const stats = side === 'w' ? review?.white : review?.black}
 	<div class="player">
 		<span aria-hidden="true" class:white={side === 'w'} class="side"></span>
 		<b title={player?.name}>{player?.name}</b>
 		{#if player?.rating}<span>{player.rating}</span>{/if}
-		{#if review}<span class="chip">{(side === 'w' ? review.white : review.black).accuracy.toFixed(1)}%</span>{/if}
+		{#if stats}<span class="chip">{stats.accuracy.toFixed(1)}%</span>{/if}
 	</div>
 {/snippet}
 
 {#snippet moveButton(index: number | undefined)}
 	{#if index !== undefined}
-		{@const analysed = reviewed[index - 1]}
-		<button type="button" class="move" class:active={session.ply === index} aria-current={session.ply === index ? 'step' : undefined} onclick={() => select(index)}>
+		{@const analysed = review?.moves[index - 1] ?? progress?.moves[index - 1]}
+		<button type="button" class="move" class:active={decision.ply === index} aria-current={decision.ply === index ? 'step' : undefined} onclick={() => select(index)}>
 			<span>{plies[index - 1].san}</span>
 			{#if analysed}<Label classification={analysed.classification} />{/if}
 		</button>
 	{:else}<span></span>{/if}
 {/snippet}
 
-<main class="page review">
+{#snippet repertoireCard()}
+	{#if deviation}
+		<section class="card repertoire" aria-label="Repertoire">
+			<span class="eyeline">{deviation.course.name}</span>
+			{#if deviation.kind === 'you'}
+				<p><b>You left your repertoire at {moveNumber(deviation.ply + 1)}</b> You played <span class="san">{deviation.played.san}</span>, the course plays <span class="san">{deviation.expected.san}</span>.</p>
+			{:else if deviation.kind === 'opponent'}
+				<p><b>Your opponent left the course at {moveNumber(deviation.ply + 1)}</b> <span class="san">{deviation.played.san}</span> is not prepared in the course, so you were on your own from here.</p>
+			{:else}
+				<p><b>You played the course to the end of the line</b> Every move up to {moveNumber(deviation.ply + 1)} was from your repertoire.</p>
+			{/if}
+			<div class="repertoire-actions">
+				<button class="btn sm btn-surface" onclick={() => select(deviation.kind === 'complete' ? deviation.ply + 1 : deviation.ply)}>Show position</button>
+				<a class="btn sm btn-primary" href={deviationHref}>{deviationLearned ? 'Drill this line' : 'Learn this line'}</a>
+			</div>
+		</section>
+	{/if}
+{/snippet}
+
+{#snippet preferenceRow()}
+	<div class="prefs">
+		<label>Side
+			<select aria-label="Review side" value={prefs.perspective} onchange={(event) => setPerspective(event.currentTarget.value)}>
+				<option value="w">White</option>
+				<option value="b">Black</option>
+				<option value="both">Both</option>
+			</select>
+		</label>
+		<label>Arrows
+			<select aria-label="Arrow overlay" value={prefs.overlays} onchange={(event) => setOverlays(event.currentTarget.value)}>
+				<option value="both">Played and best</option>
+				<option value="played">Played</option>
+				<option value="best">Best</option>
+				<option value="none">Off</option>
+			</select>
+		</label>
+		<button type="button" class="btn btn-surface compact" aria-pressed={prefs.voice} onclick={toggleVoice}>{prefs.voice ? 'Voice on' : 'Voice off'}</button>
+		<button type="button" class="btn btn-surface compact" aria-pressed={prefs.coach} onclick={() => savePrefs({ coach: !prefs.coach })}>{prefs.coach ? 'Coach on' : 'Coach off'}</button>
+		<button type="button" class="btn btn-surface compact" aria-pressed={prefs.glyphs} onclick={() => savePrefs({ glyphs: !prefs.glyphs })}>{prefs.glyphs ? 'Badges on' : 'Badges off'}</button>
+	</div>
+{/snippet}
+
+<main class="page review" data-screen={screen}>
 	<header class="header">
 		<a class="back" href="/matches" aria-label="Back to Matches">‹</a>
 		<div>
@@ -315,7 +715,7 @@
 		{#if game}
 			<label class="depth">
 				<span>Depth</span>
-				<select aria-label="Analysis depth" value={depth} onchange={event => void changeDepth(event.currentTarget.value)} disabled={session.kind === 'retrying' || session.kind === 'showingLine'}>
+				<select aria-label="Analysis depth" value={depth} onchange={(event) => void changeDepth(event.currentTarget.value)} disabled={exploring}>
 					{#each DEPTHS as option}<option value={option.value}>{option.label} · {option.value}</option>{/each}
 				</select>
 			</label>
@@ -326,143 +726,123 @@
 		<div class="workspace">
 			<section class="board-column" aria-label="Game board">
 				{@render playerCard(other(orientation))}
-				<!-- Keep swipe capture on the wrapper since Chessground handles its own touch events. -->
 				<div class="board-row" role="group" aria-label="Board position" ontouchstartcapture={touchStart} ontouchendcapture={touchEnd} ontouchcancel={() => { touch = undefined; }}>
-					<div class="eval" class:inverted={orientation === 'b'} role="img" aria-label={'Evaluation ' + scoreLabel(score)}>
-						<div class="fill" style:transform="scaleY({win / 100})"></div>
-						<span>{scoreLabel(score)}</span>
-					</div>
-					<Board {fen} orientation={orientation === 'w' ? 'white' : 'black'} {lastMove} {arrows} {marker}
-						movable={session.kind === 'retrying' && session.attempt.kind === 'playing' ? retrySide : 'none'} onmove={boardMove} />
+					<EvalBar score={shown.score as Score | undefined} turn={shown.turn} {orientation} result={barResult} loading={screen === 'loading'} />
+					<Board fen={shown.fen} orientation={orientation === 'w' ? 'white' : 'black'} lastMove={shown.last} {arrows} {marker}
+						movable={shown.movable} onmove={boardMove} />
 				</div>
 				{@render playerCard(orientation)}
 			</section>
 
 			<section class="panel" aria-label="Review controls">
-				{#if session.kind === 'analysing'}
-					<div class="card progress-card" role="status">
-						<div><b>Analysing game</b><span>{progress?.ply ?? 0} / {plies.length} plies</span></div>
-						<div class="progress" role="progressbar" aria-label="Game analysis progress" aria-valuenow={progress?.ply ?? 0} aria-valuemin={0} aria-valuemax={plies.length}>
-							<i style:width={(progress?.ply ?? 0) / Math.max(1, plies.length) * 100 + '%'}></i>
-						</div>
-					</div>
-				{/if}
 				{#if error}
 					<div class="card error" role="alert"><p>{error}</p><button class="btn btn-surface compact" onclick={() => void runAnalysis()}>Try analysis again</button></div>
 				{/if}
+				{#if status}<p role="status" class="status">{status}</p>{/if}
 
-				{#if session.kind === 'retrying'}
-					<div class="card coach" role="status">
-						<div class="coach-copy"><span class="eyeline">Retry {session.index + 1} of {session.total} · {retrySide === 'w' ? 'White' : 'Black'} to move</span>
-							<h2>{session.attempt.kind === 'solved' ? session.attempt.move.san + ' works.' : 'Find a better move'}</h2>
-							{#if session.attempt.kind === 'checking'}<p>Checking your move…</p>
-							{:else if session.attempt.kind === 'playing' && session.attempt.message}<p>{session.attempt.message}</p>{/if}
+				{#if screen !== 'review' || fading}
+				<div class="stage">
+					{#if review && (screen === 'overview' || fading)}
+						<div class="overview-layer">
+							<Overview {game} {review} ply={decision.ply} onselect={select} onstart={startPass}>
+								{#snippet coach()}{@render coachBubble('large')}{/snippet}
+							</Overview>
+							{@render preferenceRow()}
+							{@render repertoireCard()}
 						</div>
-						{#if session.attempt.kind === 'promoting'}
-							{@const fromTo = session.attempt.squares}
+					{/if}
+					{#if screen === 'loading' || fading}
+						<div class="loading-layer" class:done={fading}>
+							<ReviewLoading progress={percent} finished={fading}>
+								{#snippet coach()}{@render coachBubble('large')}{/snippet}
+							</ReviewLoading>
+						</div>
+					{/if}
+				</div>
+				{/if}
+
+				{#if screen === 'review' && review}
+					<div class="card coach-card">
+						{@render coachBubble('compact')}
+						{#if current}<div class="coach-label"><Label classification={current.classification} named /></div>{/if}
+						{#if promo}
 							<div class="actions" role="group" aria-label="Promote pawn">
 								{#each promotions as { piece, key }}
-									<button class="btn btn-surface compact" onclick={() => void playRetry(fromTo + key)}>{piece}</button>
+									<button class="btn btn-surface compact" onclick={() => void submitRetry(promo + key)}>{piece}</button>
 								{/each}
 							</div>
 						{/if}
-						<div class="actions">
-							{#if session.attempt.kind === 'solved'}<button class="btn btn-primary compact" onclick={nextRetry}>{session.index + 1 === session.total ? 'Finish retry' : 'Next mistake'}</button>{/if}
-							<button class="btn btn-surface compact" onclick={exitMode}>Back to game</button>
-						</div>
-					</div>
-				{:else if session.kind === 'showingLine'}
-					<div class="card coach">
-						<div class="coach-copy"><span class="eyeline">Best line · {session.step} / {session.line.length} plies</span>
-							<h2>{variation?.san ?? current?.best.san}</h2>
-						</div>
-						<div class="variation" aria-label="Best line moves">
-							{#each session.line as move, index}
-								<button class:active={session.step === index + 1} onclick={() => { session = transition(session, { type: 'step', step: index + 1 }); }}>{move.san}</button>
-							{/each}
-						</div>
-						<div class="actions">
-							<button class="btn btn-surface compact" disabled={session.step === 0} onclick={() => navigate(-1)}>Previous</button>
-							<button class="btn btn-primary compact" disabled={session.step === session.line.length} onclick={() => navigate(1)}>Next line move</button>
-							<button class="btn btn-ghost compact" onclick={exitMode}>Back to game</button>
-						</div>
-					</div>
-				{:else}
-					<div class="card coach">
-						<div class="coach-main">
-							{#if current}<Label classification={current.classification} />{/if}
-							<div class="coach-copy">
-								<span class="eyeline">{position ? moveNumber(session.ply) + position.san : 'Starting position'}</span>
-								<h2>{current?.explanation.headline ?? (position ? (session.kind === 'analysing' ? 'Waiting for analysis…' : 'Analysis unavailable') : 'Select a move to review')}</h2>
-								{#if current?.explanation.detail}<p>{current.explanation.detail}</p>{/if}
+						{#if decision.kind === 'branch'}
+							{@const line = decision}
+							<div class="variation" aria-label="Line moves">
+								{#each line.line as move, index}
+									<button type="button" class:active={line.step === index + 1} onclick={() => navigate(index + 1 - line.step)}>{move.san}</button>
+								{/each}
 							</div>
-						</div>
-						{#if current || retryable.length}
 							<div class="actions">
-								{#if current}<button class="btn btn-surface compact" disabled={session.kind === 'analysing'} onclick={showLine}>Show best line</button>{/if}
-								{#if retryable.length}<button class="btn btn-primary compact" onclick={() => startRetry()}>Retry mistakes</button>{/if}
+								<button class="btn btn-surface compact" aria-pressed={line.autoplay} onclick={() => setAutoplay(!line.autoplay)}>{line.autoplay ? 'Autoplay on' : 'Autoplay off'}</button>
+								<button class="btn btn-surface compact" disabled={line.step === 0} onclick={() => navigate(-1)}>Previous</button>
+								<button class="btn btn-primary compact" disabled={line.step === line.line.length} onclick={() => navigate(1)}>Next line move</button>
+								<button class="btn btn-ghost compact" onclick={exitMode}>Hide line</button>
+							</div>
+						{:else if decision.kind === 'rewinding' || decision.kind === 'retry'}
+							<div class="actions">
+								{#if decision.kind === 'retry' && decision.status === 'playing'}
+									<button class="btn btn-surface compact" onclick={() => { decision = decisionTransition(decision, { type: 'hint' }); }}>Hint</button>
+								{/if}
+								<button class="btn btn-ghost compact" onclick={exitMode}>Back to game</button>
+							</div>
+						{:else if decision.kind === 'feedback'}
+							<div class="actions">
+								{#if decision.feedback.accepted}
+									<button class="btn btn-primary compact" onclick={afterRetry}>{decision.queue.length ? 'Next mistake' : 'Back to game'}</button>
+								{:else}
+									<button class="btn btn-primary compact" onclick={() => { promo = undefined; decision = decisionTransition(decision, { type: 'tryAgain' }); }}>Try again</button>
+								{/if}
+								{#if !decision.feedback.accepted || decision.queue.length}<button class="btn btn-ghost compact" onclick={exitMode}>Back to game</button>{/if}
+							</div>
+						{:else}
+							<div class="actions">
+								<button class="btn btn-primary compact" onclick={primary}>{primaryLabel}</button>
+								{#if bestLabel}<button class="btn btn-surface compact" onclick={() => openBranch('recommended')}>{bestLabel}</button>{/if}
+								{#if followLabel}<button class="btn btn-surface compact" onclick={() => openBranch('played')}>{followLabel === bestLabel ? 'Show the follow-up' : followLabel}</button>{/if}
+								{#if current && isRetryable(current)}<button class="btn btn-surface compact" onclick={retryHere}>Retry</button>{/if}
+								{#if retryCount}<button class="btn btn-surface compact" onclick={retryAll}>Retry {retrySide === 'w' ? 'White' : 'Black'} mistakes</button>{/if}
+								<button class="btn btn-ghost compact" onclick={() => { screen = 'overview'; concluded = false; }}>Overview</button>
 							</div>
 						{/if}
 					</div>
-					<div class="navigation" aria-label="Move navigation">
-						<button class="btn btn-surface" aria-label="First position" title="First position" disabled={!session.ply} onclick={() => select(0)}>‹‹</button>
-						<button class="btn btn-surface" aria-label="Previous move" title="Previous move" disabled={!session.ply} onclick={() => navigate(-1)}>‹</button>
-						<button class="btn btn-surface" aria-label="Next move" title="Next move" disabled={session.ply === plies.length} onclick={() => navigate(1)}>›</button>
-						<button class="btn btn-surface" aria-label="Last move" title="Last move" disabled={session.ply === plies.length} onclick={() => select(plies.length)}>››</button>
-						<button class="btn btn-surface flip" onclick={() => { orientation = other(orientation); }}>Flip</button>
+					{#if decision.kind === 'mainline'}
+						<div class="navigation" aria-label="Move navigation">
+							<button class="btn btn-surface" aria-label="First position" disabled={!decision.ply} onclick={() => select(0)}>‹‹</button>
+							<button class="btn btn-surface" aria-label="Previous move" disabled={!decision.ply} onclick={() => navigate(-1)}>‹</button>
+							<button class="btn btn-surface" aria-label="Next move" disabled={decision.ply === plies.length} onclick={() => navigate(1)}>›</button>
+							<button class="btn btn-surface" aria-label="Last move" disabled={decision.ply === plies.length} onclick={() => select(plies.length)}>››</button>
+							<button class="btn btn-surface flip" onclick={() => { orientation = other(orientation); }}>Flip</button>
+						</div>
+					{/if}
+					{@render preferenceRow()}
+					<EvalGraph win={graphWin} moves={graphMoves} total={plies.length} ply={decision.ply} onselect={select} />
+					{@render repertoireCard()}
+					<div class="card moves" aria-label="Move list" bind:this={moveList}>
+						{#each rows as row (row.number)}
+							<div class="move-row"><span>{row.number}</span>{@render moveButton(row.white)}{@render moveButton(row.black)}</div>
+						{/each}
 					</div>
-				{/if}
-				{#if status}<p role="status" class="status">{status}</p>{/if}
-
-				{#if !started}
-					<EvalGraph win={progress?.win ?? []} moves={reviewed} total={plies.length} ply={session.ply} onselect={select} />
-					{#if deviation}
-						<section class="card repertoire" aria-label="Repertoire">
-							<span class="eyeline">{deviation.course.name}</span>
-							{#if deviation.kind === 'you'}
-								<p><b>You left your repertoire at {moveNumber(deviation.ply + 1)}</b> You played <span class="san">{deviation.played.san}</span>, the course plays <span class="san">{deviation.expected.san}</span>.</p>
-							{:else if deviation.kind === 'opponent'}
-								<p><b>Your opponent left the course at {moveNumber(deviation.ply + 1)}</b> <span class="san">{deviation.played.san}</span> is not prepared in the course, so you were on your own from here.</p>
-							{:else}
-								<p><b>You played the course to the end of the line</b> Every move up to {moveNumber(deviation.ply + 1)} was from your repertoire.</p>
-							{/if}
-							<div class="repertoire-actions">
-								<button class="btn sm btn-surface" onclick={() => select(deviation.kind === 'complete' ? deviation.ply + 1 : deviation.ply)}>Show position</button>
-								<a class="btn sm btn-primary" href={deviationHref}>{deviationLearned ? 'Drill this line' : 'Learn this line'}</a>
+					{#if moments.length}
+						<section class="card moments" aria-label="Key moments">
+							<h2>Key moments</h2>
+							<div>
+								{#each moments as ply (ply)}
+									{@const move = review.moves[ply - 1]}
+									{#if move}
+										<button type="button" class:active={decision.ply === ply} onclick={() => select(ply)}>
+											<span>{moveNumber(ply)} {move.san}</span><Label classification={move.classification} named />
+										</button>
+									{/if}
+								{/each}
 							</div>
 						</section>
-					{/if}
-					<div class="seg" use:seg role="group" aria-label="Review panel">
-						<button aria-pressed={tab === 'moves'} onclick={() => { tab = 'moves'; }}>Moves</button>
-						<button aria-pressed={tab === 'summary'} onclick={() => { tab = 'summary'; }}>Summary</button>
-					</div>
-					{#if tab === 'summary'}
-						{#if review}
-							<Summary {game} {review} />
-							{#if !game.userColor}
-								<label class="card retry-side">Retry mistakes as
-									<select aria-label="Side to retry" bind:value={retrySide}><option value="w">White</option><option value="b">Black</option></select>
-								</label>
-							{/if}
-						{:else}<p class="card empty">The summary appears when analysis finishes.</p>{/if}
-					{:else}
-						<div class="card moves" aria-label="Move list" bind:this={moveList}>
-							{#each rows as row (row.number)}
-								<div class="move-row"><span>{row.number}</span>{@render moveButton(row.white)}{@render moveButton(row.black)}</div>
-							{/each}
-						</div>
-						{#if keyMoments.length}
-							<section class="card moments" aria-label="Key moments">
-								<h2>Key moments</h2>
-								<div>
-									{#each keyMoments as move (move.ply)}
-										<button class:active={session.ply === move.ply} onclick={() => select(move.ply)}>
-											<span>{moveNumber(move.ply)} {move.san}</span><Label classification={move.classification} named />
-										</button>
-									{/each}
-								</div>
-							</section>
-						{/if}
 					{/if}
 				{/if}
 			</section>
@@ -475,76 +855,320 @@
 </main>
 
 <style>
-	.review { max-width: 580px; padding-top: 12px; padding-bottom: 28px; }
-	.header { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; }
-	.header > div { flex: 1; min-width: 0; }
-	h1 { font-size: 24px; line-height: 1.12; letter-spacing: -.045em; }
-	.header p { margin-top: 3px; color: var(--text-2); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.back { display: grid; place-items: center; width: 35px; height: 35px; flex: 0 0 auto; border: 1px solid var(--stroke-2); border-radius: var(--r-sm); background: var(--surface-2); font: 32px/1 var(--font); padding-bottom: 3px; }
-	.depth { display: grid; gap: 2px; flex-shrink: 0; }
-	.depth span { color: var(--text-2); font-size: 10px; }
-	select { max-width: 100%; border: 1px solid var(--stroke-2); border-radius: var(--r-xs); background: var(--surface-2); color: var(--text); font: 11px var(--mono); padding: 6px 4px; }
-	.workspace, .panel { display: grid; gap: 10px; min-width: 0; align-content: start; }
-	.board-column { display: grid; gap: 5px; min-width: 0; align-content: start; }
-	.player { display: flex; align-items: center; min-width: 0; gap: 8px; min-height: 30px; padding: 0 1px; }
-	.player b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; }
-	.player span { flex: 0 0 auto; color: var(--text-2); font: 11px var(--mono); }
-	.player .chip { margin-left: auto; color: var(--text); }
-	.side { width: 12px; aspect-ratio: 1; background: #2e2e31; border: 1px solid #4d4d52; border-radius: 3px; }
-	.side.white { background: #e9e4dd; border-color: #f4f4f2; }
-	.board-row { display: grid; grid-template-columns: 23px minmax(0, 1fr); gap: 6px; }
-	.eval { position: relative; overflow: hidden; text-align: center; border: 1px solid var(--stroke-2); border-radius: var(--r-xs); background: #262629; color: var(--text); }
-	.eval .fill { position: absolute; inset: 0; background: #e9e4dd; transform-origin: bottom; transition: transform 200ms var(--ease-out); }
-	.eval.inverted { background: #e9e4dd; color: var(--bg); }
-	.eval.inverted .fill { background: #262629; }
-	.eval span { position: absolute; inset: 6px auto auto 50%; writing-mode: vertical-rl; transform: translateX(-50%) rotate(180deg); font: 700 10px var(--mono); mix-blend-mode: difference; color: white; }
-	.coach, .progress-card, .error, .empty { padding: 12px 14px; }
-	.coach { display: grid; gap: 10px; background: var(--g-card-glow), var(--surface-2); }
-	.coach-main { display: flex; align-items: center; gap: 10px; }
-	.eyeline { display: block; color: var(--text-2); font: 10px var(--mono); }
-	.coach h2 { font-size: 16px; letter-spacing: -.025em; }
-	.coach p, .empty { font-size: 13px; color: var(--text-2); }
-	.actions { display: flex; flex-wrap: wrap; gap: 8px; }
-	.compact { height: 34px; font-size: 12px; padding: 0 12px; }
-	.navigation { display: grid; grid-template-columns: repeat(4, 1fr) minmax(49px, .8fr); gap: 7px; }
-	.navigation .btn { height: 38px; padding: 0; border-radius: var(--r-sm); font-size: 19px; }
-	.navigation .flip { font-size: 12px; }
-	.variation { display: flex; flex-wrap: wrap; gap: 5px; }
-	.variation button { padding: 4px 7px; border-radius: var(--r-xs); background: var(--surface-3); font: 12px var(--mono); }
-	.active { background: var(--accent-soft) !important; color: var(--accent-hi); }
-	.progress-card > div:first-child { display: flex; justify-content: space-between; align-items: baseline; gap: 9px; margin-bottom: 7px; }
-	.progress-card span { color: var(--text-2); font: 11px var(--mono); }
-	.error { color: var(--bad); }
-	.error button { margin-top: 8px; }
-	.status { color: var(--good); font-size: 13px; padding: 0 4px; }
-	.moves { max-height: 260px; overflow-y: auto; overscroll-behavior: contain; padding: 6px; }
-	.move-row { display: grid; grid-template-columns: 37px 1fr 1fr; gap: 3px; align-items: center; }
-	.move-row:nth-child(even) { background: var(--surface-1); border-radius: var(--r-xs); }
-	.move-row > span { text-align: center; color: var(--text-2); font: 11px var(--mono); }
-	.move { display: flex; text-align: left; align-items: center; justify-content: space-between; min-height: 35px; padding: 3px 9px; gap: 5px; font: 13px var(--mono); border-radius: var(--r-xs); }
-	@media (hover: hover) and (pointer: fine) { .move:hover, .moments button:hover { background: var(--surface-4); } }
-	.repertoire { padding: 12px 14px; display: grid; gap: 8px; }
-	.repertoire p { font-size: 14px; line-height: 1.5; color: var(--text-2); }
-	.repertoire p b { display: block; color: var(--text); font-weight: 600; }
-	.repertoire .san { font: 600 13px var(--mono); color: var(--accent-hi); }
-	.repertoire-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-	.moments { padding: 10px 12px; }
-	.moments h2 { font-size: 14px; margin-bottom: 6px; }
-	.moments > div { display: grid; max-height: 220px; overflow-y: auto; }
-	.moments button { display: flex; min-height: 35px; justify-content: space-between; align-items: center; padding: 3px 7px; border-radius: var(--r-xs); gap: 5px; font: 12px var(--mono); }
-	.retry-side { display: flex; align-items: center; gap: 10px; padding: 9px 14px; font-size: 13px; }
+	.review {
+		max-width: 580px;
+		padding-top: 12px;
+		padding-bottom: 28px;
+	}
+	.header {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-bottom: 13px;
+	}
+	.header > div {
+		flex: 1;
+		min-width: 0;
+	}
+	h1 {
+		font-size: 24px;
+		line-height: 1.12;
+		letter-spacing: -0.045em;
+	}
+	.header p {
+		margin-top: 3px;
+		color: var(--text-2);
+		font-size: 11px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.back {
+		display: grid;
+		place-items: center;
+		width: 35px;
+		height: 35px;
+		flex: 0 0 auto;
+		border: 1px solid var(--stroke-2);
+		border-radius: var(--r-sm);
+		background: var(--surface-2);
+		font: 32px/1 var(--font);
+		padding-bottom: 3px;
+	}
+	.depth {
+		display: grid;
+		gap: 2px;
+		flex-shrink: 0;
+	}
+	.depth span {
+		color: var(--text-2);
+		font-size: 10px;
+	}
+	select {
+		max-width: 100%;
+		border: 1px solid var(--stroke-2);
+		border-radius: var(--r-xs);
+		background: var(--surface-2);
+		color: var(--text);
+		font: 11px var(--mono);
+		padding: 6px 4px;
+	}
+	.workspace,
+	.panel {
+		display: grid;
+		gap: 10px;
+		min-width: 0;
+		align-content: start;
+	}
+	.board-column {
+		display: grid;
+		gap: 5px;
+		min-width: 0;
+		align-content: start;
+	}
+	.player {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+		gap: 8px;
+		min-height: 30px;
+		padding: 0 1px;
+	}
+	.player b {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		font-size: 13px;
+	}
+	.player span {
+		flex: 0 0 auto;
+		color: var(--text-2);
+		font: 11px var(--mono);
+	}
+	.player .chip {
+		margin-left: auto;
+		color: var(--text);
+	}
+	.side {
+		width: 12px;
+		aspect-ratio: 1;
+		background: var(--surface-4);
+		border: 1px solid var(--stroke-2);
+		border-radius: 3px;
+	}
+	.side.white {
+		background: var(--sq-light);
+		border-color: var(--text);
+	}
+	.board-row {
+		display: grid;
+		grid-template-columns: 28px minmax(0, 1fr);
+		gap: 8px;
+		align-items: stretch;
+	}
+	.stage {
+		display: grid;
+	}
+	.stage > * {
+		grid-area: 1 / 1;
+	}
+	.overview-layer {
+		display: grid;
+		gap: 12px;
+	}
+	.loading-layer.done {
+		pointer-events: none;
+	}
+	.coach-card {
+		display: grid;
+		gap: 10px;
+		padding: 12px 14px;
+		background: var(--g-card-glow), var(--surface-2);
+	}
+	.coach-label {
+		display: flex;
+	}
+	.eyeline {
+		display: block;
+		color: var(--text-2);
+		font: 10px var(--mono);
+	}
+	.actions,
+	.prefs,
+	.repertoire-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.prefs {
+		align-items: end;
+	}
+	.prefs label {
+		display: grid;
+		gap: 2px;
+		color: var(--text-2);
+		font-size: 10px;
+	}
+	.compact {
+		height: 34px;
+		font-size: 12px;
+		padding: 0 12px;
+	}
+	.navigation {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr) minmax(49px, 0.8fr);
+		gap: 7px;
+	}
+	.navigation .btn {
+		height: 38px;
+		padding: 0;
+		border-radius: var(--r-sm);
+		font-size: 19px;
+	}
+	.navigation .flip {
+		font-size: 12px;
+	}
+	.variation {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px;
+	}
+	.variation button {
+		padding: 4px 7px;
+		border-radius: var(--r-xs);
+		background: var(--surface-3);
+		font: 12px var(--mono);
+	}
+	.active {
+		background: var(--accent-soft) !important;
+		color: var(--accent-hi);
+	}
+	.error {
+		padding: 12px 14px;
+		color: var(--bad);
+	}
+	.error button {
+		margin-top: 8px;
+	}
+	.empty {
+		padding: 12px 14px;
+		font-size: 13px;
+		color: var(--text-2);
+	}
+	.status {
+		color: var(--good);
+		font-size: 13px;
+		padding: 0 4px;
+	}
+	.moves {
+		max-height: 260px;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding: 6px;
+	}
+	.move-row {
+		display: grid;
+		grid-template-columns: 37px 1fr 1fr;
+		gap: 3px;
+		align-items: center;
+	}
+	.move-row:nth-child(even) {
+		background: var(--surface-1);
+		border-radius: var(--r-xs);
+	}
+	.move-row > span {
+		text-align: center;
+		color: var(--text-2);
+		font: 11px var(--mono);
+	}
+	.move {
+		display: flex;
+		text-align: left;
+		align-items: center;
+		justify-content: space-between;
+		min-height: 35px;
+		padding: 3px 9px;
+		gap: 5px;
+		font: 13px var(--mono);
+		border-radius: var(--r-xs);
+	}
+	@media (hover: hover) and (pointer: fine) {
+		.move:hover,
+		.moments button:hover {
+			background: var(--surface-4);
+		}
+	}
+	.repertoire {
+		display: grid;
+		gap: 8px;
+		padding: 12px 14px;
+	}
+	.repertoire p {
+		font-size: 14px;
+		line-height: 1.5;
+		color: var(--text-2);
+	}
+	.repertoire p b {
+		display: block;
+		color: var(--text);
+		font-weight: 600;
+	}
+	.repertoire .san {
+		font: 600 13px var(--mono);
+		color: var(--accent-hi);
+	}
+	.moments {
+		padding: 10px 12px;
+	}
+	.moments h2 {
+		font-size: 14px;
+		margin-bottom: 6px;
+	}
+	.moments > div {
+		display: grid;
+		max-height: 220px;
+		overflow-y: auto;
+	}
+	.moments button {
+		display: flex;
+		min-height: 35px;
+		justify-content: space-between;
+		align-items: center;
+		padding: 3px 7px;
+		border-radius: var(--r-xs);
+		gap: 5px;
+		font: 12px var(--mono);
+	}
 	@media (min-width: 1024px) {
-		.review { max-width: 1160px; }
-		.header { margin-bottom: 18px; }
-		h1 { font-size: 31px; }
-		.header p { font-size: 13px; }
-		.workspace { grid-template-columns: minmax(0, 1.3fr) minmax(340px, 1fr); gap: 23px; }
-		.board-column { position: sticky; top: 8px; }
-		.board-row { grid-template-columns: 27px minmax(0, 1fr); gap: 8px; }
-		.panel { gap: 12px; padding-top: 35px; }
-		.player b { font-size: 15px; }
-		.coach h2 { font-size: 19px; }
-		.coach, .progress-card { padding: 15px 16px; }
-		.navigation .btn { height: 43px; }
+		.review {
+			max-width: 1160px;
+		}
+		.header {
+			margin-bottom: 18px;
+		}
+		h1 {
+			font-size: 31px;
+		}
+		.header p {
+			font-size: 13px;
+		}
+		.workspace {
+			grid-template-columns: minmax(0, 1.3fr) minmax(340px, 1fr);
+			gap: 23px;
+		}
+		.board-column {
+			position: sticky;
+			top: 8px;
+		}
+		.panel {
+			gap: 12px;
+			padding-top: 35px;
+		}
+		.player b {
+			font-size: 15px;
+		}
+		.navigation .btn {
+			height: 43px;
+		}
 	}
 </style>
