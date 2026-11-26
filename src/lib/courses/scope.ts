@@ -97,7 +97,7 @@ export function pendingNotice(course: Course, choice: DepthChoice, progress: Rea
 		return unlock(
 			'unlock:drill',
 			'Drill and Time are open',
-			'Drill draws learned lines at random and ends on the first miss. Time gives you 60 seconds: clean lines add time and mistakes cost it.',
+			'Drill deals your learned lines as a deck and keeps your streak going. Time gives you 60 seconds: clean lines add time and mistakes cost it.',
 			'Go to Drill',
 			'/drill'
 		);
