@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ChevronDown, ChevronLeft, ChevronRight, Trash2 } from '@lucide/svelte';
 	import { slide } from 'svelte/transition';
 	import { easeOut, reducedMotion } from '#lib/motion.ts';
 	import { seg } from '#lib/components/seg.ts';
@@ -97,13 +98,13 @@
 	<main class="page">
 		<header class="top">
 			<a class="icon-btn" href="/" aria-label="Back">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+				<ChevronLeft size={18} stroke-width={1.75} />
 			</a>
 			{#if isCustom(course.id)}
 				<div class="course-actions">
 					<a class="btn sm btn-surface" href="/create?edit={course.id}">Edit</a>
 					<button class="icon-btn" onclick={remove} aria-label="Delete course">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" /></svg>
+						<Trash2 size={18} stroke-width={1.75} />
 					</button>
 				</div>
 			{/if}
@@ -152,7 +153,7 @@
 						<b>Coverage</b>
 						<small>Share of real opponents' replies the course answers, from {(sample / 1e6).toFixed(1)}M Lichess games.{coverage.gaps.length ? ` ${coverage.gaps.length} ${coverage.gaps.length === 1 ? 'gap' : 'gaps'}.` : ''}</small>
 					</span>
-					{#if coverage.gaps.length}<svg class:flip={gapsOpen} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6" /></svg>{/if}
+					{#if coverage.gaps.length}<ChevronDown class:flip={gapsOpen} size={18} stroke-width={1.75} />{/if}
 				</button>
 				{#if gapsOpen}
 					<ol class="gaps" transition:slide={reveal}>
@@ -181,7 +182,7 @@
 					<button class="ch-head" onclick={() => (open = open === chapter.id ? undefined : chapter.id)} aria-expanded={open === chapter.id}>
 						<span class="num">{ci + 1}</span>
 						<span class="t"><b>{chapter.name}</b><small>{learned}/{chapter.lines.length} learned{chapter.moves ? ` · ${chapter.moves}` : ''}</small></span>
-						<svg class:flip={open === chapter.id} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6" /></svg>
+						<ChevronDown class:flip={open === chapter.id} size={18} stroke-width={1.75} />
 					</button>
 					{#if open === chapter.id}
 						<p class="intro" transition:slide={reveal}>{chapter.intro}</p>
@@ -224,7 +225,7 @@
 					<a class="row-item" href="/quiz/{course.id}/{chapter.id}">
 						<span class="qicon">?</span>
 						<span class="t"><b>{chapter.name}</b><span>{chapter.quiz.length} questions</span></span>
-						<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6" /></svg>
+						<ChevronRight size={18} stroke-width={1.75} />
 					</a>
 				{/each}
 			</div>
@@ -358,11 +359,11 @@
 		text-align: left;
 		padding: 10px 0;
 	}
-	.cov-head svg {
+	.cov-head :global(svg) {
 		color: var(--text-3);
 		transition: transform 220ms var(--ease-out);
 	}
-	.cov-head svg.flip {
+	.cov-head :global(svg.flip) {
 		transform: rotate(180deg);
 	}
 	.ring {
@@ -422,11 +423,11 @@
 		text-align: left;
 		padding: 4px 2px 10px;
 	}
-	.ch-head svg {
+	.ch-head :global(svg) {
 		color: var(--text-3);
 		transition: transform 220ms var(--ease-out);
 	}
-	.ch-head svg.flip {
+	.ch-head :global(svg.flip) {
 		transform: rotate(180deg);
 	}
 	.num {
