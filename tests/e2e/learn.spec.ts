@@ -29,6 +29,18 @@ test('learn a line, recover from a wrong move, and keep progress', async ({ page
 	await expect(page).toHaveURL(/\/course\/jobava-london$/);
 	await page.reload();
 	await expect(page.getByText(/1\/\d+ learned/).first()).toBeVisible();
+	await page.goto('/you');
+	await expect(page.getByText('Lines discovered').locator('..')).toContainText('1');
+	const [backup] = await Promise.all([
+		page.waitForEvent('download'),
+		page.getByRole('button', { name: 'Export' }).click()
+	]);
+	await page.getByRole('button', { name: 'Reset', exact: true }).click();
+	await page.getByRole('button', { name: 'Delete', exact: true }).click();
+	await expect(page.getByText('Lines discovered').locator('..')).toContainText('0');
+	await page.locator('input[type=file]').setInputFiles(await backup.path());
+	await page.getByRole('button', { name: 'Replace', exact: true }).click();
+	await expect(page.getByText('Lines discovered').locator('..')).toContainText('1');
 	await page.goto('/practice');
 	await page.getByRole('link', { name: 'Start practice' }).click();
 	const practiceBoard = page.getByRole('application', { name: /Chess board/ });
@@ -44,4 +56,19 @@ test('learn a line, recover from a wrong move, and keep progress', async ({ page
 	await page.goto('/drill');
 	await page.getByRole('link', { name: 'Start the clock' }).click();
 	await expect(page.getByRole('application', { name: /Chess board/ })).toBeVisible();
+});
+
+test('trainer appearance settings persist', async ({ page }) => {
+	await page.goto('/learn/jobava-london/nb5-na6-c6');
+	await page.getByRole('button', { name: 'Start learning' }).click();
+	await page.getByRole('button', { name: 'Trainer settings' }).click();
+	await page.getByRole('button', { name: 'Green', exact: true }).click();
+	await page.getByRole('button', { name: 'Merida', exact: true }).click();
+	await page.getByRole('group', { name: 'Text size' }).getByRole('button', { name: 'Large', exact: true }).click();
+	await expect(page.getByRole('button', { name: 'Merida', exact: true })).toHaveAttribute('aria-pressed', 'true');
+	await page.reload();
+	await page.getByRole('button', { name: 'Trainer settings' }).click();
+	await expect(page.getByRole('button', { name: 'Green', exact: true })).toHaveAttribute('aria-pressed', 'true');
+	await expect(page.getByRole('button', { name: 'Merida', exact: true })).toHaveAttribute('aria-pressed', 'true');
+	await expect(page.getByRole('group', { name: 'Text size' }).getByRole('button', { name: 'Large', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
