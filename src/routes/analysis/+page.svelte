@@ -53,6 +53,10 @@
 	const positionHref = $derived(fen === START_FEN ? '/analysis' : `/analysis?fen=${encodeURIComponent(fen)}`);
 	const shownLines = $derived(engineFen === fen ? lines : []);
 
+	$effect(() => {
+		if (target && !custom.some((course) => course.id === target && course.side === side)) target = '';
+	});
+
 	onMount(() => {
 		const params = page.url.searchParams;
 		addOpen = params.get('add') === 'course';
