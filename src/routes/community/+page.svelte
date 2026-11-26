@@ -15,14 +15,14 @@
 	</header>
 	<div class="list">
 		{#each shelf as course (course.id)}
-			<article class="card item">
-				<div>
+			<a class="card item" href={course.href}>
+				<div class="copy">
 					<p class="label">{course.side === 'w' ? 'White' : 'Black'} · {course.lines} lines</p>
 					<h2 class="h-title">{course.name}</h2>
 					<p class="muted">{course.tagline}</p>
 				</div>
-				<a class="btn btn-primary" href={course.href}>Try the first line</a>
-			</article>
+				<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+			</a>
 		{/each}
 	</div>
 </main>
@@ -43,11 +43,23 @@
 		}
 	}
 	.item {
-		display: grid;
+		display: flex;
+		align-items: center;
 		gap: 12px;
 		padding: 16px;
+		color: inherit;
+	}
+	.copy {
+		flex: 1;
+		min-width: 0;
 	}
 	.item .muted {
 		margin: 4px 0 0;
+	}
+	.chevron {
+		flex: 0 0 auto;
+		width: 20px;
+		height: 20px;
+		color: var(--text-3);
 	}
 </style>
