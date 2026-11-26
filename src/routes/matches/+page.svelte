@@ -6,7 +6,7 @@
 	import { db, getSetting, setSetting } from '#lib/db.ts';
 	import { fetchGames, PLATFORMS, type OnlineSource } from '#lib/import/fetch-games.ts';
 	import { parsePgn } from '#lib/import/pgn.ts';
-	import { Compass, LayoutGrid, List } from '@lucide/svelte';
+	import { ChevronRight, Compass, LayoutGrid, List } from '@lucide/svelte';
 	import type { GameRecord, GameReview } from '#lib/review/types.ts';
 
 	const sources: OnlineSource[] = ['lichess', 'chesscom'];
@@ -151,7 +151,7 @@
 				<button class="btn btn-primary block" disabled={busy}>{busy ? 'Importing…' : source === 'lichess' ? 'Import last 50 games' : 'Import recent games'}</button>
 			</form>
 			<details>
-				<summary>Paste a PGN</summary>
+				<summary><ChevronRight size={18} stroke-width={1.75} />Paste a PGN</summary>
 				<form onsubmit={importPgn}>
 					<textarea aria-label="Game PGN" placeholder="1. e4 e5 2. Nf3…" bind:value={pgn} required spellcheck={false} rows="5"></textarea>
 					<button class="btn block">Review PGN</button>
@@ -246,7 +246,21 @@
 	.columns { display: grid; gap: 22px; align-items: start; }
 	.import { display: grid; gap: 14px; padding: 16px; background: var(--g-card-glow), var(--surface-2); }
 	form { display: grid; gap: 11px; }
-	summary { cursor: pointer; color: var(--text-2); font-weight: 600; }
+	summary {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		cursor: pointer;
+		color: var(--text-2);
+		font-weight: 600;
+		list-style: none;
+	}
+	summary::-webkit-details-marker { display: none; }
+	summary :global(svg) {
+		flex: 0 0 auto;
+		transition: transform 220ms var(--ease-out);
+	}
+	details[open] > summary :global(svg) { transform: rotate(90deg); }
 	details[open] form { margin-top: 12px; }
 	textarea { width: 100%; padding: 10px; border: 1px solid var(--stroke-2); border-radius: var(--r-sm); resize: vertical; background: var(--bg); color: var(--text); font: 13px/1.5 var(--mono); }
 	.feedback { color: var(--text); font-size: 13px; }
