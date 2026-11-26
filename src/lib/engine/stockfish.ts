@@ -57,7 +57,7 @@ class Stockfish implements Engine {
 			const options = threaded
 				? ['setoption name Threads value ' + Math.max(1, navigator.hardwareConcurrency - 1)]
 				: [];
-			await this.collect([...options, 'isready'], line => line === 'readyok');
+			await this.collect([...options, 'setoption name Hash value 128', 'isready'], line => line === 'readyok');
 		} finally {
 			clearTimeout(timeout);
 		}
