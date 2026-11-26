@@ -329,6 +329,8 @@
 		height: 44px;
 		padding: 0 14px;
 		font-size: 14px;
+		white-space: normal;
+		text-align: center;
 	}
 	.plies {
 		display: flex;
@@ -348,6 +350,7 @@
 	}
 	.board {
 		position: relative;
+		width: 100%;
 	}
 	.draw {
 		position: absolute;
@@ -378,12 +381,13 @@
 	.error {
 		color: var(--bad);
 	}
-	@media (min-width: 900px) {
+	@container (min-width: 720px) {
 		.editor {
-			grid-template-columns: minmax(240px, 360px) minmax(0, 1fr);
+			grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
 			align-items: start;
 		}
 		.board-col {
+			order: -1;
 			position: sticky;
 			top: 12px;
 		}

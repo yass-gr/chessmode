@@ -176,11 +176,17 @@
 	}
 
 	async function copy() {
-		if (!previous) return;
-		const file = copyCourse(previous);
-		await saveCustomCourse(file);
-		await goto(`/create?edit=${file.id}`, { invalidateAll: true });
-		location.reload();
+		if (!previous) {
+			loadError = 'Nothing saved to copy yet.';
+			return;
+		}
+		try {
+			const file = copyCourse(previous);
+			await saveCustomCourse(file);
+			location.assign(`/create?edit=${file.id}`);
+		} catch (error) {
+			loadError = error instanceof Error ? error.message : String(error);
+		}
 	}
 
 	async function markLearned() {
@@ -193,15 +199,21 @@
 	async function create() {
 		if (!ready || structureError || parseError || !lineCount) return;
 		saving = true;
-		const file = { ...ready, tagline: `${lineCount} ${lineCount === 1 ? 'line' : 'lines'} imported from PGN.` };
-		await saveCustomCourse(file);
-		await goto(`/course/${id}`);
+		try {
+			const file = { ...ready, tagline: `${lineCount} ${lineCount === 1 ? 'line' : 'lines'} imported from PGN.` };
+			await saveCustomCourse(file);
+			await goto(`/course/${id}`);
+		} catch (error) {
+			parseError = error instanceof Error ? error.message : String(error);
+		} finally {
+			saving = false;
+		}
 	}
 </script>
 
 <svelte:head><title>Create a course · Chessmode</title></svelte:head>
 
-<main class="page">
+<main class="page wide">
 	<header class="top">
 		<a class="icon-btn" href="/courses" aria-label="Back">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
@@ -266,7 +278,7 @@
 				</ul>
 			{/if}
 			{#each ready.chapters as chapter}
-				<p><b>{chapter.name}</b> · {chapter.lines.length} lines</p>
+				<p><b>{chapter.name}</b> · {chapter.lines.length} {chapter.lines.length === 1 ? 'line' : 'lines'}</p>
 			{/each}
 			<button class="btn btn-surface" onclick={download}>Export preview as PGN</button>
 		</section>
@@ -321,6 +333,7 @@
 		gap: 12px;
 		align-content: start;
 		padding-bottom: 140px;
+		container-type: inline-size;
 	}
 	.actions {
 		display: flex;
