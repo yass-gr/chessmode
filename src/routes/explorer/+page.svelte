@@ -162,8 +162,10 @@
 
 <main class="page explorer">
 	<header class="top">
-		<a class="back" href="/matches" aria-label="Back to Matches">‹</a>
-		<div>
+		<a class="icon-btn" href="/matches" aria-label="Back to Matches">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+		</a>
+		<div class="titles">
 			<h1>Opening explorer</h1>
 			<p>{courseName ?? 'All saved courses'}</p>
 		</div>
@@ -174,20 +176,20 @@
 			<Board {fen} arrows={arrow} lastMove={incoming ? [incoming.slice(0, 2), incoming.slice(2, 4)] : undefined} movable="none" />
 			{#if steps[cursor]?.san}<p class="selected">Selected · {steps[cursor].san}</p>{/if}
 			<div class="nav">
-				<button class="btn" type="button" disabled={cursor === 0} onclick={() => shift(-1)}>Back</button>
-				<button class="btn" type="button" disabled={cursor >= steps.length - 1} onclick={() => shift(1)}>Forward</button>
-				<a class="btn" href={analysisHref(fen)}>Analyse</a>
+				<button class="btn sm btn-surface" type="button" disabled={cursor === 0} onclick={() => shift(-1)}>Back</button>
+				<button class="btn sm btn-surface" type="button" disabled={cursor >= steps.length - 1} onclick={() => shift(1)}>Forward</button>
+				<a class="btn sm btn-primary" href={analysisHref(fen)}>Analyse</a>
 			</div>
 		</section>
 
 		<section class="panel" aria-label="Replies">
-			<div class="courses" role="group" aria-label="Course">
+			<div class="scroll" role="group" aria-label="Course">
 				<button class="chip" class:accent={!courseId} type="button" aria-pressed={!courseId} onclick={() => (courseId = undefined)}>All</button>
 				{#each list as course (course.id)}
 					<button class="chip" class:accent={courseId === course.id} type="button" aria-pressed={courseId === course.id} onclick={() => (courseId = course.id)}>{course.name}</button>
 				{/each}
 			</div>
-			<div class="bands" role="group" aria-label="Rating band">
+			<div class="scroll" role="group" aria-label="Rating band">
 				<button class="chip" class:accent={band === 'all'} type="button" aria-pressed={band === 'all'} onclick={() => (band = 'all')}>All</button>
 				{#each EXPLORER_BANDS as value (value)}
 					<button class="chip" class:accent={band === value} type="button" aria-pressed={band === value} onclick={() => (band = value)}>{value}</button>
@@ -236,7 +238,7 @@
 				</div>
 			{/if}
 
-			<button class="btn block" type="button" onclick={copyLink}>Copy position link</button>
+			<button class="btn sm btn-surface block" type="button" onclick={copyLink}>Copy position link</button>
 		</section>
 	</div>
 </main>
@@ -249,13 +251,17 @@
 	.top {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		margin-bottom: 12px;
+		gap: 12px;
+		padding: 14px 0 16px;
+	}
+	.titles {
+		flex: 1;
+		min-width: 0;
 	}
 	h1 {
-		font-size: clamp(26px, 4vw, 36px);
-		letter-spacing: -0.045em;
-		line-height: 1.1;
+		font-size: 22px;
+		letter-spacing: -0.03em;
+		line-height: 1.15;
 	}
 	.top p,
 	h2 span,
@@ -265,16 +271,7 @@
 	}
 	.top p {
 		font-size: 13px;
-	}
-	.back {
-		display: grid;
-		place-items: center;
-		width: 36px;
-		height: 36px;
-		border-radius: var(--r-pill);
-		background: var(--surface-2);
-		font-size: 22px;
-		line-height: 1;
+		line-height: 1.35;
 	}
 	.workspace {
 		display: grid;
@@ -291,12 +288,29 @@
 		color: var(--accent-hi);
 	}
 	.nav {
-		display: flex;
-		flex-wrap: wrap;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
 		gap: 8px;
 	}
-	.courses,
-	.bands,
+	.nav .btn {
+		width: 100%;
+		padding-inline: 10px;
+	}
+	.scroll {
+		display: flex;
+		gap: 8px;
+		overflow-x: auto;
+		scrollbar-width: none;
+		margin: 0 calc(-1 * var(--gutter));
+		padding: 0 var(--gutter) 2px;
+	}
+	.scroll .chip {
+		flex: 0 0 auto;
+		height: 34px;
+		padding: 0 14px;
+		font-size: 13px;
+		cursor: pointer;
+	}
 	.zeros {
 		display: flex;
 		flex-wrap: wrap;
@@ -304,11 +318,6 @@
 	}
 	.chip {
 		cursor: pointer;
-	}
-	.chip.accent {
-		background: var(--accent-soft);
-		border-color: rgba(255, 107, 44, 0.35);
-		color: var(--accent-hi);
 	}
 	.zero {
 		color: var(--text-3);
@@ -376,6 +385,10 @@
 			grid-template-columns: minmax(280px, 460px) minmax(0, 1fr);
 			gap: 28px;
 			align-items: start;
+		}
+		.scroll {
+			margin: 0;
+			padding: 0 0 2px;
 		}
 	}
 </style>
