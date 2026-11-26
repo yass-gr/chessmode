@@ -38,7 +38,9 @@ export function totalXp(sessions: SessionLog[]): number {
 }
 
 export function best(sessions: SessionLog[], mode: 'drill' | 'time'): number {
-	return sessions.filter((s) => s.mode === mode).reduce((m, s) => Math.max(m, s.score ?? 0), 0);
+	return sessions
+		.filter((s) => s.mode === mode && (mode === 'drill' || s.metric === 'moves'))
+		.reduce((m, s) => Math.max(m, s.score ?? 0), 0);
 }
 
 /** The FEN after the last move of a line, for thumbnails. */

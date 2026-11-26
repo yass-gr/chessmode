@@ -11,8 +11,10 @@ export interface LineProgress {
 	learnedAt: number;
 	reviews: number;
 	lapses: number;
-	/** Set once a practice run finishes with no mistakes and no hints. */
+	/** Set once an eligible run finishes with no mistakes and no hints. A Practice reset clears it. */
 	clean?: boolean;
+	/** 1–10. Discovery starts at 5. Rows saved before this field count as 5. */
+	confidence?: number;
 }
 
 /** One finished training session, used for streaks, XP and personal bests. */
@@ -25,8 +27,12 @@ export interface SessionLog {
 	courseId?: string;
 	lines: number;
 	mistakes: number;
-	/** Drill streak length or Time-mode score. */
+	/**
+	 * Drill stores the best clean streak. Time stores unassisted move points when `metric` is `moves`.
+	 * Older Time rows counted clean lines and have no metric, so they are not the same scale.
+	 */
 	score?: number;
+	metric?: 'lines' | 'moves';
 	xp: number;
 }
 

@@ -1,23 +1,38 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { courses } from '#lib/courses/index.ts';
+	import { courseScope, defaultDepth, type DepthChoice } from '#lib/courses/depth.ts';
 	import type { LineProgress } from '#lib/db.ts';
 	import type { LineKey } from '#lib/courses/types.ts';
 	import MiniBoard from '#lib/components/MiniBoard.svelte';
-	import { loadProgress } from '#lib/train/data.ts';
+	import ResetCourse from '#lib/components/train/ResetCourse.svelte';
+	import { loadDepth, loadProgress } from '#lib/train/data.ts';
 	import { lineEnd, relativeTime } from '#lib/train/stats.ts';
 
 	let progress = $state(new Map<LineKey, LineProgress>());
+	let depths = $state<Record<string, DepthChoice>>({});
 	let loaded = $state(false);
 	let scope = $state('');
 	const now = Date.now();
 
-	onMount(async () => {
+	async function reload() {
 		progress = await loadProgress();
+		const entries = await Promise.all(courses.map(async (course) => [course.id, await loadDepth(course.id)] as const));
+		depths = Object.fromEntries(entries);
 		loaded = true;
-	});
+	}
 
-	const rows = $derived([...progress.values()].filter((p) => !scope || p.courseId === scope).sort((a, b) => +new Date(a.card.due) - +new Date(b.card.due)));
+	onMount(reload);
+
+	const rows = $derived.by(() => {
+		const picked: LineProgress[] = [];
+		for (const course of courses) {
+			if (scope && course.id !== scope) continue;
+			const selected = new Set(courseScope(course, depths[course.id] ?? defaultDepth(), progress).lines.map((line) => line.key));
+			for (const row of progress.values()) if (row.courseId === course.id && selected.has(row.key)) picked.push(row);
+		}
+		return picked.sort((a, b) => +new Date(a.card.due) - +new Date(b.card.due));
+	});
 	const due = $derived(rows.filter((p) => new Date(p.card.due).getTime() <= now));
 	const upcoming = $derived(rows.filter((p) => new Date(p.card.due).getTime() > now).slice(0, 6));
 	const lookup = (key: string) => {
@@ -26,7 +41,7 @@
 			if (line) return { course: c, line };
 		}
 	};
-	const query = (ahead: boolean) => new URLSearchParams({ ...(scope ? { course: scope } : {}), ...(ahead ? { ahead: '1' } : {}) }).toString();
+	const query = () => new URLSearchParams(scope ? { course: scope } : {}).toString();
 </script>
 
 <svelte:head><title>Practice · Chessmode</title></svelte:head>
@@ -49,8 +64,8 @@
 			<section class="card glow hero">
 				<img src="/img/node-locked.webp" alt="" />
 				<h2 class="h-title">Nothing to practise yet</h2>
-				<p class="muted">Learn a line first. It shows up here when it is time to review it.</p>
-				<a class="btn btn-primary block" href="/">Learn a line</a>
+				<p class="muted">Learn a line in this depth first. Practice can start as soon as one line is learned, whether or not it is due.</p>
+				<a class="btn btn-primary block" href={scope ? `/course/${scope}` : '/'}>Learn a line</a>
 			</section>
 		{:else}
 			<section class="card glow hero">
@@ -59,17 +74,9 @@
 				</div>
 				<h2 class="h-title">{due.length ? `${due.length} ${due.length === 1 ? 'line' : 'lines'} to review` : 'All caught up'}</h2>
 				<p class="muted">
-					{#if due.length}
-						{rows.length} learned. Clean lines come back later, missed ones come back soon.
-					{:else if upcoming[0]}
-						Next review {relativeTime(new Date(upcoming[0].card.due).getTime(), now)}.
-					{/if}
+					{rows.length} learned. {due.length ? `${due.length} due. ` : upcoming[0] ? `Next review ${relativeTime(new Date(upcoming[0].card.due).getTime(), now)}. ` : ''}Due is a reminder. Practice also takes lines that are not due yet.
 				</p>
-				{#if due.length}
-					<a class="btn btn-primary block" href="/practice/run?{query(false)}">Start practice</a>
-				{:else}
-					<a class="btn btn-surface block" href="/practice/run?{query(true)}">Review ahead</a>
-				{/if}
+				<a class="btn btn-primary block" href="/practice/run?{query()}">Start practice</a>
 			</section>
 
 			{#if upcoming.length}
@@ -89,6 +96,13 @@
 						{/if}
 					{/each}
 				</div>
+			{/if}
+		{/if}
+		{#if scope}
+			{@const named = courses.find((course) => course.id === scope)}
+			{#if named}
+				<h3 class="label section">This course</h3>
+				<ResetCourse courseId={named.id} courseName={named.name} ondone={reload} />
 			{/if}
 		{/if}
 	{/if}

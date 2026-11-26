@@ -1,14 +1,24 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { courses } from '#lib/courses/index.ts';
-	import type { Course, Line } from '#lib/courses/types.ts';
+	import { courseScope, defaultDepth } from '#lib/courses/depth.ts';
+	import { modeAvailability } from '#lib/courses/unlocks.ts';
+	import type { Course, Line, LineKey } from '#lib/courses/types.ts';
 	import LineTrainer from '#lib/components/train/LineTrainer.svelte';
 	import ResultSheet from '#lib/components/train/ResultSheet.svelte';
-	import { db } from '#lib/db.ts';
+	import Sheet from '#lib/components/Sheet.svelte';
+	import { readCoursePreferences } from '#lib/settings/preferences.ts';
+	import { finishPractice } from '#lib/srs.ts';
 	import { logSession } from '#lib/progress.ts';
-	import { adjust, clockSpeed, drain, lineResult, pickNext, TIME_MODE } from '#lib/train/session.ts';
+	import { db } from '#lib/db.ts';
+	import { loadDepth, loadProgress } from '#lib/train/data.ts';
+	import { commonPrefix, openingSkip } from '#lib/train/lines.ts';
+	import { clockSpeed, dealDeck, drain, DRILL_ADVANCE_MS, lineBonusMs, penalise, pickNext, reward, TIME_MODE } from '#lib/train/session.ts';
 	import { best } from '#lib/train/stats.ts';
+	import type { AttemptResult } from '#lib/train/types.ts';
+	import type { LineProgress } from '#lib/db.ts';
 
 	type Item = { course: Course; line: Line };
 
@@ -16,112 +26,265 @@
 	const scope = $derived(page.url.searchParams.get('course') ?? undefined);
 
 	let pool = $state<Item[]>([]);
-	let loaded = $state(false);
-	let item = $state<Item>();
+	let skips = $state<Record<string, boolean>>({});
+	let order = $state<Item[]>([]);
+	let cursor = 0;
+	let generation = 0;
+	let item = $state<Item | undefined>();
 	let round = $state(0);
-	let score = $state(0);
-	let mistakes = $state(0);
+	let loaded = $state(false);
+	let blocked = $state('');
+	let unseen = $state<Item | undefined>();
+	let streak = $state(0);
+	let bestStreak = $state(0);
 	let previousBest = $state(0);
+	let cleanLines = $state(0);
+	let mistakes = $state(0);
+	let points = $state(0);
+	let livePoints = $state(0);
+	let finished = 0;
+	let offer = $state(false);
 	let over = $state(false);
-	let remaining = $state(0);
-	let bump = $state<'plus' | 'minus' | undefined>();
+	let settled = false;
+	let remaining = $state<number>(TIME_MODE.startMs);
+	let bump = $state('');
+	let bumpKind = $state<'plus' | 'minus'>('plus');
+
+	function itemsFrom(progress: Map<LineKey, LineProgress>, learnedOnly: boolean): Item[] {
+		return courses
+			.filter((course) => !scope || course.id === scope)
+			.flatMap((course) =>
+				course.lines
+					.filter((line) => (learnedOnly ? progress.has(line.key) : !progress.has(line.key)))
+					.map((line) => ({ course, line }))
+			);
+	}
 
 	onMount(async () => {
-		const [progress, sessions] = await Promise.all([db.progress.toArray(), db.sessions.toArray()]);
-		const keys = new Set(progress.map((p) => p.key));
-		pool = courses
-			.filter((c) => !scope || c.id === scope)
-			.flatMap((course) => course.lines.filter((l) => keys.has(l.key)).map((line) => ({ course, line })));
-		previousBest = best(sessions.filter((s) => !scope || s.courseId === scope), mode);
+		const [progress, sessions] = await Promise.all([loadProgress(), db.sessions.toArray()]);
+		const learned = itemsFrom(progress, true);
+		if (scope) {
+			const course = courses.find((item) => item.id === scope);
+			const gate = modeAvailability(mode, learned.length, course?.lines.length ?? 0);
+			if (gate.kind === 'locked') blocked = `Learn ${gate.remaining} more ${gate.remaining === 1 ? 'line' : 'lines'} to open ${mode === 'time' ? 'Time' : 'Drill'}.`;
+			else if (gate.kind === 'unavailable') blocked = gate.reason;
+		}
+		pool = learned;
+		previousBest = best(sessions.filter((row) => !scope || row.courseId === scope), mode);
+		const ids = [...new Set(learned.map((item) => item.course.id))];
+		const prefRows = await Promise.all(ids.map(async (id) => [id, (await readCoursePreferences(id)).skipSharedStart] as const));
+		skips = Object.fromEntries(prefRows);
+		const depths = await Promise.all((scope ? courses.filter((course) => course.id === scope) : courses).map(async (course) => [course.id, await loadDepth(course.id)] as const));
+		const depthOf = Object.fromEntries(depths);
+		unseen = (scope ? courses.filter((course) => course.id === scope) : courses).flatMap((course) => {
+			const selected = courseScope(course, depthOf[course.id] ?? defaultDepth(), progress);
+			const next = selected.next ?? course.lines.find((line) => !progress.has(line.key));
+			return next ? [{ course, line: next }] : [];
+		})[0];
 		loaded = true;
-		start();
+		if (!blocked && pool.length) begin();
 	});
 
-	function start() {
-		if (!pool.length) return;
-		score = 0;
-		mistakes = 0;
+	function begin() {
+		generation += 1;
+		settled = false;
 		over = false;
-		item = pickNext(pool, undefined);
-		round += 1;
+		offer = false;
+		streak = 0;
+		bestStreak = 0;
+		cleanLines = 0;
+		mistakes = 0;
+		points = 0;
+		livePoints = 0;
+		finished = 0;
 		remaining = TIME_MODE.startMs;
+		order = mode === 'drill' ? dealDeck(pool) : [];
+		cursor = 0;
+		pull(generation);
+	}
+
+	function pull(gen: number) {
+		if (gen !== generation || over || offer) return;
+		if (mode === 'drill') {
+			if (cursor >= order.length) {
+				if (unseen) {
+					offer = true;
+					return;
+				}
+				order = dealDeck(pool);
+				cursor = 0;
+			}
+			item = order[cursor];
+			cursor += 1;
+		} else {
+			item = pickNext(pool, item);
+		}
+		round += 1;
+		livePoints = 0;
+	}
+
+	function flash(text: string, kind: 'plus' | 'minus') {
+		bump = text;
+		bumpKind = kind;
+		setTimeout(() => {
+			if (bump === text) bump = '';
+		}, 600);
+	}
+
+	function record() {
+		if (settled) return;
+		settled = true;
+		generation += 1;
+		if (finished === 0) return;
+		void logSession({
+			mode,
+			courseId: scope,
+			lines: cleanLines,
+			mistakes,
+			score: mode === 'time' ? points : bestStreak,
+			metric: mode === 'time' ? 'moves' : 'lines'
+		});
+	}
+
+	function settle() {
+		const played = finished;
+		record();
+		if (played === 0) void goto('/drill');
+		else over = true;
+	}
+
+	function onmistake() {
+		if (over) return;
+		mistakes += 1;
+		if (mode === 'drill') streak = 0;
+		if (mode === 'time') {
+			remaining = penalise(remaining);
+			flash(`−${TIME_MODE.penaltyMs / 1000}s`, 'minus');
+			if (remaining <= 0) settle();
+		}
+	}
+
+	function onhint() {
+		if (mode === 'drill') streak = 0;
+	}
+
+	function onprogress(attempt: AttemptResult) {
+		livePoints = attempt.points;
+	}
+
+	function onfinish(attempt: AttemptResult) {
+		if (over || !item) return;
+		const gen = generation;
+		const current = item;
+		finished += 1;
+		void finishPractice(current.line.key, attempt.mistakes, attempt.hints);
+		const clean = attempt.mistakes === 0 && attempt.hints === 0;
+		if (mode === 'drill') {
+			if (clean) {
+				streak += 1;
+				bestStreak = Math.max(bestStreak, streak);
+				cleanLines += 1;
+			}
+			if (cursor >= order.length && unseen) {
+				offer = true;
+				return;
+			}
+			setTimeout(() => pull(gen), clean ? DRILL_ADVANCE_MS : TIME_MODE.nextLineMs);
+			return;
+		}
+		points += attempt.points;
+		livePoints = 0;
+		if (clean) {
+			cleanLines += 1;
+			const bonus = lineBonusMs(current.line.plies.length);
+			remaining = reward(remaining, current.line.plies.length, true);
+			if (bonus) flash(`+${bonus / 1000}s`, 'plus');
+		}
+		if (remaining <= 0) {
+			settle();
+			return;
+		}
+		setTimeout(() => pull(gen), TIME_MODE.nextLineMs);
+	}
+
+	function keepDrilling() {
+		offer = false;
+		order = dealDeck(pool);
+		cursor = 0;
+		pull(generation);
 	}
 
 	$effect(() => {
 		if (mode !== 'time' || over || !item) return;
 		let last = performance.now();
-		const t = setInterval(() => {
+		const timer = setInterval(() => {
 			const at = performance.now();
-			remaining = drain(remaining, at - last, score);
+			remaining = drain(remaining, at - last, cleanLines);
 			last = at;
-			if (remaining <= 0) finish();
+			if (remaining <= 0) settle();
 		}, 100);
-		return () => clearInterval(t);
+		return () => clearInterval(timer);
 	});
 
-	function flashBump(kind: 'plus' | 'minus') {
-		bump = kind;
-		setTimeout(() => (bump = undefined), 600);
+	function startAtFor(current: Item): number {
+		const mates = pool.filter((entry) => entry.course.id === current.course.id).map((entry) => entry.line);
+		return openingSkip({
+			mode,
+			enabled: skips[current.course.id] ?? false,
+			lines: mates,
+			line: current.line,
+			firstLearn: false
+		});
 	}
 
-	function finish() {
-		if (over) return;
-		over = true;
-		void logSession({ mode, courseId: scope, lines: score, mistakes, score });
-	}
-
-	function onmistake() {
-		mistakes += 1;
-		if (mode === 'time') {
-			remaining = adjust(remaining, 'mistake');
-			flashBump('minus');
-			if (remaining <= 0) finish();
-		}
-	}
-
-	function onfinish(r: { mistakes: number; hints: number }) {
-		if (over) return;
-		if (r.mistakes === 0) {
-			score += 1;
-			if (mode === 'time' && lineResult(r.mistakes, r.hints) === 'clean') {
-				remaining = adjust(remaining, 'clean');
-				flashBump('plus');
-			}
-		} else if (mode === 'drill') {
-			finish();
-			return;
-		}
-		setTimeout(() => {
-			if (over) return;
-			item = pickNext(pool, item);
-			round += 1;
-		}, 500);
+	function sharedFor(current: Item): boolean {
+		const mates = pool.filter((entry) => entry.course.id === current.course.id).map((entry) => entry.line);
+		return mates.length >= 2 && commonPrefix(mates) >= 2;
 	}
 
 	const seconds = $derived(Math.ceil(remaining / 1000));
-	const isBest = $derived(score > previousBest);
+	const shownPoints = $derived(points + livePoints);
+	const isBest = $derived((mode === 'time' ? points : bestStreak) > previousBest);
 </script>
 
 <svelte:head><title>{mode === 'time' ? 'Time' : 'Drill'} · Chessmode</title></svelte:head>
 
-{#if item}
+{#if blocked}
+	<main class="page empty">
+		<h1 class="h-title">{mode === 'time' ? 'Time' : 'Drill'} is still locked</h1>
+		<p class="muted">{blocked}</p>
+		<a class="btn btn-primary block" href={scope ? `/course/${scope}` : '/drill'}>Back</a>
+	</main>
+{:else if item}
 	{#key round}
-		<LineTrainer course={item.course} line={item.line} {mode} closeHref="/drill" {onfinish} {onmistake}>
+		<LineTrainer
+			course={item.course}
+			line={item.line}
+			{mode}
+			startAt={startAtFor(item)}
+			sharedStartAvailable={sharedFor(item)}
+			closeHref="/drill"
+			{onfinish}
+			{onmistake}
+			{onhint}
+			{onprogress}
+			onleave={settle}
+		>
 			{#snippet status()}
 				{#if mode === 'time'}
 					<div class="clock" class:low={seconds <= 10} style:--p={Math.min(1, remaining / TIME_MODE.startMs)}>
 						<span>{seconds}</span>
 					</div>
 					<div class="score">
-						<b>{score}</b>
-						<span>{score === 1 ? 'line' : 'lines'}{clockSpeed(score) > 1 ? ` · clock ×${clockSpeed(score).toFixed(2)}` : ''}</span>
-						{#if bump}<em class={bump}>{bump === 'plus' ? `+${TIME_MODE.cleanMs / 1000}s` : `−${TIME_MODE.mistakeMs / 1000}s`}</em>{/if}
+						<b>{shownPoints}</b>
+						<span>{shownPoints === 1 ? 'point' : 'points'} · {cleanLines} clean{clockSpeed(cleanLines) > 1 ? ` · ×${clockSpeed(cleanLines).toFixed(2)}` : ''}</span>
+						{#if bump}<em class={bumpKind}>{bump}</em>{/if}
 					</div>
 				{:else}
 					<div class="streak">
 						<img src="/img/flame.webp" alt="" />
-						<b>{score}</b>
-						<span>streak · best {Math.max(previousBest, score)}</span>
+						<b>{streak}</b>
+						<span>streak · best {Math.max(previousBest, bestStreak)} · {cleanLines} clean</span>
 					</div>
 				{/if}
 			{/snippet}
@@ -131,25 +294,34 @@
 	<main class="page empty">
 		<img src="/img/node-locked.webp" alt="" />
 		<h1 class="h-title">No learned lines yet</h1>
-		<p class="muted">Drills replay lines you have learned. Learn one first.</p>
-		<a class="btn btn-primary block" href="/">Learn a line</a>
+		<p class="muted">Drill and Time replay lines you have learned. Learn one first.</p>
+		<a class="btn btn-primary block" href={scope ? `/course/${scope}` : '/'}>Learn a line</a>
 	</main>
+{/if}
+
+{#if offer && unseen}
+	<Sheet labelledby="deck-title" ondismiss={keepDrilling}>
+		<h2 id="deck-title" class="h-title">You've been through this deck</h2>
+		<p class="muted offer-copy">There are still lines to learn. Keep drilling this deck, or learn another one.</p>
+		<a class="btn btn-primary block" href="/learn/{unseen.course.id}/{unseen.line.id}" onclick={record}>Learn more</a>
+		<button class="btn btn-surface block" type="button" onclick={keepDrilling}>Keep drilling</button>
+	</Sheet>
 {/if}
 
 {#if over}
 	<ResultSheet
 		image={mode === 'time' ? '/img/flame.webp' : '/img/knight.webp'}
-		eyebrow={isBest ? 'New personal best' : mode === 'time' ? 'Time is up' : 'Streak over'}
-		title="{score} {score === 1 ? 'line' : 'lines'}"
-		subtitle={mode === 'drill' && item ? `Missed in ${item.line.name}.` : undefined}
+		eyebrow={isBest ? 'New personal best' : mode === 'time' ? 'Time is up' : 'Run finished'}
+		title={mode === 'time' ? `${points} ${points === 1 ? 'point' : 'points'}` : `${bestStreak} streak`}
+		subtitle={mode === 'time' ? `${cleanLines} clean ${cleanLines === 1 ? 'line' : 'lines'}.` : `${cleanLines} clean ${cleanLines === 1 ? 'line' : 'lines'} this run.`}
 		stats={[
-			{ label: 'Score', value: score, tone: 'accent' },
-			{ label: 'Best', value: Math.max(previousBest, score) },
-			{ label: 'Mistakes', value: mistakes, tone: mistakes ? 'bad' : 'good' }
+			{ label: mode === 'time' ? 'Points' : 'Best streak', value: mode === 'time' ? points : bestStreak, tone: 'accent' },
+			{ label: 'Clean lines', value: cleanLines },
+			{ label: 'Record', value: Math.max(previousBest, mode === 'time' ? points : bestStreak) }
 		]}
 	>
 		{#snippet actions()}
-			<button class="btn btn-primary block" onclick={start}>Play again</button>
+			<button class="btn btn-primary block" type="button" onclick={begin}>Play again</button>
 			<a class="btn btn-surface block" href="/drill">Done</a>
 		{/snippet}
 	</ResultSheet>
@@ -185,6 +357,7 @@
 		align-items: baseline;
 		gap: 6px;
 		flex: 1;
+		min-width: 0;
 	}
 	.score b,
 	.streak b {
@@ -219,6 +392,9 @@
 	em.minus {
 		color: var(--bad);
 	}
+	.offer-copy {
+		margin: 8px 0 14px;
+	}
 	@keyframes float {
 		to {
 			transform: translateY(-10px);
@@ -236,5 +412,10 @@
 		width: 140px;
 		height: 140px;
 		object-fit: contain;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		em {
+			animation: none;
+		}
 	}
 </style>
