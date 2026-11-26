@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseCourse } from '#lib/courses/parse.ts';
-import { buildCourse, readPgnTree } from '#lib/courses/pgn-tree.ts';
+import { buildCourse, buildPgnCourse, readPgnTree } from '#lib/courses/pgn-tree.ts';
 
 const london = `[Event "My London"]
 [Site "?"]
@@ -59,8 +59,10 @@ describe('buildCourse', () => {
 });
 
 describe('line names', () => {
-	it('calls a line with no branches the main line', () => {
-		const { file } = buildCourse(readPgnTree('1. e4 c6 2. d4 d5 *').tree, { id: 'x', name: 'x', side: 'b' });
-		expect(file.chapters[0].lines[0].name).toBe('Main line');
+	it('names a chapter main line after the chapter and a branch after its branch point', () => {
+		const pgn = `[Chapter "Exchange"]\n\n1. e4 e5 2. Nf3 Nc6 *\n\n[Chapter "Open"]\n\n1. e4 e5 (1... c5 2. Nf3) 2. Nf3 *`;
+		const { file } = buildPgnCourse(pgn, { id: 'x', name: 'x', side: 'w' });
+		expect(file.chapters[0].lines.map((line) => line.name)).toEqual(['Exchange']);
+		expect(file.chapters[1].lines.map((line) => line.name)).toEqual(['1…e5 2.Nf3', '1…c5 2.Nf3']);
 	});
 });
