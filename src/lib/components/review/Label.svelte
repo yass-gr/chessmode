@@ -13,6 +13,6 @@
 </span>
 
 <style>
-	.label { display: inline-flex; align-items: center; gap: 7px; }
+	.label { display: inline-flex; align-items: center; gap: 7px; color: var(--text); font: 600 14px var(--font); }
 	.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 </style>
