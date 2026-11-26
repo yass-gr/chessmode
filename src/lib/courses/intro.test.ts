@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { courses } from '#lib/courses/index.ts';
-import { courseIntro, introLine } from '#lib/courses/intro.ts';
+import { courseIntro, introLine, introOrientation } from '#lib/courses/intro.ts';
 
 describe('courseIntro', () => {
 	it('returns nothing for a course without intro data', () => {
@@ -23,6 +23,14 @@ describe('courseIntro', () => {
 	it('stops the Caro-Kann on the position after 1.e4 c6 2.d4 d5', () => {
 		const intro = courseIntro('caro-kann');
 		expect(introLine(intro!.moves).fen.startsWith('rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR')).toBe(true);
+	});
+
+	it('turns a black course toward the student', () => {
+		expect(introOrientation('b')).toBe('black');
+		expect(introOrientation('w')).toBe('white');
+		for (const course of courses) {
+			expect(introOrientation(course.side), course.id).toBe(course.side === 'b' ? 'black' : 'white');
+		}
 	});
 
 	it('stops the Ruy Lopez on the position after 3.Bb5', () => {
