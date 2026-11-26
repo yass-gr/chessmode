@@ -18,5 +18,7 @@ export async function loadEndgameProgress(): Promise<EndgameProgress> {
 }
 
 export function saveEndgameProgress(progress: EndgameProgress): Promise<void> {
-	return setSetting(ENDGAME_KEY, progress);
+	// A $state proxy is not structured-cloneable, so IndexedDB rejects it and the result sheet never appears.
+	const plain = JSON.parse(JSON.stringify(progress)) as EndgameProgress;
+	return setSetting(ENDGAME_KEY, plain);
 }

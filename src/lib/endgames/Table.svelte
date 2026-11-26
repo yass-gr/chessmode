@@ -3,7 +3,7 @@
 	import PlayShell from '#lib/components/play/PlayShell.svelte';
 	import EvalBar from '#lib/components/review/EvalBar.svelte';
 	import BoardOptions from '#lib/components/training/BoardOptions.svelte';
-	import type { EndgamePlay } from '#lib/endgames/play.ts';
+	import { resultLabel, type EndgamePlay } from '#lib/endgames/play.ts';
 	import type { EndgamePosition } from '#lib/endgames/types.ts';
 	import type { Score } from '#lib/review/types.ts';
 	import type { Preferences } from '#lib/settings/types.ts';
@@ -75,7 +75,7 @@
 		</div>
 	{/snippet}
 	{#snippet panel()}
-		<p class="turn">{round.phase === 'opponent' || busy ? 'Opponent is thinking' : round.phase === 'considering' ? 'That is not the idea.' : 'Your move'}</p>
+		<p class="turn">{round.phase === 'over' && round.result && round.termination ? resultLabel(round.result, round.termination) : round.phase === 'opponent' || busy ? 'Opponent is thinking' : round.phase === 'considering' ? 'That is not the idea.' : 'Your move'}</p>
 		{#if error}<p class="error">{error}</p>{/if}
 		{#if round.coach !== 'off' && round.phase === 'player'}
 			<div class="row">
@@ -116,6 +116,10 @@
 		display: flex;
 		align-items: stretch;
 		gap: 8px;
+	}
+	.board-row :global(.bar) {
+		height: auto;
+		align-self: stretch;
 	}
 	.board-row :global(.board-wrap) {
 		flex: 1;

@@ -115,10 +115,11 @@
 		saved = true;
 		const before = progress.rating;
 		const after = elo(before, position.rating, resultScore(done.result, done.helped));
-		progress = recordEndgame(progress, after, done.result, position.id);
-		await saveEndgameProgress(progress);
+		const next = recordEndgame(progress, after, done.result, position.id);
+		progress = next;
 		summary = { before, after, title: resultLabel(done.result, done.termination) };
 		play(done.result === 'win' ? 'complete' : 'wrong');
+		await saveEndgameProgress(next);
 	}
 
 	function deal(nextProgress: EndgameProgress) {
