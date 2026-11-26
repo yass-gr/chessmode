@@ -1,5 +1,5 @@
 import { Chess } from 'chess.js';
-import type { Color, San, Uci } from '#lib/chess/types.ts';
+import { posKey, type Color, type San, type Uci } from '#lib/chess/types.ts';
 import type { CourseFile } from '#lib/courses/types.ts';
 
 /** A position in an imported repertoire; children are keyed by UCI so games and variations merge. */
@@ -151,7 +151,7 @@ export function buildCourse(tree: TreeNode, options: { id: string; name: string;
 	function walk(at: TreeNode, path: TreeEdge[], turn: Color, split = -1) {
 		let edges = [...at.children.values()];
 		if (turn === options.side && edges.length > 1) {
-			conflicts.push(`${label(path)}: ${edges.map((e) => e.san).join(', ')}`);
+			conflicts.push(conflictText(path.map((edge) => edge.san), edges.map((edge) => edge.san)));
 			edges = edges.slice(0, 1);
 		}
 		if (!edges.length) {
@@ -163,16 +163,7 @@ export function buildCourse(tree: TreeNode, options: { id: string; name: string;
 
 	/** Moves from ply `from` on, numbered as in the game: "3.Bf4 e6 4.Nb5" or "3…e6 4.Nb5". */
 	function label(path: TreeEdge[], from = 0): string {
-		return (
-			path
-				.slice(from)
-				.map((e, k) => {
-					const i = from + k;
-					const n = Math.floor(i / 2) + 1;
-					return i % 2 === 0 ? `${n}.${e.san}` : k === 0 ? `${n}…${e.san}` : e.san;
-				})
-				.join(' ') || 'the start'
-		);
+		return pathText(path.map((edge) => edge.san), from);
 	}
 
 	function line(path: TreeEdge[], split: number, index: number) {
@@ -222,13 +213,13 @@ export function buildPgnCourse(pgn: string, options: { id: string; name: string;
 		groups.set(name, group);
 	}
 	let base: CourseFile | undefined;
-	const chapters: CourseFile['chapters'] = [];
+	let chapters: CourseFile['chapters'] = [];
 	const conflicts: string[] = [];
 	let serial = 0;
 	for (const [name, group] of groups) {
 		const result = buildCourse(readPgnTree(group.map((game) => `[Event "game"]\n\n${game.movetext}`).join('\n\n')).tree, { ...options, mainLine: name });
 		base ??= result.file;
-		conflicts.push(...result.conflicts.map((conflict) => `${name}: ${conflict}`));
+		conflicts.push(...result.conflicts);
 		const built = result.file.chapters[0].lines;
 		const names = group.map((game) => game.headers.Line).filter((line): line is string => !!line);
 		const intro = group.map((game) => game.headers.Intro).find((text) => text?.trim())?.trim();
@@ -241,7 +232,92 @@ export function buildPgnCourse(pgn: string, options: { id: string; name: string;
 		});
 	}
 	if (!base) throw new Error('The PGN has no moves.');
+	const settled = keepFirstStudentMove(chapters, options.side);
+	chapters = settled.chapters;
+	for (const conflict of settled.conflicts) if (!conflicts.includes(conflict)) conflicts.push(conflict);
+	if (!chapters.some((chapter) => chapter.lines.length)) throw new Error('No line has a move for your side.');
 	const count = chapters.reduce((total, chapter) => total + chapter.lines.length, 0);
 	const file = { ...base, chapters, tagline: `${count} ${count === 1 ? 'line' : 'lines'} imported from PGN.` };
 	return { file, conflicts, skipped: list.length - usable.length };
+}
+
+/** "After 1.e4 c6 2.d4 d5 3.e5: Bf5 or c5", or "At the start" when the split is the first move. */
+function conflictText(before: string[], moves: string[]): string {
+	const where = before.length ? `After ${pathText(before)}` : 'At the start';
+	return `${where}: ${moves.join(' or ')}`;
+}
+
+function pathText(sans: string[], from = 0): string {
+	return (
+		sans
+			.slice(from)
+			.map((san, k) => {
+				const i = from + k;
+				const n = Math.floor(i / 2) + 1;
+				return i % 2 === 0 ? `${n}.${san}` : k === 0 ? `${n}…${san}` : san;
+			})
+			.join(' ') || 'the start'
+	);
+}
+
+function sansFromPgn(pgn: string): string[] {
+	const sans: string[] = [];
+	let i = 0;
+	while (i < pgn.length) {
+		const c = pgn[i];
+		if (/\s/.test(c)) {
+			i++;
+			continue;
+		}
+		if (c === '{') {
+			const end = pgn.indexOf('}', i);
+			i = end < 0 ? pgn.length : end + 1;
+			continue;
+		}
+		let end = i;
+		while (end < pgn.length && !/[\s{}]/.test(pgn[end])) end++;
+		const word = pgn.slice(i, end);
+		i = end;
+		const san = word.replace(/^\d+\.+/, '').replace(/[!?]+$/, '');
+		if (san && !/^(1-0|0-1|1\/2-1\/2|\*)$/.test(san)) sans.push(san);
+	}
+	return sans;
+}
+
+/**
+ * Chapters are built apart, so the same position can still offer the student two moves.
+ * The first one in chapter order stays; a later line that disagrees is dropped.
+ */
+function keepFirstStudentMove(chapters: CourseFile['chapters'], side: Color): { chapters: CourseFile['chapters']; conflicts: string[] } {
+	const chosen = new Map<string, { uci: string; san: string }>();
+	const conflicts: string[] = [];
+	const kept: CourseFile['chapters'] = [];
+	for (const chapter of chapters) {
+		const lines = [];
+		for (const line of chapter.lines) {
+			const chess = new Chess();
+			const played: string[] = [];
+			let reject = false;
+			for (const san of sansFromPgn(line.pgn)) {
+				const turn = chess.turn() as Color;
+				const key = posKey(chess.fen());
+				const move = chess.move(san);
+				const uci = move.from + move.to + (move.promotion ?? '');
+				if (turn === side) {
+					const first = chosen.get(key);
+					if (first && first.uci !== uci) {
+						const text = conflictText(played, [first.san, move.san]);
+						if (!conflicts.includes(text)) conflicts.push(text);
+						reject = true;
+						break;
+					}
+					if (!first) chosen.set(key, { uci, san: move.san });
+				}
+				played.push(move.san);
+			}
+			if (!reject) lines.push(line);
+		}
+		if (lines.length) kept.push({ ...chapter, lines });
+	}
+	return { chapters: kept, conflicts };
 }
