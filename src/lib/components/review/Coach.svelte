@@ -51,7 +51,7 @@
 		{/if}
 	{/if}
 	{#key `${headline}\n${detail ?? ''}`}
-		<div class="speech">
+		<div class="speech" aria-live="polite">
 			<p class="headline">{headline}</p>
 			{#if detail}<p>{detail}</p>{/if}
 		</div>

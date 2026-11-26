@@ -17,6 +17,10 @@ export type ReviewDepth = (typeof DEPTHS)[number]['value'];
 export const DEFAULT_DEPTH: ReviewDepth = 16;
 export const DEPTH_SETTING = 'reviewDepth';
 
+export function reviewCacheKey(gameId: string, depth: number) {
+	return gameId + ':' + depth + ':v2';
+}
+
 export interface ReviewProgress {
 	ply: number;
 	total: number;
@@ -88,7 +92,7 @@ function summarize(moves: MoveReview[], win: number[], color: Color): PlayerSumm
 export async function reviewGame(game: GameRecord, opts: ReviewOptions = {}): Promise<GameReview> {
 	const { depth = DEFAULT_DEPTH, signal, onProgress } = opts;
 	signal?.throwIfAborted();
-	const key = game.id + ':' + depth + ':v2';
+	const key = reviewCacheKey(game.id, depth);
 	const cached = await db.reviews.get(key);
 	signal?.throwIfAborted();
 	if (cached) {
