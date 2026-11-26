@@ -79,16 +79,17 @@
 		return `${total} ${total === 1 ? one : many}`;
 	}
 
-	function ingest(text: string) {
+	function ingest(text: string, chosen = side) {
 		pgn = text;
 		if (!text.trim()) {
 			parseError = 'The PGN has no moves.';
 			return;
 		}
+		const meta = { id, name: name.trim() || 'My course', side: chosen };
 		try {
-			const result = buildPgnCourse(text, titled);
+			const result = buildPgnCourse(text, meta);
 			parseCourse(result.file);
-			draft = { ...result.file, ...titled };
+			draft = { ...result.file, ...meta };
 			skipped = result.skipped;
 			conflicts = result.conflicts;
 			parseError = '';
@@ -97,6 +98,11 @@
 		} catch (error) {
 			parseError = error instanceof Error ? error.message : String(error);
 		}
+	}
+
+	function chooseSide(next: Color) {
+		side = next;
+		if (pgn.trim()) ingest(pgn, next);
 	}
 
 	function onDraft(file: CourseFile) {
@@ -255,7 +261,7 @@
 
 <svelte:head><title>Create a course · Chessmode</title></svelte:head>
 
-<main class="page wide">
+<main class="page">
 	<header class="top">
 		<a class="icon-btn" href="/courses" aria-label="Back">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
@@ -304,8 +310,8 @@
 	</label>
 
 	<div class="seg" use:seg role="group" aria-label="You play">
-		<button aria-pressed={side === 'w'} onclick={() => (side = 'w')}>I play White</button>
-		<button aria-pressed={side === 'b'} onclick={() => (side = 'b')}>I play Black</button>
+		<button aria-pressed={side === 'w'} onclick={() => chooseSide('w')}>I play White</button>
+		<button aria-pressed={side === 'b'} onclick={() => chooseSide('b')}>I play Black</button>
 	</div>
 
 	{#if parseError}<p class="error">{parseError}</p>{/if}
@@ -345,7 +351,11 @@
 	{/if}
 
 	{#if ready}
-		<CourseEditor file={ready} {side} {generation} {focusFen} {focusToken} onchange={onDraft} />
+		<div class="editor-wide">
+			<div class="editor-frame">
+				<CourseEditor file={ready} {side} {generation} {focusFen} {focusToken} onchange={onDraft} />
+			</div>
+		</div>
 	{/if}
 
 	{#if ready && lineCount}
@@ -380,9 +390,20 @@
 	}
 	.page {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 12px;
 		align-content: start;
 		padding-bottom: calc(var(--tabbar-h) + 26px + 52px + 36px + var(--safe-bottom));
+	}
+	.editor-wide {
+		min-width: 0;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+	.editor-frame {
+		flex: 0 0 auto;
+		width: min(980px, calc(100vw - 36px));
 		container-type: inline-size;
 	}
 	.source-head {
