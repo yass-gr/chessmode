@@ -67,7 +67,8 @@
 		color: inherit;
 	}
 	.bot.on {
-		box-shadow: inset 0 0 0 1px var(--stroke-2);
+		background: var(--surface-3);
+		box-shadow: inset 0 0 0 1.5px var(--text-2);
 	}
 	.bot b {
 		display: block;
