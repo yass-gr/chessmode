@@ -38,3 +38,29 @@ test('complete a chapter quiz and retry it', async ({ page }) => {
 	await page.getByRole('button', { name: 'Try again' }).click();
 	await expect(page.getByText(`Question 1 of ${total}`)).toBeVisible();
 });
+
+test('explore saved opening replies and return to the starting position', async ({ page }) => {
+	await page.goto('/explorer');
+	await page.getByRole('group', { name: 'Course', exact: true }).getByRole('button', { name: 'Jobava London' }).click();
+	await expect(page.getByRole('status')).toContainText(/games/);
+	await page.getByRole('button', { name: /^d4\s/ }).click();
+	await expect(page.getByRole('button', { name: 'Back', exact: true })).toBeEnabled();
+	await page.getByRole('button', { name: 'Back', exact: true }).click();
+	await expect(page.getByRole('button', { name: 'Forward', exact: true })).toBeEnabled();
+});
+
+test('filter saved games in opening review', async ({ page }) => {
+	await page.route('https://lichess.org/api/games/user/**', async route => {
+		const { readFileSync } = await import('node:fs');
+		await route.fulfill({ status: 200, contentType: 'application/x-ndjson', body: readFileSync('src/lib/import/fixtures/lichess.ndjson', 'utf8') });
+	});
+	await page.goto('/matches');
+	await page.getByRole('textbox', { name: 'Username' }).fill('DrNykterstein');
+	await page.getByRole('button', { name: 'Import last 50 games' }).click();
+	await expect(page.getByRole('status')).toContainText(/Imported \d+ standard games/);
+	await page.goto('/opening-review');
+	await expect(page.getByRole('heading', { name: /In a course/ })).toBeVisible();
+	await expect(page.getByRole('heading', { name: /Not matched/ })).toBeVisible();
+	await page.getByRole('group', { name: 'Side' }).getByRole('button', { name: 'White' }).click();
+	await expect(page.getByRole('group', { name: 'Side' }).getByRole('button', { name: 'White' })).toHaveAttribute('aria-pressed', 'true');
+});

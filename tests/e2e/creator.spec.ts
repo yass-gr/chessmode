@@ -8,6 +8,6 @@ test('create a course and warn about conflicting moves', async ({ page }) => {
 	await expect(page.getByText(/Your PGN gives two moves for you/)).toBeVisible();
 	await page.getByRole('button', { name: 'Create course', exact: true }).click();
 	await expect(page.getByRole('heading', { name: 'My repertoire' })).toBeVisible();
-	await page.getByRole('link', { name: /Learn/ }).first().click();
+	await page.getByRole('main').getByRole('link', { name: /Learn/ }).first().click();
 	await expect(page.getByRole('application', { name: /Chess board/ })).toBeVisible();
 });

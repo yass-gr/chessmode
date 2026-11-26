@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test';
 
 test('dismisses the optional setup', async ({ page }) => {
 	await page.goto('/');
-	await expect(page.getByText('Want a course suggested?')).toBeVisible();
-	await page.getByRole('button', { name: 'Not now' }).click();
+	await expect(page.getByText('Want a course suggested?').filter({ visible: true })).toBeVisible();
+	await page.getByRole('button', { name: 'Not now' }).filter({ visible: true }).click();
 	await page.reload();
 	await expect(page.getByText('Want a course suggested?')).toHaveCount(0);
 });
