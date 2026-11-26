@@ -69,13 +69,11 @@
 		position: absolute;
 		inset: 6px;
 		border-radius: 10px;
-		background: var(--surface-3, rgba(255, 255, 255, 0.08));
-		opacity: 0;
-		transition: opacity 0.2s ease;
-		z-index: -1;
+		background: transparent;
+		transition: background 0.2s ease;
 	}
 	a.on { color: var(--accent-hi); }
-	a.on .highlight { opacity: 1; }
+	a.on .highlight { background: rgba(255, 255, 255, 0.12); }
 	@media (prefers-reduced-transparency: reduce) {
 		.tabbar {
 			background: var(--surface-2);
