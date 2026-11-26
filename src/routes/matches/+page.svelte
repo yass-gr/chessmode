@@ -19,6 +19,7 @@
 	let busy = $state(false);
 	let message = $state('');
 	let error = $state('');
+	let importProgress = $state('');
 	let controller: AbortController | undefined;
 
 	onMount(() => {
@@ -64,18 +65,40 @@
 		busy = true;
 		error = '';
 		message = '';
+		importProgress = '';
+		let timedOut = false;
+		let timeout: number | undefined;
 		try {
-			const { games: imported, missingArchives } = await fetchGames(platform, username, request.signal);
-			await db.transaction('rw', db.games, db.settings, async () => {
-				await db.games.bulkPut(imported);
-				await setSetting('games.username.' + platform, username);
+			const timedImport = new Promise<never>((_, reject) => {
+				timeout = window.setTimeout(() => {
+					timedOut = true;
+					request.abort();
+					reject(new Error('Import took too long. Check your connection and try again.'));
+				}, 120_000);
 			});
+			const importTask = async () => {
+				const result = await fetchGames(
+					platform, username, request.signal,
+					(completed, total) => {
+						if (!request.signal.aborted) importProgress = `${completed}/${total} games`;
+					}
+				);
+				await db.transaction('rw', db.games, db.settings, async () => {
+					await db.games.bulkPut(result.games);
+					await setSetting('games.username.' + platform, username);
+				});
+				return result;
+			};
+			const { games: imported, missingArchives } = await Promise.race([importTask(), timedImport]);
 			message = imported.length ? 'Imported ' + imported.length + ' standard games.' : 'No recent standard games found.';
 			if (missingArchives) message += ' One Chess.com archive was unavailable.';
 		} catch (cause) {
-			if (!request.signal.aborted) error = cause instanceof Error ? cause.message : 'Could not import these games.';
+			if (timedOut) error = 'Import took too long. Check your connection and try again.';
+			else if (!request.signal.aborted) error = cause instanceof Error ? cause.message : 'Could not import these games.';
 		} finally {
+			if (timeout !== undefined) window.clearTimeout(timeout);
 			busy = false;
+			importProgress = '';
 			controller = undefined;
 		}
 	}
@@ -148,7 +171,7 @@
 				<label class="field">
 					<input aria-label="Username" placeholder={PLATFORMS[source] + ' username'} bind:value={usernames[source]} required disabled={busy} autocapitalize="none" spellcheck={false} />
 				</label>
-				<button class="btn btn-primary block" disabled={busy}>{busy ? 'Importing…' : source === 'lichess' ? 'Import last 50 games' : 'Import recent games'}</button>
+				<button class="btn btn-primary block" disabled={busy}>{busy ? importProgress ? 'Importing… ' + importProgress : 'Importing…' : source === 'lichess' ? 'Import last 50 games' : 'Import recent games'}</button>
 			</form>
 			<details>
 				<summary><ChevronRight size={18} stroke-width={1.75} />Paste a PGN</summary>

@@ -1,4 +1,4 @@
-import { parseArchives, parseArchiveGames, parseLichessGame, readNdjson } from '#lib/import/online.ts';
+import { parseArchives, parseArchiveGamesAsync, parseLichessGame, readNdjson } from '#lib/import/online.ts';
 import type { GameRecord, GameSource } from '#lib/review/types.ts';
 
 export type OnlineSource = Exclude<GameSource, 'pgn'>;
@@ -25,7 +25,12 @@ async function request(
 	return response;
 }
 
-export async function fetchGames(source: OnlineSource, input: string, signal: AbortSignal) {
+export async function fetchGames(
+	source: OnlineSource,
+	input: string,
+	signal: AbortSignal,
+	onProgress?: (completed: number, total: number) => void
+) {
 	const username = input.trim();
 	if (!/^[\w-]{1,40}$/.test(username)) throw new Error('Enter a valid ' + PLATFORMS[source] + ' username.');
 	const account = encodeURIComponent(username.toLowerCase());
@@ -47,7 +52,10 @@ export async function fetchGames(source: OnlineSource, input: string, signal: Ab
 		for (const month of months) {
 			const response = await request(month, source, username, signal, { allowMissing: true });
 			if (response.status === 404) missingArchives++;
-			else games.push(...parseArchiveGames(await response.json(), username, importedAt));
+			else {
+				const body = await response.json();
+				games.push(...await parseArchiveGamesAsync(body, username, importedAt, signal, onProgress));
+			}
 		}
 		if (missingArchives && missingArchives === months.length) {
 			throw new Error('Chess.com’s recent game archives are unavailable. Try again shortly.');
