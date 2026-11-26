@@ -69,7 +69,7 @@
 				<div class="foot">
 					<div class="progress"><i style:width="{(100 * s.learned) / s.total}%"></i></div>
 					<span class="count">{s.learned}/{s.total}</span>
-					<a class="btn sm {s.learned ? 'btn-surface' : 'btn-primary'}" href={`/course/${course.id}`}>
+					<a class="btn sm btn-surface" href={`/course/${course.id}`}>
 						{s.learned === 0 ? 'Try the first line' : s.next ? 'Continue' : 'Open'}
 					</a>
 				</div>
@@ -132,7 +132,7 @@
 		gap: 14px;
 		align-items: flex-start;
 	}
-	.cover { width: 92px; height: 92px; object-fit: contain; flex: none; }
+	.cover { width: 72px; height: 72px; object-fit: contain; flex: none; }
 	.t {
 		flex: 1;
 		min-width: 0;
@@ -178,6 +178,9 @@
 	.empty {
 		text-align: center;
 		padding: 30px 0;
+	}
+	@media (min-width: 700px) {
+		.cover { width: 112px; height: 112px; }
 	}
 	@media (min-width: 900px) {
 		.list {
