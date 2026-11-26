@@ -69,6 +69,7 @@
 	const streakDays = $derived(streak(days));
 	/** Horizontal position of the n-th node on the winding path, -1..1. */
 	const sway = (n: number) => Math.sin(n * 1.15);
+	const libraryCourses = $derived(courses.filter((c) => library.includes(c.id)));
 	const nextChapter = $derived(course?.chapters.find((c) => c.id === stats?.next?.chapterId));
 	const nextIndex = $derived(nextChapter && stats?.next ? nextChapter.lines.findIndex((l) => l.key === stats.next?.key) + 1 : 0);
 </script>
@@ -115,7 +116,7 @@
 	{#if loaded}
 		<section class="library">
 			<div class="library-head"><h2 class="h-head">Your library</h2><a href="/courses">Browse courses</a></div>
-			{#each courses.filter((c) => library.includes(c.id)) as c (c.id)}
+			{#each libraryCourses as c (c.id)}
 				{@const depth = depths[c.id] ?? defaultDepth()}
 				{@const scoped = courseScope(c, depth, progress)}
 				{@const sample = scoped.lines[0] ?? c.lines[0]}
@@ -129,7 +130,10 @@
 					</a>
 					<button class="chip" onclick={() => removeLibrary(c.id)} aria-label="Remove {c.name} from library">Remove</button>
 				</div>
-			{:else}<p class="muted">Open a course to add it here.</p>{/each}
+			{/each}
+			{#if library.length === 0}
+				<p class="muted">Open a course to add it here.</p>
+			{/if}
 		</section>
 	{/if}
 	{#if course && loaded && stats && scope}
