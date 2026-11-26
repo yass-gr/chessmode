@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Mascot from '#lib/components/Mascot.svelte';
 	import { loadEndgameProgress, saveEndgameProgress } from '#lib/endgames/store.ts';
 	import type { EndgameDifficulty, EndgameMode, EndgameProgress } from '#lib/endgames/types.ts';
 
@@ -34,7 +33,7 @@
 
 <main class="page">
 	<header class="head">
-		<Mascot expression="thinking" size={72} />
+		<img src="/img/train/endgames.webp" alt="" width="72" height="72" />
 		<div>
 			<p class="label">Separate from openings</p>
 			<h1 class="h-display">Endgame arena</h1>

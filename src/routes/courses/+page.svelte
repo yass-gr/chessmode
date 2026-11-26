@@ -22,7 +22,6 @@
 
 	const results = $derived(searchCourses(courses, { text, side }));
 	const typed = $derived(positionOf(text));
-	const preview = (course: (typeof courses)[number]) => course.lines[0].plies[Math.min(5, course.lines[0].plies.length - 1)].fenAfter;
 </script>
 
 <svelte:head><title>Courses · Chessmode</title></svelte:head>
@@ -59,7 +58,7 @@
 			{@const s = courseStats(course, progress, now)}
 			<article class="card course">
 				<a class="body" href="/course/{course.id}">
-					<MiniBoard fen={preview(course)} orientation={course.side === 'w' ? 'white' : 'black'} size={92} />
+					{#if course.id.startsWith('custom-')}<MiniBoard fen={course.lines[0].plies[0].fenAfter} orientation={course.side === 'w' ? 'white' : 'black'} size={92} />{:else}<img class="cover" src="/img/courses/{course.id}.webp" alt="" />{/if}
 					<div class="t">
 						<p class="label"><span class="side" class:black={course.side === 'b'}></span>{course.side === 'w' ? 'White' : 'Black'} · {course.level}</p>
 						<h2 class="h-head">{course.name}</h2>
@@ -133,6 +132,7 @@
 		gap: 14px;
 		align-items: flex-start;
 	}
+	.cover { width: 92px; height: 92px; object-fit: contain; flex: none; }
 	.t {
 		flex: 1;
 		min-width: 0;

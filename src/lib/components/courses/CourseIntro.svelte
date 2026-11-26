@@ -26,7 +26,7 @@
 
 <Sheet labelledby="course-intro-title" {ondismiss}>
 	<div class="head">
-		<Mascot expression="happy" size={56} />
+		{#if course.id.startsWith('custom-')}<Mascot expression="happy" size={56} />{:else}<img src="/img/courses/{course.id}.webp" alt="" width="72" height="72" style="object-fit: contain" />{/if}
 		<div class="titles">
 			<h2 class="h-title" id="course-intro-title">{course.name}</h2>
 			<span class="chip"><span class="side" class:black={course.side === 'b'}></span>{side}</span>
