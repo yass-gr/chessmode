@@ -24,11 +24,15 @@ describe('navKind', () => {
 		expect(navKind('/course/caro-kann', '/learn/caro-kann/advance')).toBe('present');
 		expect(navKind('/matches', '/review/abc')).toBe('present');
 		expect(navKind('/review/abc', '/matches', -1)).toBe('dismiss');
+		expect(navKind('/matches', '/explorer')).toBe('present');
+		expect(navKind('/analysis', '/matches', -1)).toBe('dismiss');
 		expect(navKind('/drill/run', '/drill')).toBe('dismiss');
 	});
 
 	it('pushes from one flow to the next', () => {
 		expect(navKind('/learn/caro-kann/a', '/learn/caro-kann/b')).toBe('push');
+		expect(navKind('/matches', '/opening-review')).toBe('push');
+		expect(navKind('/opening-review', '/matches')).toBe('pop');
 	});
 });
 

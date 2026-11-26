@@ -5,7 +5,7 @@
 		{ href: '/', label: 'Learn', match: (p: string) => p === '/' || p.startsWith('/course') || p.startsWith('/learn') || p.startsWith('/quiz'), icon: 'M4 11l8-7 8 7v9h-5v-6H9v6H4z' },
 		{ href: '/practice', label: 'Practice', match: (p: string) => p.startsWith('/practice'), icon: 'M4 4h16v16H4zM4 12h16M12 4v16' },
 		{ href: '/drill', label: 'Drill', match: (p: string) => p.startsWith('/drill'), icon: 'M13 3L5 14h6l-1 7 8-11h-6z' },
-		{ href: '/matches', label: 'Matches', match: (p: string) => p.startsWith('/matches') || p.startsWith('/review'), icon: 'M3 17l5-6 4 4 8-9M14 6h6v6' },
+		{ href: '/matches', label: 'Matches', match: (p: string) => p.startsWith('/matches') || p.startsWith('/review') || p.startsWith('/explorer') || p.startsWith('/analysis') || p.startsWith('/opening-review'), icon: 'M3 17l5-6 4 4 8-9M14 6h6v6' },
 		{ href: '/you', label: 'You', match: (p: string) => p.startsWith('/you'), icon: 'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21c1.5-4 4.5-6 8-6s6.5 2 8 6' }
 	];
 </script>
