@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ChevronDown } from '@lucide/svelte';
 	import Board, { type Arrow } from '#lib/components/Board.svelte';
 	import { seg } from '#lib/components/seg.ts';
 	import type { Color } from '#lib/chess/types.ts';
@@ -204,7 +205,7 @@
 				}}>
 					{#each working.chapters as item (item.id)}<option value={item.id}>{item.name}</option>{/each}
 				</select>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+				<ChevronDown size={18} stroke-width={1.75} />
 			</span>
 		</label>
 		<label class="field">
@@ -230,7 +231,7 @@
 					<select aria-label="Line" value={line?.id ?? ''} onchange={(event) => { cursor = { chapterId: chapter.id, lineId: event.currentTarget.value, ply: 0 }; }}>
 						{#each chapter.lines as item (item.id)}<option value={item.id}>{item.name}</option>{/each}
 					</select>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+					<ChevronDown size={18} stroke-width={1.75} />
 				</span>
 			</label>
 			<label class="field">
@@ -248,7 +249,7 @@
 						}}>
 							{#each working.chapters as item (item.id)}<option value={item.id}>{item.name}</option>{/each}
 						</select>
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+						<ChevronDown size={18} stroke-width={1.75} />
 					</span>
 				</label>
 			{/if}
@@ -346,12 +347,12 @@
 		background: var(--surface-1);
 		color: var(--text);
 	}
-	.select svg {
+	.select :global(svg) {
 		position: absolute;
 		top: 50%;
 		right: 0;
-		width: 16px;
-		height: 16px;
+		width: 18px;
+		height: 18px;
 		transform: translateY(-50%);
 		color: var(--text-3);
 		pointer-events: none;
