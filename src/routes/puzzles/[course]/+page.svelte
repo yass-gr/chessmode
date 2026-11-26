@@ -211,8 +211,8 @@
 {:else if loaded && !puzzle}
 	<main class="page empty">
 		<img src="/img/mascot/neutral.webp" alt="" />
-		<h1 class="h-title">No puzzles yet</h1>
-		<p class="muted">There are no puzzles for {course.name} yet.</p>
+		<h1 class="h-title">{typeof navigator !== 'undefined' && !navigator.onLine ? 'Puzzles unavailable offline' : 'No puzzles yet'}</h1>
+		<p class="muted">{typeof navigator !== 'undefined' && !navigator.onLine ? 'This puzzle set has not been saved on this device yet. Connect once to load it for offline practice.' : `There are no puzzles for ${course.name} yet.`}</p>
 		<a class="btn btn-primary" href="/course/{course.id}">Back to the course</a>
 	</main>
 {:else if loaded && puzzle && game && record}

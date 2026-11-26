@@ -18,6 +18,8 @@ test('one visit installs the offline app shell and its routes', async ({ page, c
 
 	await page.goto('/');
 	await expect(page.getByText('Your library')).toBeVisible();
+	await page.goto('/course/jobava-london');
+	await expect(page.getByRole('heading', { name: 'Jobava London' })).toBeVisible();
 	await page.goto('/matches');
 	await page.getByText('Paste a PGN').click();
 	await page.getByLabel('Game PGN').fill('[Event "Offline proof"]\n[White "Student"]\n[Black "Practice"]\n[Result "*"]\n\n1. e4 e5 2. Nf3 Nc6 *');
@@ -31,6 +33,23 @@ test('one visit installs the offline app shell and its routes', async ({ page, c
 		if (!navigator.serviceWorker.controller)
 			await new Promise<void>((resolve) => navigator.serviceWorker.addEventListener('controllerchange', () => resolve(), { once: true }));
 	});
+	const puzzleFetch = await page.evaluate(async () => {
+		const responses = await Promise.all(['/data/puzzles/jobava-london.json', '/data/explorer/jobava-london.json'].map((path) => fetch(path)));
+		return Promise.all(responses.map(async (response) => ({ status: response.status, body: await response.text() })));
+	});
+	expect(puzzleFetch.map((response) => response.status)).toEqual([200, 200]);
+	await expect
+		.poll(() => page.evaluate(async () => {
+			const cache = await caches.open((await caches.keys()).find((key) => key.startsWith('chessmode-'))!);
+			return Promise.all(['/data/puzzles/jobava-london.json', '/data/explorer/jobava-london.json'].map(async (path) => !!(await cache.match(path, { ignoreVary: true }))));
+		}))
+		.toEqual([true, true]);
+	const precacheBytes = await page.evaluate(async () => {
+		const cache = await caches.open((await caches.keys()).find((key) => key.startsWith('chessmode-'))!);
+		const keys = (await cache.keys()).filter((request) => !/\/data\/(puzzles|explorer)\//.test(new URL(request.url).pathname));
+		return (await Promise.all(keys.map(async (request) => (await cache.match(request))!.arrayBuffer()))).reduce((sum, body) => sum + body.byteLength, 0);
+	});
+	console.log(`App shell precache: ${precacheBytes.toLocaleString()} bytes (${(precacheBytes / 1024).toFixed(1)} KiB)`);
 	await expect
 		.poll(() => page.evaluate(async () => (await caches.keys()).some((key) => key.startsWith('chessmode-'))))
 		.toBe(true);
@@ -78,10 +97,12 @@ test('one visit installs the offline app shell and its routes', async ({ page, c
 		'/drill',
 		'/drill/run',
 		'/puzzles/jobava-london',
+		'/explorer?course=jobava-london',
 		'/arena/jobava-london',
 		'/matches',
 		savedReviewPath,
-		'/you'
+		'/you',
+		'/you#settings'
 	]) {
 		await page.goto(route);
 		await expect(page.locator('body')).not.toBeEmpty();
