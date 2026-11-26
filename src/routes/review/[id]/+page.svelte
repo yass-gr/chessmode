@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ArrowRightLeft, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Ellipsis, Sun } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import Board, { type Arrow, type Marker } from '#lib/components/Board.svelte';
 	import Sheet from '#lib/components/Sheet.svelte';
@@ -748,7 +749,9 @@
 
 <main class="page review" data-screen={screen}>
 	<header class="header">
-		<a class="back" href="/matches" aria-label="Back to Matches">‹</a>
+		<a class="back" href="/matches" aria-label="Back to Matches">
+			<ChevronLeft size={18} stroke-width={1.75} />
+		</a>
 		<div class="titles">
 			<h1>Game review</h1>
 			{#if game}<p>{[review?.opening?.name ?? progress?.opening?.name ?? game.opening?.name, game.speed, game.result].filter(Boolean).join(' · ')}</p>{/if}
@@ -761,10 +764,10 @@
 		</div>
 		{#if game}
 			<button type="button" class="icon-btn" aria-label="Flip board" onclick={() => { orientation = other(orientation); }}>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3" /><path d="M20 16H7l3 3" /></svg>
+				<ArrowRightLeft size={18} stroke-width={1.75} />
 			</button>
 			<button type="button" class="icon-btn" aria-label="Review settings" aria-expanded={settingsOpen} onclick={() => { settingsOpen = true; }}>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" /></svg>
+				<Sun size={18} stroke-width={1.75} />
 			</button>
 		{/if}
 	</header>
@@ -806,7 +809,7 @@
 									<Overview {game} {review} ply={decision.ply} onselect={select} />
 									{@render repertoireCard()}
 									<details class="card archive">
-										<summary>Moves and key moments</summary>
+										<summary><ChevronRight size={18} stroke-width={1.75} />Moves and key moments</summary>
 										{@render moveListCard()}
 										{@render momentsCard()}
 									</details>
@@ -825,10 +828,10 @@
 					{#if screen === 'review' && review}
 						{#if decision.kind === 'mainline'}
 							<div class="navigation" aria-label="Move navigation">
-								<button class="btn btn-surface" type="button" aria-label="First position" disabled={!decision.ply} onclick={() => select(0)}>‹‹</button>
-								<button class="btn btn-surface" type="button" aria-label="Previous move" disabled={!decision.ply} onclick={() => navigate(-1)}>‹</button>
-								<button class="btn btn-surface" type="button" aria-label="Next move" disabled={decision.ply === plies.length} onclick={() => navigate(1)}>›</button>
-								<button class="btn btn-surface" type="button" aria-label="Last move" disabled={decision.ply === plies.length} onclick={() => select(plies.length)}>››</button>
+								<button class="btn btn-surface" type="button" aria-label="First position" disabled={!decision.ply} onclick={() => select(0)}><ChevronsLeft size={18} stroke-width={1.75} /></button>
+								<button class="btn btn-surface" type="button" aria-label="Previous move" disabled={!decision.ply} onclick={() => navigate(-1)}><ChevronLeft size={18} stroke-width={1.75} /></button>
+								<button class="btn btn-surface" type="button" aria-label="Next move" disabled={decision.ply === plies.length} onclick={() => navigate(1)}><ChevronRight size={18} stroke-width={1.75} /></button>
+								<button class="btn btn-surface" type="button" aria-label="Last move" disabled={decision.ply === plies.length} onclick={() => select(plies.length)}><ChevronsRight size={18} stroke-width={1.75} /></button>
 							</div>
 							<button type="button" class="back-overview" onclick={() => { screen = 'overview'; concluded = false; }}>Overview</button>
 						{/if}
@@ -898,7 +901,7 @@
 									{/each}
 									{#if overflowActions.length}
 										<button type="button" class="icon-btn" aria-label="More actions" aria-expanded={moreOpen} aria-haspopup="dialog" onclick={() => { moreOpen = true; }}>
-											<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6" fill="currentColor" /><circle cx="12" cy="12" r="1.6" fill="currentColor" /><circle cx="18" cy="12" r="1.6" fill="currentColor" /></svg>
+											<Ellipsis size={18} stroke-width={1.75} />
 										</button>
 									{/if}
 								</div>
@@ -995,8 +998,6 @@
 		border: 1px solid var(--stroke-2);
 		border-radius: var(--r-sm);
 		background: var(--surface-2);
-		font: 32px/1 var(--font);
-		padding-bottom: 3px;
 	}
 	.header .icon-btn {
 		width: 40px;
@@ -1309,10 +1310,24 @@
 		padding: 0;
 	}
 	.archive summary {
+		display: flex;
+		align-items: center;
+		gap: 6px;
 		padding: 12px 14px;
 		font-size: 14px;
 		font-weight: 600;
 		cursor: pointer;
+		list-style: none;
+	}
+	.archive summary::-webkit-details-marker {
+		display: none;
+	}
+	.archive summary :global(svg) {
+		flex: 0 0 auto;
+		transition: transform 220ms var(--ease-out);
+	}
+	.archive[open] > summary :global(svg) {
+		transform: rotate(90deg);
 	}
 	.archive .moves,
 	.archive .moments {
