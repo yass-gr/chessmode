@@ -44,7 +44,7 @@
 			offerSetup = (await readOnboarding()).status === 'pending';
 			loaded = true;
 			await tick();
-			document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center' });
+			if (!offerSetup) document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center' });
 		})();
 		return () => window.removeEventListener('depth-change', onDepth);
 	});
