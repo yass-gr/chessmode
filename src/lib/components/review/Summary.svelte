@@ -30,10 +30,11 @@
 		{#each ['white', 'black'] as side, index}
 			{@const player = index === 0 ? game.white : game.black}
 			{@const stats = index === 0 ? review.white : review.black}
+			{@const name = player.name && player.name !== '?' ? player.name : index === 0 ? 'White' : 'Black'}
 			{@const hasMoves = review.moves.some(move => move.color === (index === 0 ? 'w' : 'b'))}
 			{@const rating = stats.ratingContext?.kind === 'available' ? stats.ratingContext.value : stats.ratingContext ? undefined : stats.estimatedRating || undefined}
 			{@const ratingReason = stats.ratingContext?.kind === 'unavailable' && stats.ratingContext.reason === 'missing-data' ? 'No rating data' : 'Not enough moves'}
-			<section><b class="name" title={player.name}>{player.name}</b><span>{side === 'white' ? 'White' : 'Black'}</span><strong>{hasMoves ? accuracyText(stats.accuracy) : '–'}{#if hasMoves}<small>%</small>{/if}</strong><span>Accuracy</span><b title={rating ? 'Estimated performance for this game' : ratingReason}>{rating ?? '–'}</b><span>{rating ? 'Game rating' : ratingReason}</span></section>
+			<section><b class="name" title={name}>{name}</b><span>{side === 'white' ? 'White' : 'Black'}</span><strong>{hasMoves ? accuracyText(stats.accuracy) : '–'}{#if hasMoves}<small>%</small>{/if}</strong><span>Accuracy</span><b title={rating ? 'Estimated performance for this game' : ratingReason}>{rating ?? '–'}</b><span>{rating ? 'Game rating' : ratingReason}</span></section>
 		{/each}
 	</div>
 	<div class="tallies">{#each visible as label}{@render tally(label)}{/each}</div>
