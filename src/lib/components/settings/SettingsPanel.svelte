@@ -92,13 +92,16 @@
 		</div>
 	{/if}
 	{#if mode === 'drill' || mode === 'time'}
-		<label><input type="checkbox" bind:checked={course.fastOpponent} onchange={save} /> Fast opponent</label>
+		<div class="toggle">
+			<span>Fast opponent</span>
+			<Switch checked={course.fastOpponent} label="Fast opponent" onchange={(value) => { course.fastOpponent = value; save(); }} />
+		</div>
 	{/if}
 	{#if sharedStartAvailable && (mode === 'learn' || mode === 'practice' || mode === 'drill')}
-		<label>
-			<input type="checkbox" bind:checked={course.skipSharedStart} onchange={save} />
-			Skip shared start when available
-		</label>
+		<div class="toggle">
+			<span>Skip shared start when available</span>
+			<Switch checked={course.skipSharedStart} label="Skip shared start when available" onchange={(value) => { course.skipSharedStart = value; save(); }} />
+		</div>
 	{/if}
 	{#if mode === 'puzzles'}
 		<div class="toggle">
@@ -206,8 +209,8 @@
 		border-radius: var(--r-sm);
 		padding: 6px;
 	}
-	input {
-		accent-color: var(--accent);
+	.toggle span {
+		min-width: 0;
 	}
 	fieldset {
 		border: 0;
@@ -223,7 +226,7 @@
 	}
 	.choices {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 		gap: 8px;
 	}
 	.choices button {
@@ -253,13 +256,5 @@
 		width: 40px;
 		height: 40px;
 		background-size: cover;
-	}
-	@media (min-width: 800px) {
-		.choices.themes {
-			grid-template-columns: repeat(5, minmax(0, 1fr));
-		}
-		.choices.pieces {
-			grid-template-columns: repeat(4, minmax(0, 1fr));
-		}
 	}
 </style>
