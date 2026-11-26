@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { plural } from '#lib/format.ts';
 	import { onMount } from 'svelte';
 	import { ChevronRight } from '@lucide/svelte';
 	import { courses } from '#lib/courses/index.ts';
@@ -102,7 +103,7 @@
 						{@const r = ratingOf('puzzle', c.id)}
 						{@const gate = modeAvailability('puzzle', learnedIn(c.id), c.lines.length, ['caro-kann', 'jobava-london'].includes(c.id))}
 						<li>
-							<span class="t"><b>{c.name}</b><small>{gate.kind === 'locked' ? `Learn ${gate.remaining} more lines` : gate.kind === 'unavailable' ? gate.reason : r ? `${r.wins} of ${r.games} solved` : 'Not started'}</small></span>
+							<span class="t"><b>{c.name}</b><small>{gate.kind === 'locked' ? `Learn ${gate.remaining} more ${plural(gate.remaining, 'line')}` : gate.kind === 'unavailable' ? gate.reason : r ? `${r.wins} of ${r.games} solved` : 'Not started'}</small></span>
 							<span class="num">{r?.rating ?? PUZZLE_START}</span>
 							<a class="btn sm btn-surface" class:disabled={gate.kind !== 'available'} href={gate.kind === 'available' ? `/puzzles/${c.id}` : undefined} aria-disabled={gate.kind !== 'available'}>Solve</a>
 						</li>
