@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ChevronDown, ChevronRight } from '@lucide/svelte';
 	import { scale } from 'svelte/transition';
 	import { easeOut, reducedMotion } from '#lib/motion.ts';
 	import { onMount, tick } from 'svelte';
@@ -81,7 +82,7 @@
 		<button class="switch" onclick={() => (switcher = !switcher)} aria-expanded={switcher} aria-haspopup="listbox">
 			<span class="side" class:black={course?.side === 'b'}></span>
 			<span class="name">{course?.name ?? 'Choose a course'}</span>
-			<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6" /></svg>
+			<ChevronDown size={18} stroke-width={1.75} />
 		</button>
 		<a class="streak" href="/you" aria-label="{streakDays} day streak">
 			<img src="/img/flame.webp" alt="" />
@@ -143,7 +144,7 @@
 				<h1 class="h-title">{course.name}</h1>
 				<div class="bar"><div class="progress"><i style:width="{(100 * stats.learned) / stats.total}%"></i></div><span>{stats.learned}/{stats.total}</span></div>
 			</div>
-			<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6" /></svg>
+			<ChevronRight size={20} stroke-width={1.75} />
 		</a>
 
 		{#each course.chapters.filter(c => c.lines.some(l => scope.lines.includes(l))) as chapter, ci (chapter.id)}
