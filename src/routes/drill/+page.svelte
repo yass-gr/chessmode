@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { BookOpen, Bot, ChevronRight, Compass, Flag } from '@lucide/svelte';
 	import { courses } from '#lib/courses/index.ts';
 	import { isCustom } from '#lib/courses/custom.ts';
 	import { db, type LineProgress, type RatingRecord, type SessionLog } from '#lib/db.ts';
@@ -117,12 +118,15 @@
 			{/if}
 		</p>
 	{/if}
-	<nav class="more" aria-label="More training">
-		<a href="/endgames">Endgames</a>
-		<a href="/books">Reading</a>
-		<a href="/bots">Bots</a>
-		<a href="/community">Openings</a>
-	</nav>
+	<section class="more" aria-labelledby="more-heading">
+		<h2 id="more-heading" class="h-head">More ways to train</h2>
+		<div class="more-grid">
+			<a class="card more-card" href="/endgames"><span class="more-icon"><Flag size={20} /></span><span class="more-copy"><b>Endgames</b><small>Practice the final phase</small></span><ChevronRight size={18} /></a>
+			<a class="card more-card" href="/books"><span class="more-icon"><BookOpen size={20} /></span><span class="more-copy"><b>Reading</b><small>Study chess ideas</small></span><ChevronRight size={18} /></a>
+			<a class="card more-card" href="/bots"><span class="more-icon"><Bot size={20} /></span><span class="more-copy"><b>Bots</b><small>Play a practice game</small></span><ChevronRight size={18} /></a>
+			<a class="card more-card" href="/community"><span class="more-icon"><Compass size={20} /></span><span class="more-copy"><b>Openings</b><small>Explore more openings</small></span><ChevronRight size={18} /></a>
+		</div>
+	</section>
 </main>
 
 <style>
@@ -233,17 +237,57 @@
 		color: var(--text-3);
 		box-shadow: inset 0 1px 0 var(--highlight);
 		text-shadow: none;
+		border-color: transparent;
 		pointer-events: none;
 	}
 	.more {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px 14px;
-		margin-top: 18px;
+		display: grid;
+		gap: 12px;
+		margin-top: 28px;
 	}
-	.more a {
-		color: var(--accent-hi);
-		font-weight: 600;
+	.more-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+	}
+	.more-card {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		min-width: 0;
+		padding: 14px;
+		color: var(--text-2);
+		text-decoration: none;
+	}
+	.more-icon {
+		display: grid;
+		place-items: center;
+		flex: none;
+		width: 36px;
+		height: 36px;
+		border-radius: 8px;
+		background: var(--surface-4);
+	}
+	.more-copy {
+		display: grid;
+		flex: 1;
+		min-width: 0;
+		gap: 2px;
+	}
+	.more-copy b {
+		color: var(--text);
+	}
+	.more-copy small {
+		color: var(--text-3);
+		font-size: 12px;
+	}
+	.more-card > :global(svg) {
+		flex: none;
+	}
+	@media (min-width: 1024px) {
+		.more-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
 	}
 	.avail {
 		margin-top: 16px;
@@ -251,6 +295,6 @@
 		text-align: center;
 	}
 	.avail a {
-		color: var(--accent-hi);
+		color: var(--text);
 	}
 </style>
