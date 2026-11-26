@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { plural } from '#lib/format.ts';
-	import { ArrowRightLeft, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Ellipsis, Sun } from '@lucide/svelte';
+	import { ArrowRightLeft, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Ellipsis, FolderPlus, Microscope, Settings2 } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import Board, { type Arrow, type Marker } from '#lib/components/Board.svelte';
 	import Sheet from '#lib/components/Sheet.svelte';
@@ -59,6 +59,7 @@
 	let panelBody = $state<HTMLDivElement>();
 	let settingsOpen = $state(false);
 	let moreOpen = $state(false);
+	let gameMenuOpen = $state(false);
 	const promotions = [
 		{ piece: 'Queen', key: 'q' },
 		{ piece: 'Rook', key: 'r' },
@@ -324,10 +325,8 @@
 			screen = 'overview';
 			return;
 		}
-		fading = true;
+		fading = false;
 		screen = 'overview';
-		clearTimeout(fadeTimer);
-		fadeTimer = setTimeout(() => { fading = false; }, 2500);
 	}
 
 	async function runAnalysis(chosen: ReviewDepth = depth) {
@@ -740,7 +739,7 @@
 					{@const move = review.moves[ply - 1]}
 					{#if move}
 						<button type="button" class:active={decision.ply === ply} onclick={() => select(ply)}>
-							<span>{moveNumber(ply)} {move.san}</span><Label classification={move.classification} named />
+							<span><span class="num">{moveNumber(ply)}</span>{move.san}</span><Label classification={move.classification} named />
 						</button>
 					{/if}
 				{/each}
@@ -756,21 +755,20 @@
 		</a>
 		<div class="titles">
 			<h1>Game review</h1>
-			{#if game}<p>{[review?.opening?.name ?? progress?.opening?.name ?? game.opening?.name, game.speed, game.result].filter(Boolean).join(' · ')}</p>{/if}
-			{#if game}
-				<div class="handoff">
-					<a href={`/analysis?game=${encodeURIComponent(game.id)}`}>Open in analysis board</a>
-					<a href={`/analysis?game=${encodeURIComponent(game.id)}&add=course`}>Add to a course</a>
-				</div>
-			{/if}
+			{#if game}<p>{[review?.opening?.name ?? progress?.opening?.name ?? game.opening?.name, game.speed].filter(Boolean).join(' · ')}</p>{/if}
 		</div>
 		{#if game}
-			<button type="button" class="icon-btn" aria-label="Flip board" onclick={() => { orientation = other(orientation); }}>
-				<ArrowRightLeft size={18} stroke-width={1.75} />
-			</button>
-			<button type="button" class="icon-btn" aria-label="Review settings" aria-expanded={settingsOpen} onclick={() => { settingsOpen = true; }}>
-				<Sun size={18} stroke-width={1.75} />
-			</button>
+			<div class="header-actions">
+				<button type="button" class="icon-btn" aria-label="Flip board" onclick={() => { orientation = other(orientation); }}>
+					<ArrowRightLeft size={18} stroke-width={1.75} />
+				</button>
+				<button type="button" class="icon-btn" aria-label="Review settings" aria-expanded={settingsOpen} onclick={() => { settingsOpen = true; }}>
+					<Settings2 size={18} stroke-width={1.75} />
+				</button>
+				<button type="button" class="icon-btn" aria-label="More options" aria-haspopup="dialog" aria-expanded={gameMenuOpen} onclick={() => { gameMenuOpen = true; }}>
+					<Ellipsis size={18} stroke-width={1.75} />
+				</button>
+			</div>
 		{/if}
 	</header>
 
@@ -792,9 +790,6 @@
 				{#if review && screen !== 'loading'}
 					<div class="panel-head">
 						{@render coachBubble(screen === 'review' ? 'compact' : 'large')}
-						{#if screen === 'review' && decision.kind === 'mainline' && current}
-							<div class="coach-label"><Label classification={current.classification} named /></div>
-						{/if}
 					</div>
 				{/if}
 
@@ -928,6 +923,16 @@
 	</Sheet>
 {/if}
 
+{#if gameMenuOpen && game}
+	<Sheet labelledby="review-game-title" ondismiss={() => { gameMenuOpen = false; }}>
+		<div class="more-sheet">
+			<h2 id="review-game-title">This game</h2>
+			<a class="sheet-link" href={`/analysis?game=${encodeURIComponent(game.id)}`}><Microscope size={18} stroke-width={1.75} />Open in analysis board</a>
+			<a class="sheet-link" href={`/analysis?game=${encodeURIComponent(game.id)}&add=course`}><FolderPlus size={18} stroke-width={1.75} />Add to a course</a>
+		</div>
+	</Sheet>
+{/if}
+
 {#if settingsOpen && game}
 	<ReviewSettings
 		{prefs}
@@ -963,27 +968,35 @@
 		flex: 1;
 		min-width: 0;
 	}
-	.handoff {
+	.header-actions {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 4px 12px;
-		margin-top: 4px;
+		gap: 6px;
+		flex: 0 0 auto;
 	}
-	.handoff a {
-		color: var(--accent-hi);
-		font-size: 12px;
-		font-weight: 650;
-		white-space: normal;
+	.sheet-link {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		min-height: 52px;
+		padding: 0 16px;
+		border: 1px solid var(--stroke);
+		border-radius: var(--r-md);
+		background: var(--surface-2);
+		font-size: 15px;
+		font-weight: 600;
+	}
+	.sheet-link :global(svg) {
+		color: var(--text-2);
 	}
 	h1 {
-		font-size: 22px;
-		line-height: 1.12;
-		letter-spacing: -0.045em;
+		font-size: 20px;
+		line-height: 1.15;
+		letter-spacing: -0.035em;
 	}
 	.header p {
 		margin-top: 2px;
 		color: var(--text-2);
-		font-size: 11px;
+		font-size: 12px;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -1039,7 +1052,8 @@
 	.rating {
 		flex: 0 0 auto;
 		color: var(--text-2);
-		font: 11px var(--mono);
+		font: 500 12px var(--font);
+		font-variant-numeric: tabular-nums;
 	}
 	.player .chip {
 		margin-left: auto;
@@ -1082,9 +1096,6 @@
 		border-radius: var(--r-lg);
 		background: var(--g-card-glow), var(--surface-2);
 	}
-	.coach-label {
-		display: flex;
-	}
 	.panel-body {
 		display: flex;
 		flex-direction: column;
@@ -1119,8 +1130,10 @@
 	}
 	.eyeline {
 		display: block;
-		color: var(--text-2);
-		font: 10px var(--mono);
+		color: var(--text-3);
+		font: 600 11px var(--font);
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
 	}
 	.repertoire-actions {
 		display: flex;
@@ -1197,10 +1210,10 @@
 		gap: 5px;
 	}
 	.variation button {
-		padding: 4px 7px;
+		padding: 5px 9px;
 		border-radius: var(--r-xs);
 		background: var(--surface-3);
-		font: 12px var(--mono);
+		font: 600 13px var(--font);
 	}
 	.active {
 		background: var(--accent-soft) !important;
@@ -1228,8 +1241,8 @@
 	}
 	.move-row {
 		display: grid;
-		grid-template-columns: 37px 1fr 1fr;
-		gap: 3px;
+		grid-template-columns: 34px 1fr 1fr;
+		gap: 4px;
 		align-items: center;
 	}
 	.move-row:nth-child(even) {
@@ -1238,18 +1251,19 @@
 	}
 	.move-row > span {
 		text-align: center;
-		color: var(--text-2);
-		font: 11px var(--mono);
+		color: var(--text-3);
+		font: 500 12px var(--font);
+		font-variant-numeric: tabular-nums;
 	}
 	.move {
 		display: flex;
 		text-align: left;
 		align-items: center;
 		justify-content: space-between;
-		min-height: 35px;
-		padding: 3px 9px;
-		gap: 5px;
-		font: 13px var(--mono);
+		min-height: 38px;
+		padding: 4px 8px 4px 10px;
+		gap: 6px;
+		font: 600 14px var(--font);
 		border-radius: var(--r-xs);
 	}
 	@media (hover: hover) and (pointer: fine) {
@@ -1274,11 +1288,11 @@
 		font-weight: 600;
 	}
 	.repertoire .san {
-		font: 600 13px var(--mono);
+		font-weight: 700;
 		color: var(--accent-hi);
 	}
 	.moments {
-		padding: 10px 12px;
+		padding: 12px;
 	}
 	.moments-head {
 		display: flex;
@@ -1288,7 +1302,7 @@
 		margin-bottom: 6px;
 	}
 	.moments h2 {
-		font-size: 14px;
+		font-size: 15px;
 	}
 	.moments-head .btn {
 		height: 34px;
@@ -1297,14 +1311,20 @@
 	}
 	.moment-list button {
 		display: flex;
-		min-height: 35px;
+		min-height: 42px;
 		width: 100%;
 		justify-content: space-between;
 		align-items: center;
-		padding: 3px 7px;
+		padding: 4px 8px;
 		border-radius: var(--r-xs);
-		gap: 5px;
-		font: 12px var(--mono);
+		gap: 8px;
+		font: 600 14px var(--font);
+	}
+	.moment-list .num {
+		margin-right: 4px;
+		color: var(--text-3);
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
 	}
 	.archive {
 		padding: 0;

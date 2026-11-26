@@ -8,6 +8,9 @@
 	let { game, review, onselect }: { game: GameRecord; review: GameReview; onselect?: (ply: number) => void } = $props();
 	const labels: Classification[] = ['find', 'sharp', 'best', 'strong', 'good', 'book', 'only', 'loose', 'mistake', 'missed', 'blunder'];
 	const shortRating = $derived([review.white, review.black].every(stats => stats.ratingContext?.kind === 'unavailable' && stats.ratingContext.reason === 'short-sample'));
+	const outcome = $derived(
+		game.result === '1-0' ? 'White won' : game.result === '0-1' ? 'Black won' : game.result === '1/2-1/2' ? 'Draw' : 'Unfinished'
+	);
 	function jump(label: Classification, color: 'w' | 'b') {
 		const target = firstClassPly(review.moves, label, color);
 		if (target !== undefined) onselect?.(target);
@@ -19,11 +22,13 @@
 		{#each ['w', 'b'] as color, index}
 			{@const count = index === 0 ? review.white.counts[label] : review.black.counts[label]}
 			{#if index === 1}<span class="label"><Label classification={label} named size={28} /></span>{/if}
-			<button type="button" style:color={count ? CLASSIFICATIONS[label].color : undefined} disabled={!count || !onselect} aria-label={`${color === 'w' ? 'White' : 'Black'}: ${count} ${CLASSIFICATIONS[label].label} ${plural(count, 'move')}`} onclick={() => jump(label, index === 0 ? 'w' : 'b')}>{count}</button>
+			<button type="button" class="count" class:zero={!count} style:color={count ? CLASSIFICATIONS[label].color : undefined} disabled={!count || !onselect} aria-label={`${color === 'w' ? 'White' : 'Black'}: ${count} ${CLASSIFICATIONS[label].label} ${plural(count, 'move')}`} onclick={() => jump(label, index === 0 ? 'w' : 'b')}>{count}</button>
 		{/each}
 	</div>
 {/snippet}
+
 <div class="card summary">
+	<div class="outcome"><span>{game.result === '*' ? '' : game.result}</span>{outcome}</div>
 	<div class="players">
 		{#each ['white', 'black'] as side, index}
 			{@const player = index === 0 ? game.white : game.black}
@@ -32,68 +37,130 @@
 			{@const hasMoves = review.moves.some(move => move.color === (index === 0 ? 'w' : 'b'))}
 			{@const rating = stats.ratingContext?.kind === 'available' ? stats.ratingContext.value : stats.ratingContext ? undefined : stats.estimatedRating || undefined}
 			{@const ratingReason = stats.ratingContext?.kind === 'unavailable' && stats.ratingContext.reason === 'missing-data' ? 'No rating data' : 'Not enough moves'}
-			<section><b class="name" title={name}>{name}</b><span>{side === 'white' ? 'White' : 'Black'}</span><strong>{hasMoves ? accuracyText(stats.accuracy) : '–'}{#if hasMoves}<small>%</small>{/if}</strong><span>Accuracy</span>{#if !shortRating}<b title={rating ? 'Estimated performance for this game' : ratingReason}>{rating ?? '–'}</b><span>{rating ? 'Game rating' : ratingReason}</span>{/if}</section>
+			<section>
+				<b class="name" title={name}>{name}</b>
+				<strong class="accuracy" class:light={side === 'white'}>{hasMoves ? accuracyText(stats.accuracy) : '–'}{#if hasMoves}<small>%</small>{/if}</strong>
+				<span class="caption">Accuracy</span>
+				{#if !shortRating}
+					<b class="rating" title={rating ? 'Estimated performance for this game' : ratingReason}>{rating ?? '–'}</b>
+					<span class="caption">{rating ? 'Game rating' : ratingReason}</span>
+				{/if}
+			</section>
 		{/each}
 		{#if shortRating}<p class="rating-note">Not enough moves for a game rating</p>{/if}
 	</div>
 	<div class="tallies">{#each labels as label}{@render tally(label)}{/each}</div>
 </div>
+
 <style>
 	.summary {
-		padding: 14px;
+		padding: 16px 14px 8px;
+	}
+	.outcome {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 14px;
+		color: var(--text-2);
+		font-size: 13px;
+		font-weight: 600;
+	}
+	.outcome span {
+		color: var(--text);
+		font-variant-numeric: tabular-nums;
+	}
+	.outcome span:empty {
+		display: none;
 	}
 	.players {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 10px;
-		padding: 3px 0 15px;
+		gap: 12px;
+		padding-bottom: 16px;
 	}
 	section {
 		min-width: 0;
 		display: grid;
 		justify-items: center;
-		gap: 3px;
+		gap: 4px;
 	}
 	.name {
 		max-width: 100%;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		font-size: 15px;
+		font-weight: 600;
+		margin-bottom: 6px;
 	}
-	section span {
-		color: var(--text-2);
-		font-size: 12px;
+	.accuracy {
+		display: inline-flex;
+		align-items: baseline;
+		justify-content: center;
+		min-width: 96px;
+		padding: 8px 14px;
+		border-radius: var(--r-sm);
+		background: #2c2c30;
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 2px 6px rgba(0, 0, 0, 0.35);
+		color: var(--text);
+		font: 700 26px/1 var(--font);
+		letter-spacing: -0.02em;
+		font-variant-numeric: tabular-nums;
 	}
-	strong {
-		font: 700 23px var(--mono);
-		margin-top: 7px;
+	.accuracy.light {
+		background: #f1efe9;
+		color: #141416;
+		box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.35);
 	}
 	small {
-		font-size: 11px;
+		margin-left: 1px;
+		font-size: 14px;
+		font-weight: 600;
+	}
+	.caption {
+		color: var(--text-3);
+		font-size: 12px;
+	}
+	.rating {
+		margin-top: 8px;
+		font-size: 18px;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+	}
+	.rating-note {
+		grid-column: 1 / -1;
+		margin: 2px 0 0;
+		color: var(--text-3);
+		font-size: 12px;
+		text-align: center;
 	}
 	.tally {
 		display: grid;
-		grid-template-columns: 1fr 2fr 1fr;
+		grid-template-columns: 1fr 2.2fr 1fr;
 		align-items: center;
-		min-height: 34px;
+		min-height: 44px;
 		border-top: 1px solid var(--stroke);
 		text-align: center;
-		font-size: 13px;
 	}
-	.rating-note { grid-column: 1 / -1; text-align: center; color: var(--text-3); font-size: 12px; margin: 3px 0 0; }
-	.tally .label { text-align: left; font: 600 14px var(--font); }
-	.tally button {
-		padding: 7px;
-		font: 700 16px var(--font);
+	.tally .label {
+		text-align: left;
 	}
-	.tally button:not(:disabled) {
+	.count {
+		padding: 8px;
+		font: 700 17px var(--font);
+		font-variant-numeric: tabular-nums;
+	}
+	.count:not(:disabled) {
 		cursor: pointer;
 	}
-	.tally button:not(:disabled):hover {
-		color: var(--accent-hi);
+	@media (hover: hover) and (pointer: fine) {
+		.count:not(:disabled):hover {
+			filter: brightness(1.2);
+		}
 	}
-	.tally button:disabled:not([style]) {
+	.count.zero {
 		color: var(--text-3);
+		font-weight: 500;
 	}
-
 </style>
