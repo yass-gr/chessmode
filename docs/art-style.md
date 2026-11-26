@@ -5,3 +5,5 @@ Use the illustrations in `static/img/mascot/` as the reference. Render soft, mat
 The mascot is a cream knight with an orange mane and gold crown. No other character or dark piece wears that crown or an orange mane; avoid dark mascot doubles. Chess pieces must be recognisable and anatomically simple: bishops have mitres, rooks look like rooks, and pawns look like pawns. Avoid hybrids, tangled limbs, tongues, drool, and damaged pieces. Faces have two dot eyes and a small mouth; use small stubby arms sparingly.
 
 When a board is necessary, make it a correct 8×8 chessboard with a light square on the right and a legal, plausible position. A few pieces are preferable to a crowded position. Use a square canvas and one clear, centered subject that remains legible at 72–96px. Keep course icons consistent in camera angle, lighting, and apparent size.
+
+Limit image generation to five generations per thread. Always use the approved illustration set as references. Keep every illustration in the same clay family, reserve crowns for the mascot alone, and depict chess pieces and positions correctly.
