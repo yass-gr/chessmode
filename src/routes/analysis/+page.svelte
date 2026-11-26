@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ArrowRightLeft, ChevronLeft } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -262,14 +263,14 @@
 <main class="page analysis">
 	<header class="top">
 		<a class="icon-btn" href="/matches" aria-label="Back to Matches">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+			<ChevronLeft size={18} stroke-width={1.75} />
 		</a>
 		<div class="titles">
 			<h1>Analysis</h1>
 			<p>Play either side. Variations stay yours.</p>
 		</div>
 		<button type="button" class="icon-btn" aria-label="Flip board" onclick={() => (orientation = orientation === 'white' ? 'black' : 'white')}>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3" /><path d="M20 16H7l3 3" /></svg>
+			<ArrowRightLeft size={18} stroke-width={1.75} />
 		</button>
 	</header>
 
