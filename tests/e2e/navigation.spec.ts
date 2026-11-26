@@ -17,7 +17,7 @@ for (const [route, heading] of routes) {
 			if (new URL(request.url()).origin === 'http://127.0.0.1:4360') errors.push(`${request.url()}: ${request.failure()?.errorText}`);
 		});
 		await page.goto(route);
-		await expect(page.getByText(heading, { exact: true }).first()).toBeVisible();
+		await expect(page.getByRole('main').getByText(heading, { exact: true }).first()).toBeVisible();
 		expect(await page.evaluate(() => document.scrollingElement!.scrollWidth <= innerWidth)).toBe(true);
 		expect(errors).toEqual([]);
 	});

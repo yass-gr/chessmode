@@ -42,3 +42,21 @@ test('paste a PGN and complete a Stockfish review', async ({ page }) => {
 	await page.getByText('Moves and key moments').click();
 	await expect(page.getByRole('heading', { name: 'Key moments' })).toBeVisible();
 });
+
+test.fixme('retry a losing move in the Fool\'s Mate review', async ({ page }) => {
+	// The opening book masks the blunder; see docs/e2e-report.md.
+	await page.goto('/matches');
+	await page.getByText('Paste a PGN').click();
+	await page.getByRole('textbox', { name: 'Game PGN' }).fill('[White \"Alice\"]\n[Black \"Bob\"]\n[Result \"0-1\"]\n\n1. f3 e5 2. g4 Qh4# 0-1');
+	await page.getByRole('button', { name: 'Review PGN' }).click();
+	await expect(page.getByRole('slider', { name: 'Selected position on evaluation graph' })).toHaveAttribute('aria-valuemax', '4', { timeout: 150_000 });
+	await page.getByText('Moves and key moments').click();
+	await expect(page.getByRole('region', { name: 'Key moments' }).getByText(/mistake|blunder|missed/i).first()).toBeVisible();
+	await page.getByRole('button', { name: 'Retry White mistakes' }).click();
+	await expect(page.getByRole('button', { name: 'Hint', exact: true })).toBeVisible();
+	const board = page.getByRole('application', { name: /Chess board/ });
+	await board.focus();
+	await page.keyboard.type('e2e4');
+	await page.keyboard.press('Enter');
+	await expect(page.getByRole('button', { name: /Back to game|Try again|Next mistake/ }).first()).toBeVisible({ timeout: 30_000 });
+});
