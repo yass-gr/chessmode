@@ -153,7 +153,7 @@
 						<b>Coverage</b>
 						<small>Share of real opponents' replies the course answers, from {(sample / 1e6).toFixed(1)}M Lichess games.{coverage.gaps.length ? ` ${coverage.gaps.length} ${coverage.gaps.length === 1 ? 'gap' : 'gaps'}.` : ''}</small>
 					</span>
-					{#if coverage.gaps.length}<ChevronDown class:flip={gapsOpen} size={18} stroke-width={1.75} />{/if}
+					{#if coverage.gaps.length}<ChevronDown class={gapsOpen ? 'flip' : ''} size={18} stroke-width={1.75} />{/if}
 				</button>
 				{#if gapsOpen}
 					<ol class="gaps" transition:slide={reveal}>
@@ -182,7 +182,7 @@
 					<button class="ch-head" onclick={() => (open = open === chapter.id ? undefined : chapter.id)} aria-expanded={open === chapter.id}>
 						<span class="num">{ci + 1}</span>
 						<span class="t"><b>{chapter.name}</b><small>{learned}/{chapter.lines.length} learned{chapter.moves ? ` · ${chapter.moves}` : ''}</small></span>
-						<ChevronDown class:flip={open === chapter.id} size={18} stroke-width={1.75} />
+						<ChevronDown class={open === chapter.id ? 'flip' : ''} size={18} stroke-width={1.75} />
 					</button>
 					{#if open === chapter.id}
 						<p class="intro" transition:slide={reveal}>{chapter.intro}</p>
