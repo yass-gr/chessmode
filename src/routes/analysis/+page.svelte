@@ -35,7 +35,6 @@
 	let chesscom = $state('');
 	let busy = $state(false);
 	let savedHref = $state('');
-	let addOpen = $state(false);
 	let courseName = $state('From a game');
 	let side = $state<Color>('w');
 	let target = $state('');
@@ -59,8 +58,10 @@
 
 	onMount(() => {
 		const params = page.url.searchParams;
-		addOpen = params.get('add') === 'course';
 		const gameId = params.get('game');
+		if (params.get('add') === 'course') {
+			queueMicrotask(() => document.getElementById('add-course')?.scrollIntoView({ block: 'nearest' }));
+		}
 		const fenParam = params.get('fen');
 		const subscription = liveQuery(() => db.customCourses.toArray()).subscribe({
 			next: (rows) => {
@@ -260,21 +261,25 @@
 
 <main class="page analysis">
 	<header class="top">
-		<a class="back" href="/matches" aria-label="Back to Matches">‹</a>
-		<div>
+		<a class="icon-btn" href="/matches" aria-label="Back to Matches">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+		</a>
+		<div class="titles">
 			<h1>Analysis</h1>
 			<p>Play either side. Variations stay yours.</p>
 		</div>
-		<button class="btn" type="button" onclick={() => (orientation = orientation === 'white' ? 'black' : 'white')}>Flip</button>
+		<button type="button" class="icon-btn" aria-label="Flip board" onclick={() => (orientation = orientation === 'white' ? 'black' : 'white')}>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3" /><path d="M20 16H7l3 3" /></svg>
+		</button>
 	</header>
 
 	<div class="workspace">
 		<section class="board-column" aria-label="Analysis board">
 			<Board {fen} orientation={orientation} movable="both" lastMove={last ? [last.uci.slice(0, 2), last.uci.slice(2, 4)] : undefined} {onmove} />
 			<div class="nav">
-				<button class="btn" type="button" disabled={board.cursor === 0} onclick={() => (board = goTo(board, board.cursor - 1))}>Back</button>
-				<button class="btn" type="button" disabled={board.cursor >= board.line.length} onclick={() => (board = goTo(board, board.cursor + 1))}>Forward</button>
-				<button class="btn btn-primary" type="button" disabled={engineBusy} onclick={runEngine}>{engineBusy ? 'Running…' : 'Run engine'}</button>
+				<button class="btn sm btn-surface" type="button" disabled={board.cursor === 0} onclick={() => (board = goTo(board, board.cursor - 1))}>Back</button>
+				<button class="btn sm btn-surface" type="button" disabled={board.cursor >= board.line.length} onclick={() => (board = goTo(board, board.cursor + 1))}>Forward</button>
+				<button class="btn sm btn-primary" type="button" disabled={engineBusy} onclick={runEngine}>{engineBusy ? 'Running…' : 'Run engine'}</button>
 			</div>
 		</section>
 
@@ -308,7 +313,7 @@
 						<div class="engine-line">
 							<b>{formatScore(line.score)}</b>
 							<span>{lineText(line)}</span>
-							<button class="btn sm" type="button" onclick={() => playEngine(line.pv[0])}>Play</button>
+							<button class="btn sm btn-surface" type="button" onclick={() => playEngine(line.pv[0])}>Play</button>
 						</div>
 					{/each}
 					<p class="muted">Playing a line adds a variation. The main line stays first.</p>
@@ -323,48 +328,47 @@
 					<label class="field">
 						<input aria-label="Chess.com game link" placeholder="Chess.com game link" bind:value={chesscom} disabled={busy} />
 					</label>
-					<button class="btn block" type="submit" disabled={busy}>{busy ? 'Importing…' : 'Import Chess.com game'}</button>
+					<button class="btn sm btn-surface block" type="submit" disabled={busy}>{busy ? 'Importing…' : 'Import Chess.com game'}</button>
 				</form>
 				<form onsubmit={loadPgn}>
 					<textarea aria-label="Game PGN" placeholder="1. e4 e5 2. Nf3…" bind:value={pgnText} rows="4" spellcheck={false}></textarea>
-					<button class="btn block" type="submit">Load PGN</button>
+					<button class="btn sm btn-surface block" type="submit">Load PGN</button>
 				</form>
 			</section>
 
-			<div class="actions">
-				<button class="btn" type="button" onclick={copyPosition}>Copy position link</button>
-				<button class="btn" type="button" onclick={saveGame}>Save game</button>
-				<button class="btn btn-primary" type="button" onclick={openReview}>Open full review</button>
-				<a class="btn" href={explorerHref({ fen })}>Explorer</a>
-			</div>
+			<section class="card actions" aria-label="Position actions">
+				<button class="btn sm btn-surface block" type="button" onclick={copyPosition}>Copy position link</button>
+				<button class="btn sm btn-surface block" type="button" onclick={saveGame}>Save game</button>
+				<a class="btn sm btn-surface block" href={explorerHref({ fen })}>Explorer</a>
+				<button class="btn btn-primary block" type="button" onclick={openReview}>Open full review</button>
+			</section>
 			{#if savedHref}<p class="muted">Saved game · <a class="link" href={savedHref}>Open review</a></p>{/if}
 			{#if notice}<p class="feedback" role="status">{notice}</p>{/if}
 			{#if error}<p class="feedback bad" role="alert">{error}</p>{/if}
 
-			<section class="card handoff" aria-label="Add to a course">
-				<button class="disclosure" type="button" aria-expanded={addOpen} onclick={() => (addOpen = !addOpen)}>Add to a course</button>
-				{#if addOpen}
-					<form onsubmit={addToCourse}>
-						<div class="seg" use:seg role="group" aria-label="Your side">
-							<button type="button" aria-pressed={side === 'w'} onclick={() => (side = 'w')}>White</button>
-							<button type="button" aria-pressed={side === 'b'} onclick={() => (side = 'b')}>Black</button>
+			<section class="card handoff" id="add-course" aria-label="Add to a course">
+				<h2>Add to a course</h2>
+				<p class="muted">Save this game as a line on this device.</p>
+				<form onsubmit={addToCourse}>
+					<div class="seg" use:seg role="group" aria-label="Your side">
+						<button type="button" aria-pressed={side === 'w'} onclick={() => (side = 'w')}>White</button>
+						<button type="button" aria-pressed={side === 'b'} onclick={() => (side = 'b')}>Black</button>
+					</div>
+					{#if sameSide.length}
+						<div class="courses" role="group" aria-label="Course">
+							<button class="chip" class:accent={target === ''} type="button" aria-pressed={target === ''} onclick={() => (target = '')}>New course</button>
+							{#each sameSide as course (course.id)}
+								<button class="chip" class:accent={target === course.id} type="button" aria-pressed={target === course.id} onclick={() => (target = course.id)}>{course.name}</button>
+							{/each}
 						</div>
-						{#if sameSide.length}
-							<div class="courses" role="group" aria-label="Course">
-								<button class="chip" class:accent={target === ''} type="button" aria-pressed={target === ''} onclick={() => (target = '')}>New course</button>
-								{#each sameSide as course (course.id)}
-									<button class="chip" class:accent={target === course.id} type="button" aria-pressed={target === course.id} onclick={() => (target = course.id)}>{course.name}</button>
-								{/each}
-							</div>
-						{/if}
-						{#if !target}
-							<label class="field">
-								<input aria-label="Course name" placeholder="Course name" bind:value={courseName} />
-							</label>
-						{/if}
-						<button class="btn btn-primary block" type="submit">{target ? 'Add to this course' : 'Create course'}</button>
-					</form>
-				{/if}
+					{/if}
+					{#if !target}
+						<label class="field">
+							<input aria-label="Course name" placeholder="Course name" bind:value={courseName} />
+						</label>
+					{/if}
+					<button class="btn btn-primary block" type="submit">{target ? 'Add to this course' : 'Create course'}</button>
+				</form>
 			</section>
 		</section>
 	</div>
@@ -378,17 +382,17 @@
 	.top {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		margin-bottom: 12px;
+		gap: 12px;
+		padding: 14px 0 16px;
 	}
-	.top div {
+	.titles {
 		flex: 1;
 		min-width: 0;
 	}
 	h1 {
-		font-size: clamp(26px, 4vw, 36px);
-		letter-spacing: -0.045em;
-		line-height: 1.1;
+		font-size: 22px;
+		letter-spacing: -0.03em;
+		line-height: 1.15;
 	}
 	.top p,
 	.muted,
@@ -396,15 +400,8 @@
 		color: var(--text-2);
 		font-size: 13px;
 	}
-	.back {
-		display: grid;
-		place-items: center;
-		width: 36px;
-		height: 36px;
-		border-radius: var(--r-pill);
-		background: var(--surface-2);
-		font-size: 22px;
-		line-height: 1;
+	.top p {
+		line-height: 1.35;
 	}
 	.workspace {
 		display: grid;
@@ -415,13 +412,28 @@
 	form,
 	.import,
 	.engine,
-	.handoff {
+	.handoff,
+	.actions {
 		display: grid;
 		gap: 12px;
 		align-content: start;
 	}
-	.nav,
-	.actions,
+	.panel .card {
+		padding: 16px;
+	}
+	.panel .card > * {
+		position: relative;
+		z-index: 1;
+	}
+	.nav {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1.35fr;
+		gap: 8px;
+	}
+	.nav .btn {
+		width: 100%;
+		padding-inline: 10px;
+	}
 	.courses,
 	.vars {
 		display: flex;
@@ -433,7 +445,6 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 6px;
-		padding: 12px;
 		min-height: 52px;
 	}
 	.move {
@@ -484,25 +495,12 @@
 	.chip {
 		cursor: pointer;
 	}
-	.chip.accent {
-		background: var(--accent-soft);
-		border-color: rgba(255, 107, 44, 0.35);
-		color: var(--accent-hi);
-	}
-	.disclosure {
-		font-weight: 650;
-		text-align: left;
-	}
 	.link {
 		color: var(--accent-hi);
 		font-weight: 650;
 	}
 	.bad {
 		color: var(--bad);
-	}
-	.btn.sm {
-		min-height: 32px;
-		padding: 4px 10px;
 	}
 	@media (min-width: 900px) {
 		.workspace {
