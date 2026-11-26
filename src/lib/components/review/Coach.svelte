@@ -3,6 +3,7 @@
 	import { Crown } from '@lucide/svelte';
 	import type { Classification } from '#lib/review/types.ts';
 	import { reducedMotion } from '#lib/motion.ts';
+	import LabelIcon from './LabelIcon.svelte';
 	import { coachExpression, MASCOT_SRC, type CoachPhase, type CoachExpression, type RetryMood } from './coach.ts';
 
 	let {
@@ -67,7 +68,7 @@
 	{/if}
 	{#key `${headline}\n${detail ?? ''}`}
 		<div class="speech" aria-live="polite">
-			<p class="headline">{headline}</p>
+			<p class="headline">{#if phase === 'move' && classification}<span class="badge"><LabelIcon {classification} size={22} /></span>{/if}{headline}</p>
 			{#if detail}<p>{detail}</p>{/if}
 		</div>
 	{/key}
@@ -119,6 +120,11 @@
 	.speech {
 		min-width: 0;
 		animation: coach-in var(--dur-press) var(--ease-out);
+	}
+	.badge {
+		display: inline-block;
+		margin-right: 8px;
+		vertical-align: -5px;
 	}
 	.headline {
 		margin: 0;

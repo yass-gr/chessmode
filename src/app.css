@@ -749,6 +749,16 @@ html.native body {
 	   env() covers iOS and WebViews that report insets themselves. */
 	padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
 }
+/* The status bar overlays the WebView, so scrolled content would show behind the clock. */
+html.native body::before {
+	content: '';
+	position: fixed;
+	inset: 0 0 auto;
+	z-index: 60;
+	height: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+	background: var(--bg);
+	pointer-events: none;
+}
 html.native {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;

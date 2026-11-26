@@ -278,6 +278,7 @@
 	{#if marker && markerPos}
 		<span
 			class="marker"
+			class:badge={!!marker.classification}
 			style:left={markerPos.left}
 			style:top={markerPos.top}
 			style:background={marker.classification ? undefined : marker.color}
@@ -339,6 +340,15 @@
 			0 4px 10px rgba(0, 0, 0, 0.45);
 		pointer-events: none;
 		animation: pop 0.22s var(--ease-out);
+	}
+	.marker.badge {
+		width: clamp(20px, 5.6%, 36px);
+		min-width: 0;
+		box-shadow: none;
+	}
+	.marker.badge :global(svg) {
+		width: 100%;
+		height: 100%;
 	}
 	@keyframes pop {
 		from {

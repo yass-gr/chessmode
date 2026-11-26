@@ -66,7 +66,7 @@
 	.heading span,
 	.axis {
 		color: var(--text-2);
-		font: 10px var(--mono);
+		font: 500 11px var(--font);
 	}
 	.plot {
 		position: relative;
@@ -89,7 +89,7 @@
 		padding: 3px 6px;
 		border-radius: var(--r-xs);
 		background: var(--surface-4);
-		font: 11px var(--mono);
+		font: 500 12px var(--font);
 		pointer-events: none;
 	}
 </style>
