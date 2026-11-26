@@ -3,6 +3,12 @@ import { turnOf, type Color, type Fen, type Uci } from '#lib/chess/types.ts';
 import type { EngineLine, PositionAnalysis } from '#lib/review/types.ts';
 import type { AnalyseOptions, Engine } from '#lib/engine/types.ts';
 
+/** UCI `go` line. Movetime is a ceiling beside depth, so a weak bot can stop early. */
+export function goCommand(depth: number, movetime?: number): string {
+	const time = movetime && movetime > 0 ? ` movetime ${Math.round(movetime)}` : '';
+	return `go depth ${depth}${time}`;
+}
+
 export function parseInfo(message: string, turn: Color): { index: number; line: EngineLine } | undefined {
 	const depth = message.match(/^info depth (\d+)\b/);
 	const score = message.match(/\bscore (cp|mate) (-?\d+)(?=\s|$)/);
@@ -124,7 +130,7 @@ class Stockfish implements Engine {
 			await this.collect([
 				'setoption name MultiPV value ' + multiPv,
 				'position fen ' + fen,
-				'go depth ' + depth + restriction
+				goCommand(depth, opts.movetime) + restriction
 			], message => {
 				if (message.startsWith('bestmove ')) {
 					const bestMove = message.split(' ')[1];
