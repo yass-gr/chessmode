@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { parseInfo } from '#lib/engine/stockfish.ts';
+import { goCommand, parseInfo } from '#lib/engine/stockfish.ts';
+
+describe('goCommand', () => {
+	it('caps a search with movetime and leaves a plain depth search alone', () => {
+		expect(goCommand(12)).toBe('go depth 12');
+		expect(goCommand(4, 250)).toBe('go depth 4 movetime 250');
+		expect(goCommand(4, 0)).toBe('go depth 4');
+	});
+});
 
 describe('Stockfish UCI output', () => {
 	it('normalises centipawns to White and preserves depth and MultiPV order', () => {
