@@ -13,4 +13,34 @@
   <ol>{#each coverage.gaps as gap}<li><button class="option" onclick={() => onselect(gap)}><span>{gap.path.join(' ')} → {gap.san}</span><small>{(gap.share * 100).toFixed(1)}% of replies</small></button></li>{/each}</ol>
  {:else if coverage.observed && !coverage.unknown.length}<p>No common unanswered replies in the available sample.</p>{/if}
 </section>
-<style>.coverage { padding:16px; } h2 { margin:0; } p { line-height:1.45; } ol { padding-left:20px; } li { margin:8px 0; } button { width:100%; display:flex; justify-content:space-between; gap:12px; text-align:left; } small { color:var(--text-2); }</style>
+<style>
+	.coverage {
+		display: grid;
+		gap: 10px;
+		padding: 16px;
+	}
+	h2,
+	p {
+		margin: 0;
+	}
+	h2 {
+		font-size: 17px;
+		line-height: 1.3;
+		font-weight: 600;
+		letter-spacing: -0.015em;
+	}
+	p {
+		line-height: 1.45;
+	}
+	ol {
+		display: grid;
+		gap: 8px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	small {
+		color: var(--text-2);
+		white-space: nowrap;
+	}
+</style>
