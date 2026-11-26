@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { vibrate } from '#lib/native.ts';
 	import type { Snippet } from 'svelte';
 	import { Lightbulb, Sun, Volume2, VolumeX, X } from '@lucide/svelte';
 	import { onMount, untrack } from 'svelte';
@@ -175,8 +176,8 @@
 	}
 
 	function buzz(ms: number) {
-		if (!preferences.haptics || typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') return;
-		navigator.vibrate(ms);
+		if (!preferences.haptics) return;
+		vibrate(ms);
 	}
 
 	function publish() {

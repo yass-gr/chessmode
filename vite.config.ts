@@ -34,6 +34,7 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 			adapter: adapter({ fallback: 'index.html' }),
+			serviceWorker: { register: false },
 			// The SPA fallback is served at every depth, so asset URLs must not be relative.
 			paths: { relative: false }
 		})

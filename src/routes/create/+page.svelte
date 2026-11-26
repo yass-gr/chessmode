@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ChevronDown, ChevronLeft } from '@lucide/svelte';
+	import { onlineFetch } from '#lib/native.ts';
 	import { seg } from '#lib/components/seg.ts';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -204,7 +205,7 @@
 		fetching = true;
 		fetchError = '';
 		try {
-			const res = await fetch(`https://lichess.org/api/study/${studyId}.pgn?comments=true&variations=true&clocks=false&orientation=true`);
+			const res = await onlineFetch(`https://lichess.org/api/study/${studyId}.pgn?comments=true&variations=true&clocks=false&orientation=true`, {});
 			if (!res.ok) throw new Error(res.status === 404 ? 'Lichess has no public study at that link.' : `Lichess answered ${res.status}.`);
 			adopt(await res.text());
 		} catch (error) {

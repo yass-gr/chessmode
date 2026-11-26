@@ -1,3 +1,4 @@
+import { onlineFetch } from '#lib/native.ts';
 import { parseChesscomGame } from '#lib/import/online.ts';
 import type { GameRecord } from '#lib/review/types.ts';
 
@@ -18,7 +19,7 @@ export async function fetchChesscomGame(input: string, signal: AbortSignal, impo
 	if (!url) throw new Error('Paste a Chess.com game link.');
 	let response: Response;
 	try {
-		response = await fetch(url, { headers: { Accept: 'application/json' }, signal });
+		response = await onlineFetch(url, { headers: { Accept: 'application/json' }, signal });
 	} catch {
 		signal.throwIfAborted();
 		throw new Error('Could not reach Chess.com. Check your connection and try again.');
