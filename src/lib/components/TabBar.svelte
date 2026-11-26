@@ -23,7 +23,7 @@
 		{@const on = owns(t.prefixes, path)}
 		<a href={t.href} class:on aria-label={t.label} aria-current={on ? 'page' : undefined}>
 			<span class="highlight" aria-hidden="true"></span>
-			<t.Icon size={20} stroke-width={1.75} />
+			<t.Icon size={24} stroke-width={1.75} />
 		</a>
 	{/each}
 </nav>
@@ -36,9 +36,8 @@
 		bottom: calc(14px + var(--safe-bottom));
 		width: auto;
 		max-width: calc(100% - 24px);
-		height: var(--tabbar-h);
-		padding: 6px 8px;
-		border-radius: 24px;
+		padding: 6px 12px;
+		border-radius: 26px;
 		background: rgba(29, 29, 31, 0.72);
 		backdrop-filter: blur(20px) saturate(180%);
 		-webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -47,15 +46,15 @@
 			inset 0 1px 0 rgba(255, 255, 255, 0.06),
 			0 20px 30px -16px rgba(0, 0, 0, 0.9);
 		display: flex;
-		gap: 4px;
+		gap: 10px;
 		align-items: center;
 		justify-content: center;
 		z-index: 40;
 	}
 	a {
 		position: relative;
-		width: 44px;
-		height: 44px;
+		width: 56px;
+		height: 48px;
 		display: grid;
 		place-items: center;
 		color: var(--text-3);
@@ -67,10 +66,14 @@
 	}
 	a .highlight {
 		position: absolute;
-		inset: 6px;
-		border-radius: 10px;
+		inset: 4px 6px;
+		border-radius: 12px;
 		background: transparent;
 		transition: background 0.2s ease;
+	}
+	a :global(svg) {
+		position: relative;
+		z-index: 1;
 	}
 	a.on { color: var(--accent-hi); }
 	a.on .highlight { background: rgba(255, 255, 255, 0.12); }
