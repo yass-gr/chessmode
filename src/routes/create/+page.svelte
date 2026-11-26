@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ChevronDown, ChevronLeft } from '@lucide/svelte';
 	import { seg } from '#lib/components/seg.ts';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -264,7 +265,7 @@
 <main class="page">
 	<header class="top">
 		<a class="icon-btn" href="/courses" aria-label="Back">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+			<ChevronLeft size={18} stroke-width={1.75} />
 		</a>
 		<h1 class="h-title">{previous ? 'Edit course' : 'Create a course'}</h1>
 	</header>
@@ -366,7 +367,7 @@
 					<option value="">Choose a sample</option>
 					{#each courses.filter((course) => !course.id.startsWith('custom-')) as course}<option value={course.id}>{course.name}</option>{/each}
 				</select>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+				<ChevronDown size={18} stroke-width={1.75} />
 			</span>
 		</label>
 		{#if coverage && explorer}<CoveragePanel {coverage} {explorer} onselect={openGap} />{/if}
@@ -523,12 +524,12 @@
 		background: var(--surface-1);
 		color: var(--text);
 	}
-	.select svg {
+	.select :global(svg) {
 		position: absolute;
 		top: 50%;
 		right: 0;
-		width: 16px;
-		height: 16px;
+		width: 18px;
+		height: 18px;
 		transform: translateY(-50%);
 		color: var(--text-3);
 		pointer-events: none;
