@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { HeatDay } from '#lib/activity/types.ts';
 
 	let { days }: { days: HeatDay[] } = $props();
 	let selected = $state<string | null>(null);
+	let scroller = $state<HTMLDivElement | undefined>();
 
 	const columns = $derived.by(() => {
 		const weeks: HeatDay[][] = [];
@@ -27,10 +29,20 @@
 		const [year, month] = day.split('-').map(Number);
 		return new Date(year, month - 1, 1, 12).toLocaleString(undefined, { month: 'short' });
 	}
+
+	onMount(() => {
+		const node = scroller;
+		if (!node) return;
+		const showToday = () => {
+			node.scrollLeft = node.scrollWidth;
+		};
+		showToday();
+		requestAnimationFrame(showToday);
+	});
 </script>
 
 <div class="heat">
-	<div class="scroll" role="group" aria-label="Training activity for the past year">
+	<div class="scroll" bind:this={scroller} role="group" aria-label="Training activity for the past year">
 		<div class="grid">
 			{#each columns as column, index (column[0].day)}
 				{@const month = column[0].day.slice(0, 7)}
