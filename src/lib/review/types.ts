@@ -34,6 +34,24 @@ export type Classification =
 	| 'missed'
 	| 'blunder';
 
+export interface ReviewBranchStep {
+	uci: Uci;
+	san: San;
+	fenBefore: Fen;
+	fenAfter: Fen;
+	score?: Score;
+	explanation: string;
+}
+
+export interface ReviewBranch {
+	explanation: string;
+	steps: ReviewBranchStep[];
+}
+
+export type RatingContext =
+	| { kind: 'available'; value: number }
+	| { kind: 'unavailable'; reason: 'missing-data' | 'short-sample' };
+
 export interface MoveReview {
 	ply: number;
 	color: Color;
@@ -54,12 +72,14 @@ export interface MoveReview {
 	/** Score of fenAfter (White POV). */
 	scoreAfter: Score;
 	alternatives?: EngineLine[];
+	branches?: { played: ReviewBranch; recommended: ReviewBranch };
 	/** Coach text, built from the analysis. */
 	explanation: { headline: string; detail?: string };
 }
 
 export interface PlayerSummary {
 	accuracy: number;
+	ratingContext?: RatingContext;
 	/** Rough performance estimate from move quality. */
 	estimatedRating: number;
 	acpl: number;

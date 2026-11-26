@@ -2,52 +2,124 @@
 	import Label from '#lib/components/review/Label.svelte';
 	import { CLASSIFICATIONS } from '#lib/review/classify.ts';
 	import type { Classification, GameRecord, GameReview } from '#lib/review/types.ts';
+	import { accuracyText, firstClassPly } from './evaluation.ts';
 
-	let { game, review }: { game: GameRecord; review: GameReview } = $props();
-	const labels = (Object.keys(CLASSIFICATIONS) as Classification[]).sort((a, b) => CLASSIFICATIONS[b].rank - CLASSIFICATIONS[a].rank);
-	const sides = ['white', 'black'] as const;
+	let { game, review, onselect }: { game: GameRecord; review: GameReview; onselect?: (ply: number) => void } = $props();
+	const primary: Classification[] = ['find', 'sharp', 'best', 'strong', 'good', 'book', 'only', 'mistake', 'missed', 'blunder'];
+	const common: Classification[] = ['best', 'strong', 'good'];
+	let expanded = $state(false);
+	const visible = $derived(primary.filter(label => !common.includes(label) || common.filter(item => review.white.counts[item] + review.black.counts[item] > 0).includes(label)));
+	const extra: Classification[] = ['loose'];
+	function jump(label: Classification, color: 'w' | 'b') {
+		const target = firstClassPly(review.moves, label, color);
+		if (target !== undefined) onselect?.(target);
+	}
 </script>
 
-<div class="card summary">
-	<div class="players">
-		{#each sides as side}
-			{@const player = game[side]}
-			{@const stats = review[side]}
-			<section>
-				<div class="ring" style:--accuracy={stats.accuracy + '%'}><strong>{stats.accuracy.toFixed(1)}<small>%</small></strong></div>
-				<b class="name" title={player.name}>{player.name}</b>
-				<span>{side === 'white' ? 'White' : 'Black'} · Accuracy</span>
-			</section>
+{#snippet tally(label: Classification)}
+	<div class="tally">
+		{#each ['w', 'b'] as color, index}
+			{@const count = index === 0 ? review.white.counts[label] : review.black.counts[label]}
+			{#if index === 1}<span class="label"><Label classification={label} named /></span>{/if}
+			<button type="button" disabled={!count || !onselect} aria-label={`${color === 'w' ? 'White' : 'Black'}: ${count} ${CLASSIFICATIONS[label].label} moves`} onclick={() => jump(label, index === 0 ? 'w' : 'b')}>{count}</button>
 		{/each}
 	</div>
-	<table>
-		<thead><tr><th scope="col">White</th><th scope="col">Game summary</th><th scope="col">Black</th></tr></thead>
-		<tbody>
-			<tr><td>{review.white.estimatedRating || '–'}</td><th scope="row">Estimated rating</th><td>{review.black.estimatedRating || '–'}</td></tr>
-			<tr><td>{review.white.acpl.toFixed(1)}</td><th scope="row">Avg. centipawn loss</th><td>{review.black.acpl.toFixed(1)}</td></tr>
-			{#each labels as classification}
-				<tr>
-					<td>{review.white.counts[classification]}</td>
-					<th scope="row"><Label {classification} named /></th>
-					<td>{review.black.counts[classification]}</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
+{/snippet}
+<div class="card summary">
+	<div class="players">
+		{#each ['white', 'black'] as side, index}
+			{@const player = index === 0 ? game.white : game.black}
+			{@const stats = index === 0 ? review.white : review.black}
+			{@const hasMoves = review.moves.some(move => move.color === (index === 0 ? 'w' : 'b'))}
+			{@const rating = stats.ratingContext?.kind === 'available' ? stats.ratingContext.value : stats.ratingContext ? undefined : stats.estimatedRating || undefined}
+			{@const ratingReason = stats.ratingContext?.kind === 'unavailable' && stats.ratingContext.reason === 'missing-data' ? 'No rating data' : 'Not enough moves'}
+			<section><b class="name" title={player.name}>{player.name}</b><span>{side === 'white' ? 'White' : 'Black'}</span><strong>{hasMoves ? accuracyText(stats.accuracy) : '–'}{#if hasMoves}<small>%</small>{/if}</strong><span>Accuracy</span><b title={rating ? 'Estimated performance for this game' : ratingReason}>{rating ?? '–'}</b><span>{rating ? 'Game rating' : ratingReason}</span></section>
+		{/each}
+	</div>
+	<div class="tallies">{#each visible as label}{@render tally(label)}{/each}</div>
+	<div class:expanded class="extra" inert={!expanded}><div>{#each extra as label}{@render tally(label)}{/each}</div></div>
+	<button class="expand" type="button" aria-expanded={expanded} onclick={() => { expanded = !expanded; }}>{expanded ? 'Show less' : 'Show more'}</button>
 </div>
-
 <style>
-	.summary { padding: 14px; }
-	.players { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 3px 0 15px; }
-	section { min-width: 0; display: grid; justify-items: center; gap: 3px; }
-	.name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-	section span { color: var(--text-2); font-size: 12px; }
-	.ring { width: 68px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(var(--accent-hi) var(--accuracy), var(--surface-4) 0); margin-bottom: 4px; }
-	.ring strong { display: grid; place-content: center; grid-auto-flow: column; align-items: baseline; width: 58px; aspect-ratio: 1; border-radius: 50%; background: var(--surface-2); font: 700 17px var(--mono); }
-	small { font-size: 9px; }
-	table { width: 100%; border-collapse: collapse; font-size: 13px; }
-	th, td { padding: 5px 2px; text-align: center; border-top: 1px solid var(--stroke); }
-	td { width: 22%; font-family: var(--mono); }
-	th { font-weight: 550; }
-	thead { color: var(--text-2); }
+	.summary {
+		padding: 14px;
+	}
+	.players {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+		padding: 3px 0 15px;
+	}
+	section {
+		min-width: 0;
+		display: grid;
+		justify-items: center;
+		gap: 3px;
+	}
+	.name {
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	section span {
+		color: var(--text-2);
+		font-size: 12px;
+	}
+	strong {
+		font: 700 23px var(--mono);
+		margin-top: 7px;
+	}
+	small {
+		font-size: 11px;
+	}
+	.tally {
+		display: grid;
+		grid-template-columns: 1fr 2fr 1fr;
+		align-items: center;
+		min-height: 34px;
+		border-top: 1px solid var(--stroke);
+		text-align: center;
+		font-size: 13px;
+	}
+	.tally button {
+		padding: 7px;
+		font: 600 13px var(--mono);
+	}
+	.tally button:not(:disabled) {
+		cursor: pointer;
+	}
+	.tally button:not(:disabled):hover {
+		color: var(--accent-hi);
+	}
+	.tally button:disabled {
+		color: var(--text-3);
+	}
+	.extra {
+		display: grid;
+		grid-template-rows: 0fr;
+		opacity: 0;
+		transition:
+			grid-template-rows 150ms cubic-bezier(0.5, 0, 0.6, 1),
+			opacity 100ms cubic-bezier(0.5, 0, 0.6, 1);
+	}
+	.extra.expanded {
+		grid-template-rows: 1fr;
+		opacity: 1;
+	}
+	.extra > div {
+		overflow: hidden;
+	}
+	.expand {
+		display: block;
+		width: 100%;
+		padding: 10px;
+		color: var(--text-2);
+		font-size: 12px;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.extra {
+			transition: none;
+		}
+	}
 </style>

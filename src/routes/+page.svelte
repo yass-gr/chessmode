@@ -5,33 +5,59 @@
 	import { courses } from '#lib/courses/index.ts';
 	import type { Course, LineKey } from '#lib/courses/types.ts';
 	import { db, type LineProgress } from '#lib/db.ts';
-	import { activeCourse, loadProgress, setActiveCourse } from '#lib/train/data.ts';
-	import { courseStats, lineStatus } from '#lib/train/stats.ts';
+	import MiniBoard from '#lib/components/MiniBoard.svelte';
+	import { activeCourse, loadProgress, setActiveCourse, loadDepth, loadLibrary, removeFromLibrary } from '#lib/train/data.ts';
+	import { courseScope, defaultDepth, type DepthChoice } from '#lib/courses/depth.ts';
+	import { normalizeDepth, resumeHref } from '#lib/courses/scope.ts';
+	import { courseStats, lineEnd, lineStatus, lineTail } from '#lib/train/stats.ts';
 	import { streak } from '#lib/progress.ts';
 
 	let course = $state.raw<Course>();
+	let choice = $state(defaultDepth());
+	let library = $state<string[]>([]);
+	let depths = $state<Record<string, DepthChoice>>({});
 	let progress = $state.raw(new Map<LineKey, LineProgress>());
 	let days = $state<string[]>([]);
 	let switcher = $state(false);
 	let loaded = $state(false);
 	const now = Date.now();
 
-	onMount(async () => {
-		[course, progress, days] = await Promise.all([activeCourse(), loadProgress(), db.sessions.toArray().then((s) => s.map((x) => x.day))]);
-		loaded = true;
-		await tick();
-		document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center' });
+	onMount(() => {
+		const onDepth = async (event: Event) => {
+			const id = (event as CustomEvent<string>).detail;
+			const next = await loadDepth(id);
+			depths = { ...depths, [id]: next };
+			if (course?.id === id) choice = next;
+		};
+		window.addEventListener('depth-change', onDepth);
+		void (async () => {
+			[course, progress, days] = await Promise.all([activeCourse(), loadProgress(), db.sessions.toArray().then((s) => s.map((x) => x.day))]);
+			library = await loadLibrary();
+			const saved: Record<string, DepthChoice> = {};
+			for (const row of await db.settings.toArray()) {
+				if (row.key.startsWith('depth/')) saved[row.key.slice('depth/'.length)] = normalizeDepth(row.value as Partial<DepthChoice>);
+			}
+			depths = saved;
+			if (course) choice = depths[course.id] ?? (await loadDepth(course.id));
+			loaded = true;
+			await tick();
+			document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center' });
+		})();
+		return () => window.removeEventListener('depth-change', onDepth);
 	});
 
 	async function choose(c: Course) {
 		course = c;
 		switcher = false;
 		await setActiveCourse(c.id);
+		choice = await loadDepth(c.id);
 		await tick();
 		document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
 	}
 
-	const stats = $derived(course ? courseStats(course, progress, now) : undefined);
+	const scope = $derived(course ? courseScope(course, choice, progress) : undefined);
+	const stats = $derived(course && scope ? courseStats({ ...course, lines: scope.lines }, progress, now) : undefined);
+	async function removeLibrary(id: string) { await removeFromLibrary(id); library = await loadLibrary(); }
 	const streakDays = $derived(streak(days));
 	/** Horizontal position of the n-th node on the winding path, -1..1. */
 	const sway = (n: number) => Math.sin(n * 1.15);
@@ -67,7 +93,27 @@
 		{/if}
 	</header>
 
-	{#if course && loaded && stats}
+	{#if loaded}
+		<section class="library">
+			<div class="library-head"><h2 class="h-head">Your library</h2><a href="/courses">Browse courses</a></div>
+			{#each courses.filter((c) => library.includes(c.id)) as c (c.id)}
+				{@const depth = depths[c.id] ?? defaultDepth()}
+				{@const scoped = courseScope(c, depth, progress)}
+				{@const sample = scoped.lines[0] ?? c.lines[0]}
+				<div class="card library-row">
+					<a href={resumeHref(c, depth, progress, now)}>
+						<MiniBoard fen={lineEnd(sample)} orientation={c.side === 'w' ? 'white' : 'black'} size={52} />
+						<span class="t">
+							<b>{c.name}</b>
+							<small>{c.side === 'w' ? 'White' : 'Black'} · {lineTail(sample, 3)} · {scoped.learned}/{scoped.total} learned · {scoped.perfected} perfected</small>
+						</span>
+					</a>
+					<button class="chip" onclick={() => removeLibrary(c.id)} aria-label="Remove {c.name} from library">Remove</button>
+				</div>
+			{:else}<p class="muted">Open a course to add it here.</p>{/each}
+		</section>
+	{/if}
+	{#if course && loaded && stats && scope}
 		<a class="overview card" href="/course/{course.id}">
 			<div>
 				<p class="label">{course.side === 'w' ? 'White' : 'Black'} repertoire</p>
@@ -77,7 +123,7 @@
 			<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6" /></svg>
 		</a>
 
-		{#each course.chapters as chapter, ci (chapter.id)}
+		{#each course.chapters.filter(c => c.lines.some(l => scope.lines.includes(l))) as chapter, ci (chapter.id)}
 			{@const learned = chapter.lines.filter((l) => progress.has(l.key)).length}
 			<section class="chapter">
 				<div class="module">
@@ -92,7 +138,7 @@
 				</div>
 
 				<ol class="path">
-					{#each chapter.lines as line, li (line.key)}
+					{#each chapter.lines.filter(l => scope.lines.includes(l)) as line, li (line.key)}
 						{@const n = ci * 3 + li}
 						{@const st = lineStatus(progress, line.key, now)}
 						{@const active = stats.next?.key === line.key}
@@ -137,7 +183,7 @@
 			{#if stats.due}
 				<a class="btn btn-white block" href="/practice/run?course={course.id}">Practice {stats.due} due</a>
 			{:else if stats.next}
-				<a class="btn btn-white block" href="/learn/{course.id}/{stats.next.id}">{stats.learned ? 'Continue' : 'Start'} learning</a>
+				<a class="btn btn-white block" href={resumeHref(course, choice, progress, now)}>{stats.learned ? 'Continue' : 'Start'} learning</a>
 			{:else}
 				<a class="btn btn-white block" href="/drill">Go to Drill</a>
 			{/if}
@@ -146,6 +192,27 @@
 </main>
 
 <style>
+	.library { display: grid; gap: 8px; margin: 12px 0 20px; }
+	.library-head, .library-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+	.library-head a { color: var(--accent-hi); font-size: 13px; }
+	.library-row { padding: 12px; }
+	.library-row a {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		flex: 1;
+		min-width: 0;
+	}
+	.library-row .t {
+		display: grid;
+		min-width: 0;
+	}
+	.library-row .t small {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.library-row small { color: var(--text-3); }
 	.home {
 		padding-bottom: calc(var(--tabbar-h) + 200px + var(--safe-bottom));
 	}

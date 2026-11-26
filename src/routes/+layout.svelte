@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { onNavigate } from '$app/navigation';
 	import TabBar from '#lib/components/TabBar.svelte';
+	import CourseEntry from '#lib/components/CourseEntry.svelte';
 	import { isImmersive, navKind } from '#lib/motion.ts';
 
 	let { children } = $props();
@@ -49,6 +50,7 @@
 </svelte:head>
 
 {@render children()}
+<CourseEntry />
 
 {#if !immersive}
 	<TabBar />

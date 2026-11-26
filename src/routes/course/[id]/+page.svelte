@@ -10,12 +10,18 @@
 	import type { LineKey } from '#lib/courses/types.ts';
 	import type { LineProgress } from '#lib/db.ts';
 	import MiniBoard from '#lib/components/MiniBoard.svelte';
-	import { loadProgress, setActiveCourse } from '#lib/train/data.ts';
+	import DepthChooser from '#lib/components/DepthChooser.svelte';
+	import { loadProgress, setActiveCourse, loadDepth, saveDepth, addToLibrary } from '#lib/train/data.ts';
+	import { courseScope, defaultDepth } from '#lib/courses/depth.ts';
+	import { modeAvailability, modeData, type CourseMode } from '#lib/courses/unlocks.ts';
 	import { courseStats, lineEnd, lineStatus, lineTail, relativeTime } from '#lib/train/stats.ts';
 	import { courseCoverage, type Coverage } from '#lib/explorer/coverage.ts';
 	import { loadExplorer } from '#lib/explorer/types.ts';
 
 	const course = $derived(getCourse(page.params.id));
+	let choice = $state(defaultDepth());
+	let previewTier = $state(0);
+	let chooser = $state(false);
 	let progress = $state.raw(new Map<LineKey, LineProgress>());
 	let tab = $state<'lines' | 'ideas' | 'quiz'>('lines');
 	let open = $state<string | undefined>();
@@ -24,18 +30,37 @@
 	let sample = $state(0);
 	const now = Date.now();
 
-	onMount(async () => {
-		progress = await loadProgress();
-		if (!course) return;
-		await setActiveCourse(course.id);
-		const explorer = isCustom(course.id) ? undefined : await loadExplorer(course.id);
-		if (explorer) {
-			coverage = courseCoverage(course, explorer);
-			sample = explorer.games;
-		}
+	onMount(() => {
+		const onDepth = async (event: Event) => {
+			const id = (event as CustomEvent<string>).detail;
+			if (course && id === course.id) choice = await loadDepth(course.id);
+		};
+		window.addEventListener('depth-change', onDepth);
+		void (async () => {
+			progress = await loadProgress();
+			if (!course) return;
+			await setActiveCourse(course.id);
+			await addToLibrary(course.id);
+			choice = await loadDepth(course.id);
+			previewTier = choice.tier;
+			chooser = !choice.seen && courseScope(course, choice, progress).tiers.length > 1;
+			const explorer = isCustom(course.id) ? undefined : await loadExplorer(course.id);
+			if (explorer) {
+				coverage = courseCoverage(course, explorer);
+				sample = explorer.games;
+			}
+		})();
+		return () => window.removeEventListener('depth-change', onDepth);
 	});
 
-	const stats = $derived(course ? courseStats(course, progress, now) : undefined);
+	const scope = $derived(course ? courseScope(course, choice, progress) : undefined);
+	const stats = $derived(course && scope ? courseStats({ ...course, lines: scope.lines }, progress, now) : undefined);
+	async function closeChooser(confirm: boolean) {
+		if (!course) return;
+		choice = { ...choice, seen: true, tier: confirm ? previewTier : choice.tier };
+		await saveDepth(course.id, $state.snapshot(choice));
+		chooser = false;
+	}
 	const orientation = $derived(course?.side === 'w' ? 'white' : 'black');
 	const reveal = { duration: reducedMotion() ? 0 : 220, easing: easeOut };
 	const hasQuiz = $derived(course?.chapters.some((c) => c.quiz.length) ?? false);
@@ -64,19 +89,33 @@
 			{/if}
 		</header>
 
-		<div class="hero card">
-			<img src="/img/board-hero.webp" alt="" />
+		<div class="intro">
+			<div class="hero card">
+				<img src="/img/board-hero.webp" alt="" />
+			</div>
+			<div>
+				<h1 class="h-display title">{course.name}</h1>
+				<p class="tagline muted">{course.tagline}</p>
+				<div class="meta">
+					<span class="chip"><span class="side" class:black={course.side === 'b'}></span>{course.side === 'w' ? 'White' : 'Black'}</span>
+					<span class="chip">{course.lines.length} lines</span>
+					<span class="chip">{course.chapters.length} {course.chapters.length === 1 ? 'chapter' : 'chapters'}</span>
+					<span class="chip">≈{Math.round(minutes / 6) * 6 >= 60 ? `${Math.round(minutes / 60)} h` : `${minutes} min`}</span>
+				</div>
+			</div>
 		</div>
 
-		<h1 class="h-display title">{course.name}</h1>
-		<p class="tagline muted">{course.tagline}</p>
-		<div class="meta">
-			<span class="chip"><span class="side" class:black={course.side === 'b'}></span>{course.side === 'w' ? 'White' : 'Black'}</span>
-			<span class="chip">{course.lines.length} lines</span>
-			<span class="chip">{course.chapters.length} {course.chapters.length === 1 ? 'chapter' : 'chapters'}</span>
-			<span class="chip">≈{Math.round(minutes / 6) * 6 >= 60 ? `${Math.round(minutes / 60)} h` : `${minutes} min`}</span>
+		<button class="chip depth-button" onclick={() => { previewTier = choice.tier; chooser = true; }}>{scope?.tiers[scope.tier].name} · Change depth</button>
+		<p class="muted scope-count">{scope?.learned}/{scope?.total} learned · {scope?.perfected}/{scope?.total} perfected</p>
+		<div class="modes" aria-label="Training modes">
+			{#each [{mode:'learn', label:'Learn'}, {mode:'practice', label:'Practice'}, {mode:'drill', label:'Drill'}, {mode:'time', label:'Time'}, {mode:'puzzle', label:'Puzzles'}, {mode:'arena', label:'Arena'}] as item}
+				{@const mode = item.mode as CourseMode}
+				{@const data = modeData(course.id)}
+				{@const gate = modeAvailability(mode, course.lines.filter((l) => progress.has(l.key)).length, course.lines.length, mode === 'puzzle' ? data.puzzle : mode === 'arena' ? data.arena : true)}
+				{@const href = mode === 'learn' ? (scope?.next ? `/learn/${course.id}/${scope.next.id}` : `/course/${course.id}`) : mode === 'practice' ? `/practice/run?course=${course.id}` : mode === 'drill' || mode === 'time' ? `/drill/run?mode=${mode}&course=${course.id}` : `/${mode === 'puzzle' ? 'puzzles' : 'arena'}/${course.id}`}
+				{#if gate.kind === 'available'}<a class="option" {href}><b>{item.label}</b><small>Ready</small></a>{:else}<span class="option"><b>{item.label}</b><small>{gate.kind === 'locked' ? `Learn ${gate.remaining} more` : gate.reason}</small></span>{/if}
+			{/each}
 		</div>
-
 		<div class="bar">
 			<div class="progress"><i style:width="{(100 * stats.learned) / stats.total}%"></i></div>
 			<span>{Math.round((100 * stats.learned) / stats.total)}%</span>
@@ -106,7 +145,7 @@
 			</section>
 		{/if}
 
-		<div class="seg" use:seg role="group" aria-label="Sections">
+		<div class="seg sections" use:seg role="group" aria-label="Sections">
 			<button aria-pressed={tab === 'lines'} onclick={() => (tab = 'lines')}>Lines</button>
 			<button aria-pressed={tab === 'ideas'} onclick={() => (tab = 'ideas')}>Ideas</button>
 			{#if hasQuiz}<button aria-pressed={tab === 'quiz'} onclick={() => (tab = 'quiz')}>Quiz</button>{/if}
@@ -131,6 +170,7 @@
 								<MiniBoard fen={lineEnd(line)} {orientation} size={52} />
 								<span class="t">
 									<b>{line.name}</b>
+									{#if scope?.beyond.some(l => l.key === line.key)}<small>Beyond selected depth</small>{/if}
 									<span class="mono">{lineTail(line, 4)}</span>
 								</span>
 								{#if st.kind === 'new'}
@@ -183,7 +223,41 @@
 	</main>
 {/if}
 
+{#if chooser && scope}
+	<DepthChooser tiers={scope.tiers} preview={previewTier} onpreview={(tier) => (previewTier = tier)} onconfirm={() => closeChooser(true)} ondismiss={() => closeChooser(false)} />
+{/if}
+
 <style>
+	.depth-button {
+		margin-top: 16px;
+	}
+	.scope-count {
+		margin-top: 8px;
+		font-size: 13px;
+	}
+	.modes {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 8px;
+		margin-top: 16px;
+	}
+	.modes .option {
+		display: grid;
+		padding: 12px;
+		gap: 4px;
+	}
+	.modes small {
+		color: var(--text-3);
+	}
+	.sections {
+		position: relative;
+		z-index: 1;
+		margin-bottom: 8px;
+		background: var(--bg);
+	}
+	main.page {
+		padding-bottom: calc(var(--tabbar-h) + 132px + var(--safe-bottom));
+	}
 	.top {
 		display: flex;
 		justify-content: space-between;
@@ -414,5 +488,26 @@
 		bottom: calc(var(--tabbar-h) + 26px + var(--safe-bottom));
 		width: min(calc(100% - 36px), 520px);
 		z-index: 30;
+	}
+	/* At 1440×900 the section control sat in the tab bar. A shorter intro keeps it above that bar. */
+	@media (min-width: 1000px) {
+		main.page {
+			max-width: 880px;
+		}
+		.intro {
+			display: grid;
+			grid-template-columns: 240px 1fr;
+			gap: 22px;
+			align-items: center;
+		}
+		.hero {
+			height: 120px;
+		}
+		.title {
+			margin-top: 0;
+		}
+		.modes {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 </style>

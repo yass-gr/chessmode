@@ -21,8 +21,14 @@
 	import type { Key } from 'chessground/types';
 	import type { DrawShape, DrawBrushes } from 'chessground/draw';
 	import { Chess, type Square } from 'chess.js';
+	import { boardColors } from '#lib/settings/appearance.ts';
+	import type { BoardTheme, PieceSet } from '#lib/settings/types.ts';
+	import { reducedMotion } from '#lib/motion.ts';
+	import { resolvePremove, type QueuedPremove } from '#lib/settings/premove.ts';
+	import { parseKeyboardMove } from '#lib/settings/keyboard.ts';
 	import 'chessground/assets/chessground.base.css';
 	import 'chessground/assets/chessground.cburnett.css';
+ import './board-assets/pieces.css';
 
 	interface Props {
 		fen: string;
@@ -33,6 +39,9 @@
 		arrows?: Arrow[];
 		marker?: Marker;
 		coordinates?: boolean;
+  theme?: BoardTheme;
+  pieces?: PieceSet;
+  premove?: { session: string };
 		onmove?: (uci: string) => void;
 	}
 
@@ -44,11 +53,17 @@
 		arrows = [],
 		marker,
 		coordinates = true,
+  theme = 'default',
+		pieces = 'cburnett',
+  premove,
 		onmove
 	}: Props = $props();
 
 	let el: HTMLDivElement;
 	let cg: Api | undefined;
+	let queued: QueuedPremove | undefined;
+	let entry = $state('');
+	let promoOverride: string | undefined;
 
 	const BRUSHES: Record<Brush, string> = {
 		accent: '#ff6b2c',
@@ -77,6 +92,25 @@
 			game = undefined;
 		}
 		const turn = game?.turn() ?? 'w';
+		if (queued && (queued.session !== premove?.session || movable === 'none' || movable === 'both')) {
+			queued = undefined;
+			cg.cancelPremove();
+		}
+		if (queued && queued.fen !== fen) {
+			const pending = queued;
+			queued = undefined;
+			cg.cancelPremove();
+			if (premove && (movable === 'w' || movable === 'b')) {
+				const move = resolvePremove(pending, fen, premove.session, movable);
+				const currentFen = fen;
+				const currentSession = premove.session;
+				if (move) {
+					queueMicrotask(() => {
+						if (fen === currentFen && premove?.session === currentSession) onmove?.(move);
+					});
+				}
+			}
+		}
 		const canMove = movable === 'both' || movable === turn;
 		cg.set({
 			fen,
@@ -85,9 +119,10 @@
 			lastMove: lastMove as Key[] | undefined,
 			check: game?.inCheck() ? (turn === 'w' ? 'white' : 'black') : false,
 			coordinates,
+			premovable: { enabled: !!premove && (movable === 'w' || movable === 'b') },
 			movable: {
 				free: false,
-				color: canMove ? (turn === 'w' ? 'white' : 'black') : undefined,
+				color: movable === 'both' ? (turn === 'w' ? 'white' : 'black') : movable === 'w' ? 'white' : movable === 'b' ? 'black' : undefined,
 				dests: canMove && game ? legalDests(game) : new Map()
 			}
 		});
@@ -104,9 +139,25 @@
 
 	onMount(() => {
 		cg = Chessground(el, {
-			animation: { enabled: true, duration: 200 },
+			animation: { enabled: !reducedMotion(), duration: 200 },
 			highlight: { lastMove: true, check: true },
-			premovable: { enabled: false },
+			premovable: {
+				enabled: true,
+				events: {
+					set: (from, to) => {
+						const current = cg?.state.premovable.current;
+						const waiting = premove && (movable === 'w' || movable === 'b') && new Chess(fen).turn() !== movable;
+						const piece = new Chess(fen).get(from as Square);
+						const wouldPromote = piece?.type === 'p' && (piece.color === movable) && (to[1] === '8' || to[1] === '1');
+						if (waiting && !wouldPromote && current?.[0] === from && current[1] === to) {
+							queued = { from, to, fen, session: premove.session };
+						} else cg?.cancelPremove();
+					},
+					unset: () => {
+						if (!cg?.state.premovable.current) queued = undefined;
+					}
+				}
+			},
 			draggable: { enabled: true, showGhost: true },
 			drawable: {
 				enabled: true,
@@ -120,7 +171,9 @@
 					after: (orig, dest) => {
 						const game = new Chess(fen);
 						const piece = game.get(orig as Square);
-						const promo = piece?.type === 'p' && (dest[1] === '8' || dest[1] === '1') ? 'q' : '';
+						const needsPromotion = piece?.type === 'p' && (dest[1] === '8' || dest[1] === '1');
+						const promo = needsPromotion ? promoOverride || 'q' : '';
+						promoOverride = undefined;
 						onmove?.(orig + dest + promo);
 						// Re-sync after the parent reacts: keeps the move if `fen` changed, undoes it if not.
 						tick().then(apply);
@@ -132,11 +185,64 @@
 		return () => cg?.destroy();
 	});
 
+	let entryFen = '';
 	$effect(() => {
 		// Track every prop that feeds the board.
-		void [fen, orientation, movable, lastMove, arrows, coordinates];
+		void [orientation, movable, lastMove, arrows, coordinates, premove];
+		if (fen !== entryFen) {
+			entryFen = fen;
+			entry = '';
+		}
 		apply();
 	});
+
+	function cancelQueuedPremove() {
+		queued = undefined;
+		entry = '';
+		cg?.cancelPremove();
+	}
+
+	function playTyped(force: boolean) {
+		if (movable !== 'w' && movable !== 'b') return;
+		const parsed = parseKeyboardMove(fen, entry, movable, force);
+		if (!parsed || !cg) return;
+		const orig = parsed.uci.slice(0, 2) as Key;
+		const dest = parsed.uci.slice(2, 4) as Key;
+		promoOverride = parsed.uci[4];
+		entry = '';
+		cg.selectSquare(orig);
+		cg.selectSquare(dest);
+		if (parsed.kind === 'premove' && !cg.state.premovable.current) promoOverride = undefined;
+	}
+
+	function onKeydown(event: KeyboardEvent) {
+		if (movable !== 'w' && movable !== 'b') return;
+		if (event.metaKey || event.ctrlKey || event.altKey) return;
+		if (event.key === 'Escape') {
+			event.preventDefault();
+			cancelQueuedPremove();
+			return;
+		}
+		if (event.key === 'Backspace') {
+			event.preventDefault();
+			entry = entry.slice(0, -1);
+			return;
+		}
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			playTyped(true);
+			return;
+		}
+		if (event.key.length !== 1 || !/[a-h1-8nbrqkox=#-]/i.test(event.key)) return;
+		event.preventDefault();
+		entry += event.key;
+		playTyped(false);
+	}
+
+	function onPointerDown(event: PointerEvent) {
+		// Right-click cancels a queued premove. Drawing still uses that button.
+		if (event.button === 2) cancelQueuedPremove();
+	}
 
 	const markerPos = $derived.by(() => {
 		if (!marker) return undefined;
@@ -148,8 +254,25 @@
 	});
 </script>
 
-<div class="board-wrap">
+<!-- The board is the keyboard move target. It is a widget, not a button. -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<div
+	class="board-wrap piece-{pieces}"
+	style:--light={boardColors[theme][0]}
+	style:--dark={boardColors[theme][1]}
+	role="application"
+	tabindex={movable === 'w' || movable === 'b' ? 0 : undefined}
+	aria-label="Chess board. Type a move such as e4 or e2e4."
+	data-entry={entry}
+	onkeydown={onKeydown}
+	onpointerdown={onPointerDown}
+	oncontextmenu={cancelQueuedPremove}
+>
 	<div class="cg-host" bind:this={el}></div>
+	{#if entry}
+		<span class="entry">{entry}</span>
+	{/if}
 	{#if marker && markerPos}
 		<span
 			class="marker"
@@ -168,9 +291,28 @@
 		width: 100%;
 		aspect-ratio: 1;
 		border-radius: var(--r-sm);
+		outline: none;
 		box-shadow:
 			0 0 0 1px rgba(255, 255, 255, 0.06),
 			0 18px 40px -20px rgba(0, 0, 0, 0.9);
+	}
+	.board-wrap:focus-visible {
+		box-shadow:
+			0 0 0 2px var(--accent),
+			0 18px 40px -20px rgba(0, 0, 0, 0.9);
+	}
+	.entry {
+		position: absolute;
+		z-index: 6;
+		left: 8px;
+		bottom: 8px;
+		padding: 4px 8px;
+		border-radius: var(--r-sm);
+		background: var(--surface-1);
+		color: var(--text);
+		border: 1px solid var(--accent);
+		font: 600 13px/1 var(--mono);
+		pointer-events: none;
 	}
 	.cg-host {
 		position: absolute;
@@ -207,10 +349,9 @@
 		inset: 0;
 	}
 	.board-wrap :global(cg-board) {
-		background-color: var(--sq-light);
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cpath fill='%238b8378' d='M1 0h1v1H1zM3 0h1v1H3zM5 0h1v1H5zM7 0h1v1H7zM0 1h1v1H0zM2 1h1v1H2zM4 1h1v1H4zM6 1h1v1H6zM1 2h1v1H1zM3 2h1v1H3zM5 2h1v1H5zM7 2h1v1H7zM0 3h1v1H0zM2 3h1v1H2zM4 3h1v1H4zM6 3h1v1H6zM1 4h1v1H1zM3 4h1v1H3zM5 4h1v1H5zM7 4h1v1H7zM0 5h1v1H0zM2 5h1v1H2zM4 5h1v1H4zM6 5h1v1H6zM1 6h1v1H1zM3 6h1v1H3zM5 6h1v1H5zM7 6h1v1H7zM0 7h1v1H0zM2 7h1v1H2zM4 7h1v1H4zM6 7h1v1H6z'/%3E%3C/svg%3E");
-		background-size: 100% 100%;
+		background: conic-gradient(var(--light) 25%, var(--dark) 0 50%, var(--light) 0 75%, var(--dark) 0) 0 0 / 25% 25%;
 	}
+	.board-wrap :global(cg-board square.current-premove) { background-color: rgba(255, 107, 44, 0.5); }
 	.board-wrap :global(cg-board square.last-move) {
 		background-color: rgba(255, 143, 87, 0.42);
 	}

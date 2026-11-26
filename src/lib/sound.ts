@@ -1,19 +1,27 @@
 import { getSetting, setSetting } from '#lib/db.ts';
 
-export type Cue = 'move' | 'capture' | 'correct' | 'wrong' | 'complete';
+export type Cue = 'move' | 'capture' | 'correct' | 'wrong' | 'complete' | 'check' | 'castle' | 'promotion' | 'find';
 
 let ctx: AudioContext | undefined;
 let muted = false;
-getSetting('muted', false).then((m) => (muted = m));
+let muteChanged = false;
+if (typeof indexedDB !== 'undefined') {
+	void getSetting('muted', false).then((m) => { if (!muteChanged) muted = m; }).catch(() => {});
+}
 
 export const isMuted = () => muted;
 export async function setMuted(value: boolean) {
+	muteChanged = true;
 	muted = value;
 	await setSetting('muted', value);
 }
 
 /** Notes as [frequency Hz, start s, length s, gain]. Short synthesized cues, no audio files to ship. */
 const CUES: Record<Cue, [number, number, number, number][]> = {
+	check: [[440, 0, 0.09, 0.07], [660, 0.06, 0.1, 0.05]],
+	castle: [[180, 0, 0.05, 0.1], [240, 0.07, 0.06, 0.08]],
+	promotion: [[440, 0, 0.08, 0.05], [660, 0.07, 0.12, 0.05]],
+	find: [[784, 0, 0.08, 0.05], [1175, 0.08, 0.16, 0.04]],
 	move: [[180, 0, 0.05, 0.12]],
 	capture: [
 		[140, 0, 0.06, 0.16],
