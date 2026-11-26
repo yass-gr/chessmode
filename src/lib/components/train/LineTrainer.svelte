@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { Lightbulb, Sun, Volume2, VolumeX, X } from '@lucide/svelte';
 	import { onMount, untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Chess } from 'chess.js';
@@ -384,7 +385,7 @@
 <div class="trainer" data-text={preferences.textSize}>
 	<header class="topbar">
 		<a class="icon-btn" href={closeHref} aria-label="Close" onclick={requestClose}>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+			<X size={18} stroke-width={1.75} />
 		</a>
 		<div class="status">
 			{#if status}
@@ -397,13 +398,13 @@
 			{/if}
 		</div>
 		<button class="icon-btn" onclick={() => (settingsOpen = true)} aria-label="Trainer settings">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3" /><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" /></svg>
+			<Sun size={18} stroke-width={1.75} />
 		</button>
 		<button class="icon-btn" onclick={toggleSound} aria-label={muted ? 'Turn sound on' : 'Turn sound off'} aria-pressed={!muted}>
 			{#if muted}
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4zM22 9l-6 6M16 9l6 6" /></svg>
+				<VolumeX size={18} stroke-width={1.75} />
 			{:else}
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4zM15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13" /></svg>
+				<Volume2 size={18} stroke-width={1.75} />
 			{/if}
 		</button>
 	</header>
@@ -562,7 +563,7 @@
 
 			{#if hint !== 'move' && (playing || run.state.kind === 'wrong')}
 				<button class="btn btn-surface block hint" type="button" onclick={requestHint}>
-					<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z" /></svg>
+					<Lightbulb size={18} stroke-width={1.75} />
 					{hint === 'source' ? 'Show the move' : 'Hint'}
 				</button>
 			{/if}
