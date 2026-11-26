@@ -33,8 +33,9 @@ it('stores legal, independently described branches with only known scores', asyn
 	const { buildBranches } = await import('./explain.ts');
 	const { Chess } = await import('chess.js');
 	const branches = buildBranches(move, ['c6d5' as Uci], undefined, true);
-	expect(branches.played.steps[0].explanation).toContain('captures');
-	expect(branches.recommended.steps[0].explanation).toContain('continues');
+	expect(branches.played.steps[0].explanation).toBe('Qxd5 takes the pawn and hangs the queen.');
+	expect(branches.recommended.steps[0].explanation).toBe('Qh5+ forks the king and the pawn.');
+	expect(JSON.stringify(branches)).not.toContain('continues the line');
 	for (const line of Object.values(branches)) {
 		for (const step of line.steps) {
 			const board = new Chess(step.fenBefore);
@@ -51,7 +52,26 @@ it('describes mate, forks, and leaving an opening', async () => {
 		...move, fenBefore: fenBefore as Fen, uci: uci as Uci,
 		best: { ...move.best, pv: [uci as Uci] }
 	}, [], undefined, true).played.steps[0].explanation;
-	expect(make('7k/5Q2/6K1/8/8/8/8/8 w - - 0 1', 'f7g7')).toContain('checkmate');
-	expect(make('4k3/8/8/8/8/8/8/4K1N1 w - - 0 1', 'g1f3')).toContain('leaves the known opening');
-	expect(make('4k3/8/8/8/r3q3/8/7K/1N6 w - - 0 1', 'b1c3')).toContain('multiple pieces');
+	expect(make('7k/5Q2/6K1/8/8/8/8/8 w - - 0 1', 'f7g7')).toBe('Qg7# is checkmate.');
+	expect(make('4k3/8/8/8/8/8/8/4K1N1 w - - 0 1', 'g1f3')).toBe('Nf3 leaves the book.');
+	expect(make('4k3/8/8/8/r3q3/8/7K/1N6 w - - 0 1', 'b1c3')).toBe('Nc3 forks the queen and the rook.');
+});
+
+it('names a promotion, a quiet best move, and a piece that steps out of danger', async () => {
+	const { buildBranches } = await import('./explain.ts');
+	const promoted = buildBranches({
+		...move, fenBefore: '8/k3P3/8/8/8/8/8/4K3 w - - 0 1' as Fen, uci: 'e7e8q' as Uci,
+		best: { ...move.best, pv: ['e7e8q' as Uci] }
+	}, []).played.steps[0].explanation;
+	expect(promoted).toBe('e8=Q promotes the pawn to a queen.');
+	const quiet = buildBranches({
+		...move, fenBefore: '4k3/8/8/8/8/8/4P3/4K3 w - - 0 1' as Fen, uci: 'e2e4' as Uci,
+		best: { ...move.best, san: 'e4' as San, uci: 'e2e4' as Uci, pv: ['e2e4' as Uci] }
+	}, []).recommended.steps[0].explanation;
+	expect(quiet).toBe('e4 is the best move, placing the pawn on e4.');
+	const saved = buildBranches({
+		...move, fenBefore: 'r6k/8/8/8/8/8/8/R6K w - - 0 1' as Fen, uci: 'a1b1' as Uci,
+		best: { ...move.best, pv: ['a1b1' as Uci] }
+	}, []).played.steps[0].explanation;
+	expect(saved).toBe('Rb1 steps the rook out of danger.');
 });
