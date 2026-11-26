@@ -9,7 +9,6 @@
 	import type { RecordLine } from '#lib/activity/types.ts';
 	import { parseArchive, serializeArchive } from '#lib/archive/archive.ts';
 	import { readArchive, replaceWithArchive } from '#lib/archive/io.ts';
-	import type { UserArchive } from '#lib/archive/types.ts';
 	import { readOnboarding } from '#lib/onboarding/store.ts';
 	import { RATING_BRACKETS, type OnboardingProfile } from '#lib/onboarding/types.ts';
 	import Heatmap from '#lib/components/activity/Heatmap.svelte';
@@ -21,7 +20,8 @@
 	let loaded = $state(false);
 	let setup = $state<OnboardingProfile | null>(null);
 	let backupError = $state('');
-	let pending = $state<UserArchive | null>(null);
+	let pendingText = $state<string | null>(null);
+	let pendingWhen = $state('');
 	let importing = $state(false);
 	let fileInput = $state<HTMLInputElement>();
 
@@ -111,25 +111,30 @@
 		const input = event.currentTarget as HTMLInputElement;
 		const file = input.files?.[0];
 		input.value = '';
-		pending = null;
+		pendingText = null;
 		if (!file) return;
-		const parsed = parseArchive(await file.text());
+		const text = await file.text();
+		const parsed = parseArchive(text);
 		if (!parsed.ok) {
 			backupError = parsed.error;
 			return;
 		}
 		backupError = '';
-		pending = parsed.archive;
+		pendingText = text;
+		pendingWhen = new Date(parsed.archive.exportedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 	}
 
 	async function confirmImport() {
-		if (!pending || importing) return;
+		if (!pendingText || importing) return;
 		importing = true;
 		backupError = '';
 		try {
-			await replaceWithArchive(pending);
+			const parsed = parseArchive(pendingText);
+			if (!parsed.ok) throw new Error(parsed.error);
+			await replaceWithArchive(parsed.archive);
 			location.reload();
-		} catch {
+		} catch (error) {
+			console.error(error);
 			importing = false;
 			backupError = 'Could not import this backup. Nothing was changed.';
 		}
@@ -224,11 +229,11 @@
 			<input bind:this={fileInput} class="file" type="file" accept="application/json,.json" onchange={chooseBackup} />
 		</div>
 		{#if backupError}<p class="backup-error">{backupError}</p>{/if}
-		{#if pending}
+		{#if pendingText}
 			<div class="import">
-				<p>Replace everything on this device with the backup from {new Date(pending.exportedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}?</p>
+				<p>Replace everything on this device with the backup from {pendingWhen}?</p>
 				<span class="confirm">
-					<button class="btn sm btn-surface" type="button" disabled={importing} onclick={() => (pending = null)}>Cancel</button>
+					<button class="btn sm btn-surface" type="button" disabled={importing} onclick={() => (pendingText = null)}>Cancel</button>
 					<button class="btn sm btn-primary" type="button" disabled={importing} onclick={confirmImport}>{importing ? 'Importing…' : 'Replace'}</button>
 				</span>
 			</div>

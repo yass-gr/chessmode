@@ -1,3 +1,4 @@
+import { parseArchive } from '#lib/archive/archive.ts';
 import { db } from '#lib/db.ts';
 import { ARCHIVE_VERSION, type UserArchive } from '#lib/archive/types.ts';
 
@@ -16,16 +17,22 @@ export async function readArchive(exportedAt = Date.now()): Promise<UserArchive>
 	return { version: ARCHIVE_VERSION, exportedAt, progress, sessions, games, reviews, settings, ratings, customCourses };
 }
 
-/** Replace every local table with the backup. Callers validate the file first. */
+/**
+ * Replace every local table with the backup. Callers validate the file first.
+ * The copy is rebuilt from JSON so a Svelte state proxy can be stored in IndexedDB.
+ */
 export async function replaceWithArchive(archive: UserArchive): Promise<void> {
+	const parsed = parseArchive(JSON.stringify(archive));
+	if (!parsed.ok) throw new Error(parsed.error);
+	const data = parsed.archive;
 	await db.transaction('rw', tables, async () => {
 		for (const table of tables) await table.clear();
-		if (archive.progress.length) await db.progress.bulkAdd(archive.progress);
-		if (archive.sessions.length) await db.sessions.bulkAdd(archive.sessions);
-		if (archive.games.length) await db.games.bulkAdd(archive.games);
-		if (archive.reviews.length) await db.reviews.bulkAdd(archive.reviews);
-		if (archive.settings.length) await db.settings.bulkAdd(archive.settings);
-		if (archive.ratings.length) await db.ratings.bulkAdd(archive.ratings);
-		if (archive.customCourses.length) await db.customCourses.bulkAdd(archive.customCourses);
+		if (data.progress.length) await db.progress.bulkAdd(data.progress);
+		if (data.sessions.length) await db.sessions.bulkAdd(data.sessions);
+		if (data.games.length) await db.games.bulkAdd(data.games);
+		if (data.reviews.length) await db.reviews.bulkAdd(data.reviews);
+		if (data.settings.length) await db.settings.bulkAdd(data.settings);
+		if (data.ratings.length) await db.ratings.bulkAdd(data.ratings);
+		if (data.customCourses.length) await db.customCourses.bulkAdd(data.customCourses);
 	});
 }
