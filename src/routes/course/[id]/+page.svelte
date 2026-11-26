@@ -7,9 +7,11 @@
 	import { goto } from '$app/navigation';
 	import { deleteCustomCourse, isCustom } from '#lib/courses/custom.ts';
 	import { getCourse } from '#lib/courses/index.ts';
+	import { courseIntro } from '#lib/courses/intro.ts';
 	import type { LineKey } from '#lib/courses/types.ts';
-	import type { LineProgress } from '#lib/db.ts';
+	import { setSetting, type LineProgress } from '#lib/db.ts';
 	import MiniBoard from '#lib/components/MiniBoard.svelte';
+	import CourseIntro from '#lib/components/courses/CourseIntro.svelte';
 	import DepthChooser from '#lib/components/DepthChooser.svelte';
 	import { loadProgress, setActiveCourse, loadDepth, saveDepth, addToLibrary } from '#lib/train/data.ts';
 	import { courseScope, defaultDepth } from '#lib/courses/depth.ts';
@@ -28,7 +30,9 @@
 	let coverage = $state.raw<Coverage>();
 	let gapsOpen = $state(false);
 	let sample = $state(0);
+	let aboutId = $state<string | undefined>();
 	const now = Date.now();
+	const opening = $derived(course ? courseIntro(course.id) : undefined);
 
 	onMount(() => {
 		const onDepth = async (event: Event) => {
@@ -72,6 +76,19 @@
 	}
 
 	const minutes = $derived(course ? Math.round(course.lines.reduce((s, l) => s + l.plies.filter((p) => p.student).length, 0) * 0.25) : 0);
+
+	async function closeAbout() {
+		if (course) await setSetting(`intro/${course.id}`, true);
+		aboutId = undefined;
+	}
+
+	async function startFromAbout() {
+		if (!course) return;
+		const id = scope?.next?.id ?? course.lines[0]?.id;
+		await setSetting(`intro/${course.id}`, true);
+		aboutId = undefined;
+		if (id) await goto(`/learn/${course.id}/${id}`);
+	}
 </script>
 
 <svelte:head><title>{course?.name ?? 'Course'} · Chessmode</title></svelte:head>
@@ -105,6 +122,9 @@
 					<span class="chip">{course.chapters.length} {course.chapters.length === 1 ? 'chapter' : 'chapters'}</span>
 					<span class="chip">≈{Math.round(minutes / 6) * 6 >= 60 ? `${Math.round(minutes / 60)} h` : `${minutes} min`}</span>
 				</div>
+				{#if opening}
+					<button class="btn sm btn-surface about" type="button" onclick={() => (aboutId = course.id)}>About this course</button>
+				{/if}
 			</div>
 		</div>
 
@@ -230,7 +250,14 @@
 	<DepthChooser tiers={scope.tiers} preview={previewTier} onpreview={(tier) => (previewTier = tier)} onconfirm={() => closeChooser(true)} ondismiss={() => closeChooser(false)} />
 {/if}
 
+{#if aboutId === course?.id && course && opening && scope}
+	<CourseIntro {course} intro={opening} lines={scope.total} onstart={startFromAbout} ondismiss={closeAbout} />
+{/if}
+
 <style>
+	.about {
+		margin-top: 14px;
+	}
 	.depth-button {
 		margin-top: 16px;
 	}

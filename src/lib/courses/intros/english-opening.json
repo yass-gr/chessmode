@@ -1,0 +1,8 @@
+{
+	"learn": [
+		"Set up with Nc3, g3 and the bishop on g2",
+		"Fight for d5, then expand with b4 and b5",
+		"Use one setup against ...e5, ...c5 and ...Nf6"
+	],
+	"moves": "1.c4 e5 2.Nc3 Nf6 3.Nf3 Nc6 4.g3"
+}
