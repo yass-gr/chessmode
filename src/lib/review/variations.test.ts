@@ -14,6 +14,12 @@ describe('analysis variations', () => {
 		expect(board.line.map((edge) => edge.san)).toEqual(['e4', 'e5']);
 	});
 
+	it('hides the continuation when the line holds a copy of that move', () => {
+		const board = goTo(play(play(emptyBoard(), uci('e2e4')), uci('c7c6')), 1);
+		const copy = { ...board.line[1], node: board.line[1].node };
+		expect(otherMoves({ ...board, line: [board.line[0], copy] })).toEqual([]);
+	});
+
 	it('follows an existing variation instead of copying it', () => {
 		let board = play(play(emptyBoard(), uci('e2e4')), uci('c7c5'));
 		board = play(goTo(board, 1), uci('e7e5'));
