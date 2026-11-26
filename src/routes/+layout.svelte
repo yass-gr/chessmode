@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { onNavigate } from '$app/navigation';
 	import TabBar from '#lib/components/TabBar.svelte';
+	import TopNav from '#lib/components/TopNav.svelte';
 	import CourseEntry from '#lib/components/CourseEntry.svelte';
 	import { isImmersive, navKind } from '#lib/motion.ts';
 
@@ -48,6 +49,10 @@
 <svelte:head>
 	<title>Chessmode</title>
 </svelte:head>
+
+{#if !immersive}
+	<TopNav />
+{/if}
 
 {@render children()}
 <CourseEntry />
