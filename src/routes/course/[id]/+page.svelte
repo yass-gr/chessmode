@@ -83,9 +83,12 @@
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
 			</a>
 			{#if isCustom(course.id)}
-				<button class="icon-btn" onclick={remove} aria-label="Delete course">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" /></svg>
-				</button>
+				<div class="course-actions">
+					<a class="btn sm btn-surface" href="/create?edit={course.id}">Edit</a>
+					<button class="icon-btn" onclick={remove} aria-label="Delete course">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" /></svg>
+					</button>
+				</div>
 			{/if}
 		</header>
 
@@ -261,7 +264,13 @@
 	.top {
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
 		padding: 14px 0 10px;
+	}
+	.course-actions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
 	}
 	.hero {
 		height: 200px;
