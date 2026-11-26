@@ -60,6 +60,7 @@
 		display: grid;
 		gap: 8px;
 		min-width: 0;
+		justify-items: start;
 	}
 	.side {
 		width: 10px;
