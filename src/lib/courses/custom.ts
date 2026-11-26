@@ -25,7 +25,13 @@ export async function loadCustomCourses(): Promise<void> {
 	}
 }
 
+/** Svelte state proxies cannot be stored in IndexedDB or cloned. */
+function plain(file: CourseFile): CourseFile {
+	return JSON.parse(JSON.stringify(file)) as CourseFile;
+}
+
 export async function saveCustomCourse(file: CourseFile): Promise<void> {
+	file = plain(file);
 	const previous = await db.customCourses.get(file.id);
 	const saved = previous ? preserveLineIds(previous.file, file) : file;
 	parseCourse(saved);
@@ -74,7 +80,7 @@ export function preserveLineIds(previous: CourseFile, next: CourseFile): CourseF
 }
 
 export function copyCourse(file: CourseFile, id = newCustomId()): CourseFile {
-	return { ...structuredClone(file), id, name: `${file.name} copy` };
+	return { ...plain(file), id, name: `${file.name} copy` };
 }
 
 export interface ReimportLine {
