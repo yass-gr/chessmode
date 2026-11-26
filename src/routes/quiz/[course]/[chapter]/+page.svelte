@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { X } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import Board from '#lib/components/Board.svelte';
 	import ResultSheet from '#lib/components/train/ResultSheet.svelte';
@@ -60,7 +61,7 @@
 				<h1 class="h-head">Find the plan</h1>
 			</div>
 			<a class="close" href="/course/{course.id}" aria-label="Close" style:--p={index / total}>
-				<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+				<X size={18} stroke-width={1.75} />
 			</a>
 		</header>
 
@@ -159,8 +160,9 @@
 		border-radius: 50%;
 		background: var(--surface-2);
 	}
-	.close svg {
+	.close :global(svg) {
 		position: relative;
+		z-index: 1;
 	}
 	.layout {
 		display: grid;
