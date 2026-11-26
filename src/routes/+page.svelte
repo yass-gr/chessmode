@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ChevronDown, ChevronRight } from '@lucide/svelte';
+	import { ChevronDown, ChevronRight, Plus } from '@lucide/svelte';
 	import { scale } from 'svelte/transition';
 	import { easeOut, reducedMotion } from '#lib/motion.ts';
 	import { onMount, tick } from 'svelte';
@@ -98,7 +98,7 @@
 						{#if s.due}<span class="chip accent">{s.due} due</span>{/if}
 					</button>
 				{/each}
-				<a class="all" href="/courses">Browse all courses</a>
+				<a class="all" href="/courses"><Plus size={18} stroke-width={1.75} /> Browse all courses</a>
 			</div>
 		{/if}
 	</header>
@@ -116,7 +116,7 @@
 
 	{#if loaded}
 		<section class="library">
-			<div class="library-head"><h2 class="h-head">Your library</h2><a href="/courses">Browse courses</a></div>
+			<h2 class="h-head">Your library</h2>
 			{#each libraryCourses as c (c.id)}
 				{@const depth = depths[c.id] ?? defaultDepth()}
 				{@const scoped = courseScope(c, depth, progress)}
@@ -132,9 +132,14 @@
 					<button class="chip" onclick={() => removeLibrary(c.id)} aria-label="Remove {c.name} from library">Remove</button>
 				</div>
 			{/each}
-			{#if library.length === 0}
-				<p class="muted">Open a course to add it here.</p>
-			{/if}
+			<a class="card library-row browse" href="/courses">
+				<span class="browse-icon"><Plus size={22} stroke-width={1.75} /></span>
+				<span class="t">
+					<b>Browse courses</b>
+					<small>{courses.length} openings for White and Black</small>
+				</span>
+				<ChevronRight size={20} stroke-width={1.75} />
+			</a>
 		</section>
 	{/if}
 	{#if course && loaded && stats && scope}
@@ -228,10 +233,39 @@
 		gap: 8px;
 		margin-top: 4px;
 	}
-	.library { display: grid; gap: 8px; margin: 12px 0 20px; }
-	.library-head, .library-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-	.library-head a { color: var(--accent-hi); font-size: 13px; }
-	.library-row { padding: 12px; }
+	.library {
+		display: grid;
+		gap: 8px;
+		margin: 12px 0 20px;
+	}
+	.library-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 12px;
+	}
+	.browse {
+		min-height: 78px;
+		border-style: dashed;
+		border-color: var(--stroke-2);
+		color: var(--text-2);
+	}
+	.browse .t {
+		flex: 1;
+	}
+	.browse b {
+		color: var(--text);
+	}
+	.browse-icon {
+		display: grid;
+		place-items: center;
+		width: 52px;
+		height: 52px;
+		flex: 0 0 auto;
+		border-radius: 12px;
+		background: var(--surface-3);
+	}
 	.library-row a {
 		display: flex;
 		align-items: center;
@@ -248,7 +282,9 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
-	.library-row small { color: var(--text-3); }
+	.library-row small {
+		color: var(--text-3);
+	}
 	.home {
 		padding-bottom: calc(var(--tabbar-h) + 200px + var(--safe-bottom));
 	}
@@ -352,9 +388,13 @@
 		font-size: 12px;
 	}
 	.menu .all {
+		display: flex;
+		align-items: center;
+		gap: 12px;
 		padding: 12px;
+		border-radius: 12px;
 		font-size: 13px;
-		color: var(--accent-hi);
+		color: var(--text-2);
 	}
 	.overview {
 		display: flex;
