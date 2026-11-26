@@ -1,0 +1,8 @@
+{
+	"learn": [
+		"Play c3 and d3 against ...Bc5 and ...Nf6",
+		"Keep the bishop and tour the knight to g3",
+		"Break with d4 when Black runs out of moves"
+	],
+	"moves": "1.e4 e5 2.Nf3 Nc6 3.Bc4"
+}

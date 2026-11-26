@@ -1,17 +1,32 @@
 import { describe, expect, it } from 'vitest';
-import { courseIntro } from '#lib/courses/intro.ts';
+import { courses } from '#lib/courses/index.ts';
+import { courseIntro, introLine } from '#lib/courses/intro.ts';
 
 describe('courseIntro', () => {
-	it('returns nothing when a course has no recording', () => {
+	it('returns nothing for a course without intro data', () => {
 		expect(courseIntro('not-a-course')).toBeUndefined();
-		expect(courseIntro('italian-game')).toBeUndefined();
 	});
 
-	it('returns the Caro-Kann intro with a playable video and a transcript', () => {
+	it('gives every bundled course three short lessons and a position the course reaches', () => {
+		expect(courses.length).toBeGreaterThan(0);
+		for (const course of courses) {
+			const intro = courseIntro(course.id);
+			expect(intro, course.id).toBeTruthy();
+			expect(intro!.learn, course.id).toHaveLength(3);
+			for (const bullet of intro!.learn) expect(bullet.trim().split(/\s+/).length, `${course.id}: ${bullet}`).toBeLessThan(12);
+			const line = introLine(intro!.moves);
+			const reached = course.lines.some((item) => line.sans.every((san, index) => item.plies[index]?.san === san));
+			expect(reached, `${course.id}: ${intro!.moves}`).toBe(true);
+		}
+	});
+
+	it('stops the Caro-Kann on the position after 1.e4 c6 2.d4 d5', () => {
 		const intro = courseIntro('caro-kann');
-		expect(intro?.title).toBe('Caro-Kann Defence');
-		expect(intro?.video).toBe('/intro/caro-kann.webm');
-		expect(intro?.captions).toBe('/intro/caro-kann.vtt');
-		expect(intro?.transcript).toContain('1.e4 c6');
+		expect(introLine(intro!.moves).fen.startsWith('rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR')).toBe(true);
+	});
+
+	it('stops the Ruy Lopez on the position after 3.Bb5', () => {
+		const intro = courseIntro('ruy-lopez');
+		expect(introLine(intro!.moves).fen.startsWith('r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R')).toBe(true);
 	});
 });
