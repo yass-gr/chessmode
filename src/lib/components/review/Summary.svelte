@@ -39,9 +39,85 @@
 	<button class="expand" type="button" aria-expanded={expanded} onclick={() => { expanded = !expanded; }}>{expanded ? 'Show less' : 'Show more'}</button>
 </div>
 <style>
-	.summary { padding: 14px; } .players { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 3px 0 15px; }
-	section { min-width: 0; display: grid; justify-items: center; gap: 3px; } .name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } section span { color: var(--text-2); font-size: 12px; } strong { font: 700 23px var(--mono); margin-top: 7px; } small { font-size: 11px; }
-	.tally { display: grid; grid-template-columns: 1fr 2fr 1fr; align-items: center; min-height: 34px; border-top: 1px solid var(--stroke); text-align: center; font-size: 13px; } .tally button { padding: 7px; font: 600 13px var(--mono); } .tally button:not(:disabled) { cursor: pointer; } .tally button:not(:disabled):hover { color: var(--accent-hi); } .tally button:disabled { color: var(--text-3); }
-	.extra { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 150ms cubic-bezier(.5, 0, .6, 1), opacity 100ms cubic-bezier(.5, 0, .6, 1); } .extra.expanded { grid-template-rows: 1fr; opacity: 1; } .extra > div { overflow: hidden; } .expand { display: block; width: 100%; padding: 10px; color: var(--text-2); font-size: 12px; }
-	@media (prefers-reduced-motion: reduce) { .extra { transition: none; } }
+	.summary {
+		padding: 14px;
+	}
+	.players {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+		padding: 3px 0 15px;
+	}
+	section {
+		min-width: 0;
+		display: grid;
+		justify-items: center;
+		gap: 3px;
+	}
+	.name {
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	section span {
+		color: var(--text-2);
+		font-size: 12px;
+	}
+	strong {
+		font: 700 23px var(--mono);
+		margin-top: 7px;
+	}
+	small {
+		font-size: 11px;
+	}
+	.tally {
+		display: grid;
+		grid-template-columns: 1fr 2fr 1fr;
+		align-items: center;
+		min-height: 34px;
+		border-top: 1px solid var(--stroke);
+		text-align: center;
+		font-size: 13px;
+	}
+	.tally button {
+		padding: 7px;
+		font: 600 13px var(--mono);
+	}
+	.tally button:not(:disabled) {
+		cursor: pointer;
+	}
+	.tally button:not(:disabled):hover {
+		color: var(--accent-hi);
+	}
+	.tally button:disabled {
+		color: var(--text-3);
+	}
+	.extra {
+		display: grid;
+		grid-template-rows: 0fr;
+		opacity: 0;
+		transition:
+			grid-template-rows 150ms cubic-bezier(0.5, 0, 0.6, 1),
+			opacity 100ms cubic-bezier(0.5, 0, 0.6, 1);
+	}
+	.extra.expanded {
+		grid-template-rows: 1fr;
+		opacity: 1;
+	}
+	.extra > div {
+		overflow: hidden;
+	}
+	.expand {
+		display: block;
+		width: 100%;
+		padding: 10px;
+		color: var(--text-2);
+		font-size: 12px;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.extra {
+			transition: none;
+		}
+	}
 </style>

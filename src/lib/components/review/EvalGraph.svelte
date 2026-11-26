@@ -38,7 +38,8 @@
 			<defs><clipPath id="graph-white"><rect width={width} height={middle} /></clipPath><clipPath id="graph-black"><rect y={middle} width={width} height={middle} /></clipPath></defs>
 			<line x1="6" x2={width - 6} y1={middle} y2={middle} stroke="var(--stroke-2)" stroke-dasharray="4 4" />
 			{#if points.length}
-				<path d={area} fill="#deddd9" opacity=".32" clip-path="url(#graph-white)" /><path d={area} fill="#77777c" opacity=".35" clip-path="url(#graph-black)" />
+				<path d={area} fill="var(--eval-graph-white)" opacity=".32" clip-path="url(#graph-white)" />
+				<path d={area} fill="var(--eval-graph-black)" opacity=".35" clip-path="url(#graph-black)" />
 				<path d={line} stroke="var(--text-2)" stroke-width="1.5" vector-effect="non-scaling-stroke" fill="none" />
 				{#each marked as move (move.ply)}<circle cx={x(move.ply)} cy={y(scoreValue(move.scoreAfter, move.color === 'w' ? 'b' : 'w'))} r={move.ply === ply ? 5 : 4} fill={CLASSIFICATIONS[move.classification].color} stroke="var(--bg)" stroke-width="1" />{/each}
 				<line x1={x(Math.min(ply, maxPly))} x2={x(Math.min(ply, maxPly))} y1="2" y2={height - 2} stroke="var(--accent)" stroke-width="1.5" vector-effect="non-scaling-stroke" />
@@ -50,7 +51,45 @@
 	<div class="axis"><span>{points.length ? 'Start' : 'Evaluation unavailable'}</span><span>{total} plies</span></div>
 </div>
 <style>
-	.graph { padding: 12px 14px 9px; } .heading, .axis { display: flex; justify-content: space-between; gap: 10px; } h2 { font-size: 14px; } .heading span, .axis { color: var(--text-2); font: 10px var(--mono); }
-	.plot { position: relative; cursor: crosshair; touch-action: manipulation; } .plot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; } svg { display: block; width: 100%; height: 80px; }
-	.tooltip { position: absolute; right: 0; top: 0; padding: 3px 6px; border-radius: var(--r-xs); background: var(--surface-4); font: 11px var(--mono); pointer-events: none; }
+	.graph {
+		padding: 12px 14px 9px;
+	}
+	.heading,
+	.axis {
+		display: flex;
+		justify-content: space-between;
+		gap: 10px;
+	}
+	h2 {
+		font-size: 14px;
+	}
+	.heading span,
+	.axis {
+		color: var(--text-2);
+		font: 10px var(--mono);
+	}
+	.plot {
+		position: relative;
+		cursor: crosshair;
+		touch-action: manipulation;
+	}
+	.plot:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+	svg {
+		display: block;
+		width: 100%;
+		height: 80px;
+	}
+	.tooltip {
+		position: absolute;
+		right: 0;
+		top: 0;
+		padding: 3px 6px;
+		border-radius: var(--r-xs);
+		background: var(--surface-4);
+		font: 11px var(--mono);
+		pointer-events: none;
+	}
 </style>
