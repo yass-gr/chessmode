@@ -142,7 +142,8 @@
 			lines: cleanLines,
 			mistakes,
 			score: mode === 'time' ? points : bestStreak,
-			metric: mode === 'time' ? 'moves' : 'lines'
+			metric: mode === 'time' ? 'moves' : 'lines',
+			reps: finished
 		});
 	}
 

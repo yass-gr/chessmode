@@ -11,6 +11,7 @@
 	import { normalizeDepth, resumeHref } from '#lib/courses/scope.ts';
 	import { courseStats, lineEnd, lineStatus, lineTail } from '#lib/train/stats.ts';
 	import { streak } from '#lib/progress.ts';
+	import { dismissOnboarding, readOnboarding } from '#lib/onboarding/store.ts';
 
 	let course = $state.raw<Course>();
 	let choice = $state(defaultDepth());
@@ -20,6 +21,7 @@
 	let days = $state<string[]>([]);
 	let switcher = $state(false);
 	let loaded = $state(false);
+	let offerSetup = $state(false);
 	const now = Date.now();
 
 	onMount(() => {
@@ -39,12 +41,18 @@
 			}
 			depths = saved;
 			if (course) choice = depths[course.id] ?? (await loadDepth(course.id));
+			offerSetup = (await readOnboarding()).status === 'pending';
 			loaded = true;
 			await tick();
-			document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center' });
+			if (!offerSetup) document.querySelector('[data-active-node]')?.scrollIntoView({ block: 'center' });
 		})();
 		return () => window.removeEventListener('depth-change', onDepth);
 	});
+
+	async function skipSetup() {
+		await dismissOnboarding();
+		offerSetup = false;
+	}
 
 	async function choose(c: Course) {
 		course = c;
@@ -92,6 +100,17 @@
 			</div>
 		{/if}
 	</header>
+
+	{#if loaded && offerSetup}
+		<section class="card setup">
+			<p class="h-head">Want a course suggested?</p>
+			<p class="muted">Optional. Your rating picks a starting point. You can train without it.</p>
+			<div class="setup-actions">
+				<a class="btn sm btn-primary" href="/onboarding">Set up</a>
+				<button class="btn sm btn-surface" type="button" onclick={skipSetup}>Not now</button>
+			</div>
+		</section>
+	{/if}
 
 	{#if loaded}
 		<section class="library">
@@ -192,6 +211,18 @@
 </main>
 
 <style>
+	.setup {
+		display: grid;
+		gap: 8px;
+		padding: 16px;
+		margin: 4px 0 8px;
+	}
+	.setup-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 4px;
+	}
 	.library { display: grid; gap: 8px; margin: 12px 0 20px; }
 	.library-head, .library-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 	.library-head a { color: var(--accent-hi); font-size: 13px; }

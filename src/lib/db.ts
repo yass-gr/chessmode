@@ -33,6 +33,8 @@ export interface SessionLog {
 	 */
 	score?: number;
 	metric?: 'lines' | 'moves';
+	/** Finished lines in a Drill or Time run. `lines` counts only clean lines, so it is not the rep total. */
+	reps?: number;
 	xp: number;
 }
 
