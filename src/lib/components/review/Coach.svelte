@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import type { Classification } from '#lib/review/types.ts';
 	import { reducedMotion } from '#lib/motion.ts';
 	import { coachExpression, MASCOT_SRC, type CoachPhase, type CoachExpression, type RetryMood } from './coach.ts';
@@ -21,36 +22,47 @@
 		size?: 'compact' | 'large';
 	} = $props();
 
-	let expression = $state<CoachExpression>('neutral');
 	let failedSrc = $state('');
 	const target = $derived(coachExpression(phase, classification, retry));
-	const src = $derived(MASCOT_SRC[expression]);
+	// Shown face. The previous face stays underneath for one crossfade, then drops.
+	let front = $state<CoachExpression>('neutral');
+	let back = $state<CoachExpression | undefined>();
 
 	$effect(() => {
 		const next = target;
-		void headline;
-		void detail;
-		if (reducedMotion() || phase === 'loading') {
-			expression = next;
+		if (reducedMotion()) {
+			front = next;
+			back = undefined;
 			return;
 		}
-		expression = 'neutral';
+		const prev = untrack(() => front);
+		if (prev === next) return;
+		back = prev;
+		front = next;
+		// Same length as --dur-press, which drives the opacity crossfade.
 		const timer = setTimeout(() => {
-			expression = next;
-		}, 200);
+			back = undefined;
+		}, 160);
 		return () => clearTimeout(timer);
 	});
 </script>
 
 <div class="coach" class:large={size === 'large'}>
 	{#if showMascot}
-		{#if failedSrc === src}
-			<span class="placeholder" role="img" aria-label="Coach">
-				<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 16.5 6.2 9l3.1 3.2L12 6l2.7 6.2L17.8 9 20 16.5V18H4v-1.5z" /></svg>
-			</span>
-		{:else}
-			<img src={src} alt="" onerror={() => { failedSrc = src; }} />
-		{/if}
+		<div class="mascot">
+			{#if back && MASCOT_SRC[back] !== failedSrc}
+				<img class="under" src={MASCOT_SRC[back]} alt="" />
+			{/if}
+			{#if failedSrc === MASCOT_SRC[front]}
+				<span class="placeholder" role="img" aria-label="Coach">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 16.5 6.2 9l3.1 3.2L12 6l2.7 6.2L17.8 9 20 16.5V18H4v-1.5z" /></svg>
+				</span>
+			{:else}
+				{#key front}
+					<img class:swap={back !== undefined} src={MASCOT_SRC[front]} alt="" onerror={() => { failedSrc = MASCOT_SRC[front]; }} />
+				{/key}
+			{/if}
+		</div>
 	{/if}
 	{#key `${headline}\n${detail ?? ''}`}
 		<div class="speech" aria-live="polite">
@@ -67,16 +79,30 @@
 		gap: 10px;
 		min-width: 0;
 	}
+	.mascot {
+		position: relative;
+		width: 56px;
+		height: 56px;
+		flex: 0 0 auto;
+	}
 	img,
 	.placeholder {
 		width: 56px;
 		height: 56px;
-		flex: 0 0 auto;
 		border-radius: 50%;
 	}
 	img {
 		object-fit: cover;
 		background: var(--surface-2);
+	}
+	img.under,
+	img.swap,
+	.mascot .placeholder {
+		position: absolute;
+		inset: 0;
+	}
+	img.swap {
+		animation: coach-fade var(--dur-press) var(--ease-out);
 	}
 	.placeholder {
 		display: grid;
@@ -116,7 +142,16 @@
 			transform: none;
 		}
 	}
+	@keyframes coach-fade {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
 	@media (min-width: 1024px) {
+		.mascot,
 		img,
 		.placeholder {
 			width: 64px;
@@ -128,7 +163,8 @@
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.speech {
+		.speech,
+		img.swap {
 			animation: none;
 		}
 	}

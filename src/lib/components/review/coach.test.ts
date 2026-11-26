@@ -5,10 +5,14 @@ import { coachExpression, lineAction, overviewVerdict } from './coach.ts';
 it('maps coach phases and move labels to one expression', () => {
 	expect(coachExpression('loading')).toBe('thinking');
 	expect(coachExpression('overview')).toBe('neutral');
-	expect(coachExpression('complete')).toBe('celebrating');
+	expect(coachExpression('move')).toBe('neutral');
+	expect(coachExpression('complete')).toBe('happy');
 	expect(coachExpression('followup')).toBe('thinking');
 	expect(coachExpression('move', 'best')).toBe('happy');
+	expect(coachExpression('move', 'strong')).toBe('happy');
+	expect(coachExpression('move', 'good')).toBe('happy');
 	expect(coachExpression('move', 'book')).toBe('happy');
+	expect(coachExpression('move', 'only')).toBe('happy');
 	expect(coachExpression('move', 'find')).toBe('celebrating');
 	expect(coachExpression('move', 'sharp')).toBe('celebrating');
 	expect(coachExpression('move', 'mistake')).toBe('encouraging');
