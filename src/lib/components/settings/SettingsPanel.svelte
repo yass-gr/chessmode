@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import MiniBoard from '#lib/components/MiniBoard.svelte';
+	import Switch from '#lib/components/Switch.svelte';
 	import { START_FEN } from '#lib/chess/types.ts';
 	import { boardColors, pieceLabel, themeLabel } from '#lib/settings/appearance.ts';
 	import { readCoursePreferences, readPreferences, writeCoursePreferences, writePreferences } from '#lib/settings/preferences.ts';
@@ -40,6 +41,10 @@
 	});
 
 	let pending = Promise.resolve();
+	function setPreference(key: 'evalBar' | 'autoNext' | 'sound' | 'confetti' | 'haptics', value: boolean) {
+		preferences[key] = value;
+		save();
+	}
 	function save() {
 		const next = $state.snapshot(preferences);
 		const nextCourse = $state.snapshot(course);
@@ -75,7 +80,10 @@
 		</label>
 	{/if}
 	{#if mode !== 'puzzles'}
-		<label><input type="checkbox" bind:checked={preferences.evalBar} onchange={save} /> Evaluation bar</label>
+		<div class="toggle">
+			<span>Evaluation bar</span>
+			<Switch checked={preferences.evalBar} label="Evaluation bar" onchange={(value) => setPreference('evalBar', value)} />
+		</div>
 	{/if}
 	{#if mode === 'drill' || mode === 'time'}
 		<label><input type="checkbox" bind:checked={course.fastOpponent} onchange={save} /> Fast opponent</label>
@@ -87,11 +95,23 @@
 		</label>
 	{/if}
 	{#if mode === 'puzzles'}
-		<label><input type="checkbox" bind:checked={preferences.autoNext} onchange={save} /> Next puzzle automatically</label>
+		<div class="toggle">
+			<span>Next puzzle automatically</span>
+			<Switch checked={preferences.autoNext} label="Next puzzle automatically" onchange={(value) => setPreference('autoNext', value)} />
+		</div>
 	{/if}
-	<label><input type="checkbox" bind:checked={preferences.sound} onchange={save} /> Sound</label>
-	<label><input type="checkbox" bind:checked={preferences.confetti} onchange={save} /> Confetti</label>
-	<label><input type="checkbox" bind:checked={preferences.haptics} onchange={save} /> Haptics</label>
+	<div class="toggle">
+		<span>Sound</span>
+		<Switch checked={preferences.sound} label="Sound" onchange={(value) => setPreference('sound', value)} />
+	</div>
+	<div class="toggle">
+		<span>Confetti</span>
+		<Switch checked={preferences.confetti} label="Confetti" onchange={(value) => setPreference('confetti', value)} />
+	</div>
+	<div class="toggle">
+		<span>Haptics</span>
+		<Switch checked={preferences.haptics} label="Haptics" onchange={(value) => setPreference('haptics', value)} />
+	</div>
 	<label>
 		Text size
 		<select bind:value={preferences.textSize} onchange={save}>
@@ -158,10 +178,15 @@
 		display: grid;
 		gap: 12px;
 	}
-	label {
+	label,
+	.toggle {
 		display: flex;
 		align-items: center;
 		gap: 8px;
+	}
+	.toggle {
+		justify-content: space-between;
+		gap: 12px;
 	}
 	select {
 		margin-left: auto;
