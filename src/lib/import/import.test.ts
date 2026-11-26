@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import chessMonth from './fixtures/chesscom-month.json';
 import chessArchives from './fixtures/chesscom-archives.json';
 import lichessGames from './fixtures/lichess.ndjson?raw';
-import { parseArchiveGames, parseArchives, parseLichessGame, readNdjson } from '#lib/import/online.ts';
+import { parseArchiveGames, parseArchiveGamesAsync, parseArchives, parseLichessGame, readNdjson } from '#lib/import/online.ts';
 import { parsePgn, readPgn } from '#lib/import/pgn.ts';
 
 describe('game imports', () => {
@@ -33,6 +33,19 @@ describe('game imports', () => {
 			userColor: expect.stringMatching(/^[wb]$/)
 		});
 		expect(readPgn(games[0].pgn).plies).toHaveLength(80);
+	});
+
+	it('parses Chess.com archives in cancellable chunks', async () => {
+		const signal = new AbortController().signal;
+		const progress: number[] = [];
+		const value = { games: [...chessMonth.games, ...chessMonth.games] };
+		const games = await parseArchiveGamesAsync(value, 'hikaru', 1000, signal, completed => progress.push(completed));
+		expect(games).toHaveLength(2);
+		expect(progress).toEqual([2]);
+
+		const controller = new AbortController();
+		setTimeout(() => controller.abort(), 0);
+		await expect(parseArchiveGamesAsync(value, 'hikaru', 1000, controller.signal)).rejects.toMatchObject({ name: 'AbortError' });
 	});
 
 	it('parses pasted PGN with annotations and a deterministic identifier', () => {
