@@ -43,8 +43,7 @@ test('paste a PGN and complete a Stockfish review', async ({ page }) => {
 	await expect(page.getByRole('heading', { name: 'Key moments' })).toBeVisible();
 });
 
-test.fixme('retry a losing move in the Fool\'s Mate review', async ({ page }) => {
-	// The opening book masks the blunder; see docs/e2e-report.md.
+test('retry a losing move in the Fool\'s Mate review', async ({ page }) => {
 	await page.goto('/matches');
 	await page.getByText('Paste a PGN').click();
 	await page.getByRole('textbox', { name: 'Game PGN' }).fill('[White \"Alice\"]\n[Black \"Bob\"]\n[Result \"0-1\"]\n\n1. f3 e5 2. g4 Qh4# 0-1');
@@ -58,5 +57,10 @@ test.fixme('retry a losing move in the Fool\'s Mate review', async ({ page }) =>
 	await board.focus();
 	await page.keyboard.type('e2e4');
 	await page.keyboard.press('Enter');
-	await expect(page.getByRole('button', { name: /Back to game|Try again|Next mistake/ }).first()).toBeVisible({ timeout: 30_000 });
+	const coach = page.getByRole('region', { name: 'Coach' });
+	await expect(coach.getByText(/e4 works\./).first()).toBeVisible({ timeout: 30_000 });
+	const success = coach.getByRole('button', { name: 'Back to game', exact: true });
+	await expect(success).toBeVisible({ timeout: 30_000 });
+	await success.click();
+	await expect(page.getByRole('status').filter({ hasText: 'Retry complete. You found a better move for each position.' })).toBeVisible();
 });

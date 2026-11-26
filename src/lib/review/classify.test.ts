@@ -32,6 +32,23 @@ describe('move labels', () => {
 		expect(classify({ ...fixture(), inBook: true }).classification).toBe('book');
 	});
 
+	it("does not let the opening book hide Fool's Mate", () => {
+		const position = new Chess(START_FEN);
+		position.move('f3');
+		position.move('e5');
+		const input = fixture({
+			fen: position.fen() as Fen,
+			played: 'g2g4',
+			best: 'e2e4',
+			next: { mate: -1 }
+		});
+		expect(classify({ ...input, inBook: true }).classification).toBe('blunder');
+	});
+
+	it('keeps a sound move in the opening book', () => {
+		expect(classify({ ...fixture({ played: 'e2e4', best: 'e2e4' }), inBook: true }).classification).toBe('book');
+	});
+
 	it('recognises only legal moves', () => {
 		const input = fixture({ fen: 'k7/8/2K5/2Q5/8/8/8/8 b - - 0 1' as Fen, played: 'a8b8', best: 'a8b8' });
 		input.before.lines.pop();
