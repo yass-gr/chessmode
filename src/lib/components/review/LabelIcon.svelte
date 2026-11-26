@@ -2,27 +2,53 @@
 	import { CLASSIFICATIONS } from '#lib/review/classify.ts';
 	import type { Classification } from '#lib/review/types.ts';
 	let { classification, size = 20 }: { classification: Classification; size?: number } = $props();
+	const id = $props.id();
+	let color = $derived(CLASSIFICATIONS[classification].color);
 </script>
 
 <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" class="icon">
-	<circle cx="12" cy="12" r="11.5" fill={CLASSIFICATIONS[classification].color} stroke="rgba(0,0,0,.18)" />
-	{#if classification === 'best'}
-		<path d="m12 2.7 2.8 5.8 6.4.9-4.6 4.5 1.1 6.3L12 17.3l-5.7 2.9 1.1-6.3-4.6-4.5 6.4-.9z" />
-	{:else if classification === 'strong'}
-		<path d="M9 20H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h3l3.5-6.2c.5-.9 1.8-.9 2.2 0 .6 1.3.3 3-.3 4.7L13 10h5.4c1.6 0 2.6 1.4 2.2 2.9l-1.3 5.3c-.3 1.1-1.2 1.8-2.3 1.8H9zm-2-8v6h1v-6z" />
-	{:else if classification === 'good'}
-		<path d="m3.5 12 2.7-2.7 3.8 3.8 7.8-8 2.7 2.7L10 18.5z" />
-	{:else if classification === 'book'}
-		<path d="M2.8 5.1c3.3-.9 6.1-.5 8.4 1.2v13c-2.3-1.7-5.1-2.1-8.4-1.2zm18.4 0v13c-3.3-.9-6.1-.5-8.4 1.2v-13c2.3-1.7 5.1-2.1 8.4-1.2z" />
-	{:else if classification === 'only'}
-		<path d="M3 10h10V6l8 6-8 6v-4H3z" />
-	{:else if classification === 'missed'}
-		<path d="m6.3 3.8 5.7 5.7 5.7-5.7 2.5 2.5-5.7 5.7 5.7 5.7-2.5 2.5-5.7-5.7-5.7 5.7-2.5-2.5 5.7-5.7-5.7-5.7z" />
-	{:else}
-		<text x="12" y="18.4" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" textLength={classification === 'sharp' || classification === 'mistake' ? 9 : 18} lengthAdjust="spacingAndGlyphs" font-weight="900" letter-spacing={classification === 'sharp' || classification === 'mistake' ? 0 : -1.5} fill="white">{CLASSIFICATIONS[classification].glyph}</text>
-	{/if}
+	<defs>
+		<linearGradient id={`${id}-rim`} x1="0" y1="0" x2="0" y2="1">
+			<stop stop-color={color} /><stop offset="1" stop-color="#202020" />
+		</linearGradient>
+		<radialGradient id={`${id}-body`} cx="30%" cy="18%" r="90%">
+			<stop stop-color="white" stop-opacity=".38" /><stop offset=".55" stop-color="white" stop-opacity="0" /><stop offset="1" stop-color="black" stop-opacity=".18" />
+		</radialGradient>
+		<g id={`${id}-glyph`} stroke-linecap="round" stroke-linejoin="round">
+			{#if classification === 'find'}
+				<path d="M8 6v8m8-8v8" /><circle cx="8" cy="18" r="1.3" /><circle cx="16" cy="18" r="1.3" />
+			{:else if classification === 'sharp'}
+				<path d="M12 6v8" /><circle cx="12" cy="18" r="1.3" />
+			{:else if classification === 'best'}
+				<path fill="currentColor" d="m12 4 2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z" />
+			{:else if classification === 'strong'}
+				<path fill="currentColor" d="M9 19H6a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h3l3-6c.5-1 2-1 2.3.2.3 1.3-.1 2.8-.6 4.3l-.2.5H18c1.2 0 1.8.9 1.5 2l-1.2 5.4c-.2 1-1 1.6-2 1.6z" />
+			{:else if classification === 'good'}
+				<path d="m5 12 4.5 4.5L19 7" />
+			{:else if classification === 'book'}
+				<path d="M4 6c3-.8 5.5-.3 8 1.4v11c-2.5-1.7-5-2.2-8-1.4zM20 6c-3-.8-5.5-.3-8 1.4v11c2.5-1.7 5-2.2 8-1.4z" />
+			{:else if classification === 'only'}
+				<path d="M4 12h15m-6-6 6 6-6 6" />
+			{:else if classification === 'loose'}
+				<path d="M4.5 8a3.2 3.2 0 1 1 5.1 2.6c-1.2.8-1.7 1.5-1.7 3M16 6v8" /><circle cx="8" cy="18" r="1.3" /><circle cx="16" cy="18" r="1.3" />
+			{:else if classification === 'mistake'}
+				<path d="M8.5 8a3.5 3.5 0 1 1 5.3 3c-1.3.8-1.8 1.5-1.8 3" /><circle cx="12" cy="18" r="1.3" />
+			{:else if classification === 'missed'}
+				<path d="m7 7 10 10M17 7 7 17" />
+			{:else}
+				<path d="M3.8 8a3 3 0 1 1 4.7 2.5c-1.1.8-1.5 1.6-1.5 3.5M13 8a3 3 0 1 1 4.7 2.5c-1.1.8-1.5 1.6-1.5 3.5" /><circle cx="7" cy="18" r="1.3" /><circle cx="16.2" cy="18" r="1.3" />
+			{/if}
+		</g>
+	</defs>
+	<circle cx="12" cy="12" r="11.5" fill={`url(#${id}-rim)`} />
+	<circle cx="12" cy="11.4" r="9.7" fill={color} />
+	<circle cx="12" cy="11.4" r="9.7" fill={`url(#${id}-body)`} />
+	<ellipse cx="12" cy="6.8" rx="7.4" ry="3.4" fill="white" opacity=".27" />
+	<g transform="translate(4.2 4.2) scale(.65)" fill="none" stroke-width="2.8">
+		<use href={`#${id}-glyph`} transform="translate(0 1)" color="#000" stroke="#000" opacity=".25" />
+		<use href={`#${id}-glyph`} color="white" stroke="white" />
+	</g>
 </svg>
 <style>
-	.icon { display: block; flex: 0 0 auto; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
-	path { fill: white; }
+	.icon { display: block; flex: 0 0 auto; filter: drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
 </style>

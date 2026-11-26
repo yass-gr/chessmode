@@ -758,3 +758,14 @@ html.native input, html.native textarea, html.native [contenteditable='true'] {
 	-webkit-user-select: text;
 	user-select: text;
 }
+
+/* Keep scrolling content out of the translucent native status bar. */
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0 0 auto;
+	height: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+	background: var(--bg);
+	z-index: 49;
+	pointer-events: none;
+}
