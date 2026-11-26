@@ -105,7 +105,7 @@
 	</header>
 
 	{#if loaded && offerSetup}
-		<section class="card setup">
+		<section class="card setup mobile-setup">
 			<p class="h-head">Want a course suggested?</p>
 			<p class="muted">Optional. Your rating picks a starting point. You can train without it.</p>
 			<div class="setup-actions">
@@ -196,6 +196,7 @@
 
 	{/if}
 	</div>
+	<aside class="home-aside">
 	{#if course && loaded && stats && scope}
 		<div class="cta">
 			<div class="top-row">
@@ -222,6 +223,17 @@
 			{/if}
 		</div>
 	{/if}
+	{#if loaded && offerSetup}
+		<section class="card setup desktop-setup">
+			<p class="h-head">Want a course suggested?</p>
+			<p class="muted">Optional. Your rating picks a starting point. You can train without it.</p>
+			<div class="setup-actions">
+				<a class="btn sm btn-primary" href="/onboarding">Set up</a>
+				<button class="btn sm btn-surface" type="button" onclick={skipSetup}>Not now</button>
+			</div>
+		</section>
+	{/if}
+	</aside>
 </main>
 
 <style>
@@ -617,7 +629,25 @@
 		-webkit-mask: radial-gradient(circle, transparent 14px, #000 15px);
 		mask: radial-gradient(circle, transparent 14px, #000 15px);
 	}
+	.home-aside {
+		display: contents;
+	}
+	.desktop-setup {
+		display: none;
+	}
 	@media (min-width: 1024px) {
+		.home-aside {
+			display: grid;
+			position: sticky;
+			top: 92px;
+			gap: 16px;
+		}
+		.mobile-setup {
+			display: none;
+		}
+		.desktop-setup {
+			display: grid;
+		}
 		.home {
 			display: grid;
 			grid-template-columns: minmax(0, 1fr) 360px;
@@ -632,8 +662,9 @@
 			display: none;
 		}
 		.cta {
-			position: sticky;
-			top: 92px;
+			position: relative;
+			top: auto;
+			bottom: auto;
 			left: auto;
 			transform: none;
 			width: 100%;

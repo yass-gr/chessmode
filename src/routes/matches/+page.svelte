@@ -280,4 +280,9 @@
 		.columns { grid-template-columns: minmax(300px, 370px) 1fr; gap: 28px; }
 		.entries { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 	}
+	@media (min-width: 1024px) {
+		.matches {
+			max-width: 1200px;
+		}
+	}
 </style>
