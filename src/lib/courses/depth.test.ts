@@ -17,9 +17,19 @@ describe('course depth', () => {
    const first = courseScope(course, defaultDepth(), new Map());
    const full = courseScope(course, { ...defaultDepth(), tier: data.counts.length - 1 }, new Map());
    expect(first.lines.length).toBe(data.counts[0]);
+   expect(new Set(first.lines.map(line => line.id))).toEqual(new Set(data.order.slice(0, data.counts[0])));
    expect(full.lines.length).toBe(course.lines.length);
-   expect(full.lines.slice(0, first.lines.length)).toEqual(first.lines);
+   expect(first.lines).toEqual(course.lines.filter(line => first.lines.includes(line)));
+   expect(full.lines).toEqual(course.lines);
   }
+ });
+ it('starts a fresh Caro-Kann course at its first in-scope line', () => {
+  const course = courses.find(course => course.id === 'caro-kann');
+  expect(course).toBeDefined();
+  if (!course) return;
+  const scope = courseScope(course, defaultDepth(), new Map());
+  expect(scope.next).toBe(course.chapters[0].lines.find(line => scope.lines.includes(line)));
+  expect(scope.next?.chapterId).toBe(course.chapters[0].id);
  });
  it('provides usable gates for short courses and missing data', () => {
   expect(modeAvailability('drill', 1, 1)).toEqual({ kind: 'available' });
