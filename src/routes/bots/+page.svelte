@@ -38,7 +38,7 @@
 		{/each}
 	</div>
 
-	<p class="label">Your color</p>
+	<p class="label section">Your color</p>
 	<div class="seg" role="group" aria-label="Color">
 		{#each colors as item (item.id)}
 			<button type="button" aria-pressed={color === item.id} onclick={() => (color = item.id)}>{item.label}</button>
@@ -84,7 +84,10 @@
 		background: var(--surface-3);
 		font-weight: 700;
 	}
+	.section {
+		margin: 26px 0 10px;
+	}
 	.seg {
-		margin: 8px 0 16px;
+		margin: 0 0 16px;
 	}
 </style>
