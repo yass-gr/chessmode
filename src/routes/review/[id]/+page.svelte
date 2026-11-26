@@ -1074,8 +1074,8 @@
 		min-width: 0;
 		min-height: 0;
 	}
-	/* Cards use overflow:hidden, so a fixed-height panel would shrink them to slivers. Keep their height and scroll the body. */
-	.panel-body > * {
+	/* Cards use overflow:hidden, so a fixed-height panel would shrink them to slivers. :global reaches child components such as the graph. */
+	.panel-body > :global(*) {
 		flex: 0 0 auto;
 		min-height: min-content;
 	}
