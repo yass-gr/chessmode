@@ -26,6 +26,7 @@ test('learn a line, recover from a wrong move, and keep progress', async ({ page
 	}
 	await expect(page.getByText('Line learned · +10 XP')).toBeVisible();
 	await page.getByRole('link', { name: 'Back to course' }).click();
+	await expect(page).toHaveURL(/\/course\/jobava-london$/);
 	await page.reload();
 	await expect(page.getByText(/1\/\d+ learned/).first()).toBeVisible();
 });
