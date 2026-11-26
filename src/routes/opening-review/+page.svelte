@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ChevronLeft } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { liveQuery } from 'dexie';
 	import { seg } from '#lib/components/seg.ts';
@@ -68,7 +69,7 @@
 <main class="page opening">
 	<header class="top">
 		<a class="icon-btn" href="/matches" aria-label="Back to Matches">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+			<ChevronLeft size={18} stroke-width={1.75} />
 		</a>
 		<div class="titles">
 			<h1>Opening review</h1>
