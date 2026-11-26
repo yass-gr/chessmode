@@ -29,4 +29,19 @@ test('learn a line, recover from a wrong move, and keep progress', async ({ page
 	await expect(page).toHaveURL(/\/course\/jobava-london$/);
 	await page.reload();
 	await expect(page.getByText(/1\/\d+ learned/).first()).toBeVisible();
+	await page.goto('/practice');
+	await page.getByRole('link', { name: 'Start practice' }).click();
+	const practiceBoard = page.getByRole('application', { name: /Chess board/ });
+	await expect(practiceBoard).toBeVisible();
+	for (const [index, [from, to]] of [['d2','d4'], ['b1','c3'], ['c1','f4'], ['c3','b5'], ['e2','e3'], ['b5','c3'], ['f1','d3'], ['g1','f3'], ['d3','a6'], ['f3','e5']].entries()) {
+		await move(practiceBoard, from, to);
+		await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', String(index + 1));
+	}
+	await expect(page.getByText(/Next review/)).toBeVisible();
+	await page.goto('/drill');
+	await page.getByRole('link', { name: 'Start drill' }).click();
+	await expect(page.getByRole('application', { name: /Chess board/ })).toBeVisible();
+	await page.goto('/drill');
+	await page.getByRole('link', { name: 'Start the clock' }).click();
+	await expect(page.getByRole('application', { name: /Chess board/ })).toBeVisible();
 });
