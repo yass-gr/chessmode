@@ -1,29 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { tabs, tabForPath } from '#lib/nav.ts';
 	import { BookOpen, Target, Zap, LineChart, UserRound } from '@lucide/svelte';
-
-	/** `/` matches only the home page. Every other prefix matches that path and its children. */
-	const tabs = [
-		{ href: '/', label: 'Learn', prefixes: ['/', '/course', '/courses', '/learn', '/quiz', '/onboarding', '/create', '/books', '/community'], Icon: BookOpen },
-		{ href: '/practice', label: 'Practice', prefixes: ['/practice', '/puzzles'], Icon: Target },
-		{ href: '/drill', label: 'Drill', prefixes: ['/drill', '/arena', '/bots', '/endgames'], Icon: Zap },
-		{ href: '/matches', label: 'Matches', prefixes: ['/matches', '/review', '/explorer', '/analysis', '/opening-review'], Icon: LineChart },
-		{ href: '/you', label: 'You', prefixes: ['/you'], Icon: UserRound }
-	];
+	const icons = [BookOpen, Target, Zap, LineChart, UserRound];
 
 	const path = $derived(page.url.pathname);
-
-	function owns(prefixes: string[], pathname: string) {
-		return prefixes.some((prefix) => prefix === '/' ? pathname === '/' : pathname === prefix || pathname.startsWith(prefix + '/'));
-	}
 </script>
 
 <nav class="tabbar" aria-label="Main">
-	{#each tabs as t (t.href)}
-		{@const on = owns(t.prefixes, path)}
+	{#each tabs as t, i (t.href)}
+		{@const on = tabForPath(path) === t}
+		{@const Icon = icons[i]}
 		<a href={t.href} class:on aria-label={t.label} aria-current={on ? 'page' : undefined}>
 			<span class="highlight" aria-hidden="true"></span>
-			<t.Icon size={24} stroke-width={1.75} />
+			<Icon size={24} stroke-width={1.75} />
 		</a>
 	{/each}
 </nav>
@@ -77,6 +67,11 @@
 	}
 	a.on { color: var(--accent-hi); }
 	a.on .highlight { background: rgba(255, 255, 255, 0.12); }
+	@media (min-width: 1024px) {
+		.tabbar {
+			display: none;
+		}
+	}
 	@media (prefers-reduced-transparency: reduce) {
 		.tabbar {
 			background: var(--surface-2);
