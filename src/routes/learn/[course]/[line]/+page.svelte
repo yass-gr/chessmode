@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { getCourse } from '#lib/courses/index.ts';
-	import { courseIntro } from '#lib/courses/intro.ts';
+	import { courseIntro, type CourseIntroContent } from '#lib/courses/intro.ts';
 	import { courseScope, defaultDepth, type DepthChoice } from '#lib/courses/depth.ts';
 	import type { LineKey } from '#lib/courses/types.ts';
-	import CourseIntro, { type Intro } from '#lib/components/courses/CourseIntro.svelte';
+	import CourseIntro from '#lib/components/courses/CourseIntro.svelte';
 	import LineTrainer from '#lib/components/train/LineTrainer.svelte';
 	import ResultSheet from '#lib/components/train/ResultSheet.svelte';
 	import { db, getSetting, setSetting, type LineProgress } from '#lib/db.ts';
@@ -31,7 +31,7 @@
 	let ready = $state(false);
 	let play = $state(0);
 	let result = $state<{ mistakes: number; next?: string; learned: number } | undefined>();
-	let intro = $state<Intro | undefined>();
+	let intro = $state<CourseIntroContent | undefined>();
 
 	$effect(() => {
 		const courseId = params.course;
@@ -82,10 +82,8 @@
 <svelte:head><title>{line?.name ?? 'Learn'} · Chessmode</title></svelte:head>
 
 {#if course && line && ready}
-	{#if intro}
-		<div class="intro-layer">
-			<CourseIntro {intro} onclose={dismissIntro} />
-		</div>
+	{#if intro && scope}
+		<CourseIntro {course} {intro} lines={scope.total} onstart={dismissIntro} ondismiss={dismissIntro} />
 	{/if}
 	{#key `${line.key}:${play}`}
 		<LineTrainer
@@ -129,19 +127,3 @@
 		<a class="btn btn-surface" href="/">Home</a>
 	</main>
 {/if}
-
-<style>
-	.intro-layer {
-		position: fixed;
-		z-index: 40;
-		inset: 0;
-		display: grid;
-		align-content: center;
-		padding: 16px;
-		background: rgba(13, 13, 14, 0.72);
-	}
-	.intro-layer :global(.intro) {
-		width: min(100%, 560px);
-		margin: 0 auto;
-	}
-</style>

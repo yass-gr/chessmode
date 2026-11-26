@@ -1,10 +1,51 @@
-import type { Intro } from '#lib/components/courses/CourseIntro.svelte';
+import { Chess } from 'chess.js';
+import type { Fen } from '#lib/chess/types.ts';
+import { tokenize } from '#lib/courses/parse.ts';
 
-const files = import.meta.glob<Intro>('./intros/*.json', { eager: true, import: 'default' });
+/** Three short lessons, each under 12 words, plus the moves that define the course. */
+export interface CourseIntroContent {
+	learn: readonly [string, string, string];
+	moves: string;
+}
 
-/** An optional author intro. Courses without a recording keep the Ideas tab as the introduction. */
-export function courseIntro(id: string): Intro | undefined {
+interface IntroFile {
+	learn?: unknown;
+	moves?: unknown;
+}
+
+const files = import.meta.glob<IntroFile>('./intros/*.json', { eager: true, import: 'default' });
+
+const wordCount = (text: string) => text.trim().split(/\s+/).filter(Boolean).length;
+
+function isContent(value: IntroFile | undefined): value is CourseIntroContent {
+	return !!value
+		&& Array.isArray(value.learn)
+		&& value.learn.length === 3
+		&& value.learn.every((item) => typeof item === 'string' && wordCount(item) > 0 && wordCount(item) < 12)
+		&& typeof value.moves === 'string'
+		&& value.moves.trim().length > 0;
+}
+
+/** The position after the course's defining moves, and those moves in standard notation. */
+export function introLine(moves: string): { sans: string[]; fen: Fen } {
+	const chess = new Chess();
+	const sans = tokenize(moves).map(({ san }) => {
+		const played = chess.move(san);
+		if (!played) throw new Error(`Illegal intro move: ${san}`);
+		return played.san;
+	});
+	if (!sans.length) throw new Error('Intro has no moves');
+	return { sans, fen: chess.fen() as Fen };
+}
+
+/** Welcome copy for a bundled course. Missing or unplayable data stays hidden. */
+export function courseIntro(id: string): CourseIntroContent | undefined {
 	const intro = Object.entries(files).find(([path]) => path.endsWith(`/${id}.json`))?.[1];
-	if (!intro || typeof intro.title !== 'string' || typeof intro.video !== 'string' || !intro.title || !intro.video) return;
+	if (!isContent(intro)) return;
+	try {
+		introLine(intro.moves);
+	} catch {
+		return;
+	}
 	return intro;
 }

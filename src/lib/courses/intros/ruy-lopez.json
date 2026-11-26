@@ -1,0 +1,8 @@
+{
+	"learn": [
+		"Build the Closed Ruy with c3, h3 and d4",
+		"Tour the knight from d2 through f1 to g3",
+		"Choose quiet 4.d3 against Berlin and Schliemann"
+	],
+	"moves": "1.e4 e5 2.Nf3 Nc6 3.Bb5"
+}
