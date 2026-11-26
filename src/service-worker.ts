@@ -4,10 +4,17 @@ import { self as sw } from '$app/service-worker';
 
 const CACHE = `chessmode-${version}`;
 const SHELL = '/';
+const OPTIONAL_DATA = /^\/data\/(puzzles|explorer)\//;
 const PRECACHE = [
 	SHELL,
 	...immutable.map((f) => f.path),
-	...assets.map((f) => f.path).filter((path) => !/(_headers|robots\.txt|COPYING\.txt)$/.test(path))
+	...assets
+		.map((f) => f.path)
+		.filter(
+			(path) =>
+				!/(^|\/)data\/(puzzles|explorer)\//.test(path) &&
+				!/(_headers|robots\.txt|COPYING\.txt)$/.test(path)
+		)
 ];
 
 sw.addEventListener('install', (event) => {
@@ -23,7 +30,9 @@ sw.addEventListener('activate', (event) => {
 	event.waitUntil(
 		caches
 			.keys()
-			.then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+			.then((keys) =>
+				Promise.all(keys.filter((k) => k.startsWith('chessmode-') && k !== CACHE).map((k) => caches.delete(k)))
+			)
 			.then(() => sw.clients.claim())
 	);
 });
@@ -38,12 +47,17 @@ async function respond(request: Request): Promise<Response> {
 		} catch {
 			// Offline: the SPA shell renders every route.
 		}
-		return (await cache.match(SHELL)) ?? Response.error();
+		return (await cache.match(SHELL, { ignoreVary: true })) ?? Response.error();
 	}
 
 	// Key on the full URL. Vite serves the component and its CSS from one path with different queries.
-	const hit = await cache.match(request);
+	const hit = await cache.match(request, { ignoreVary: true });
 	if (hit) return hit;
+	const optionalData = OPTIONAL_DATA.exec(new URL(request.url).pathname);
+	if (optionalData && !sw.navigator.onLine) {
+		const body = optionalData[1] === 'puzzles' ? '[]' : '{"games":0,"month":"","bands":[],"nodes":{}}';
+		return new Response(body, { headers: { 'Content-Type': 'application/json' } });
+	}
 	const fresh = await fetch(request);
 	if (fresh.ok && fresh.type === 'basic') void cache.put(request, fresh.clone());
 	return fresh;
