@@ -2,7 +2,7 @@
 	import Mascot from '#lib/components/Mascot.svelte';
 	import MiniBoard from '#lib/components/MiniBoard.svelte';
 	import Sheet from '#lib/components/Sheet.svelte';
-	import { introLine, type CourseIntroContent } from '#lib/courses/intro.ts';
+	import { introLine, introOrientation, type CourseIntroContent } from '#lib/courses/intro.ts';
 	import type { Course } from '#lib/courses/types.ts';
 
 	let {
@@ -20,7 +20,7 @@
 	} = $props();
 
 	const position = $derived(introLine(intro.moves));
-	const orientation = $derived(course.side === 'w' ? 'white' : 'black');
+	const orientation = $derived(introOrientation(course.side));
 	const side = $derived(course.side === 'w' ? 'White' : 'Black');
 </script>
 

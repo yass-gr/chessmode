@@ -1,5 +1,5 @@
 import { Chess } from 'chess.js';
-import type { Fen } from '#lib/chess/types.ts';
+import type { Color, Fen } from '#lib/chess/types.ts';
 import { tokenize } from '#lib/courses/parse.ts';
 
 /** Three short lessons, each under 12 words, plus the moves that define the course. */
@@ -24,6 +24,11 @@ function isContent(value: IntroFile | undefined): value is CourseIntroContent {
 		&& value.learn.every((item) => typeof item === 'string' && wordCount(item) > 0 && wordCount(item) < 12)
 		&& typeof value.moves === 'string'
 		&& value.moves.trim().length > 0;
+}
+
+/** Black courses put Black at the bottom of the intro board. */
+export function introOrientation(side: Color): 'white' | 'black' {
+	return side === 'b' ? 'black' : 'white';
 }
 
 /** The position after the course's defining moves, and those moves in standard notation. */
