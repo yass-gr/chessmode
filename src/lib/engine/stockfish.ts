@@ -33,7 +33,7 @@ class Stockfish implements Engine {
 	private queue = Promise.resolve();
 
 	constructor() {
-		const threaded = crossOriginIsolated;
+		const threaded = globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== 'undefined';
 		const build = threaded ? 'stockfish-19-lite' : 'stockfish-19-lite-single';
 		this.worker = new Worker('/stockfish/' + build + '.js');
 		this.worker.onmessage = ({ data }) => {

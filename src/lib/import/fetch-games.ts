@@ -1,3 +1,4 @@
+import { onlineFetch } from '#lib/native.ts';
 import { parseArchives, parseArchiveGamesAsync, parseLichessGame, readNdjson } from '#lib/import/online.ts';
 import type { GameRecord, GameSource } from '#lib/review/types.ts';
 
@@ -11,7 +12,7 @@ async function request(
 	const name = PLATFORMS[source];
 	let response: Response;
 	try {
-		response = await fetch(url, { headers: { Accept: options.accept ?? 'application/json' }, signal });
+		response = await onlineFetch(url, { headers: { Accept: options.accept ?? 'application/json' }, signal });
 	} catch {
 		signal.throwIfAborted();
 		throw new Error('Could not connect to ' + name + '. Check your connection and try again.');

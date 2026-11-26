@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { vibrate } from '#lib/native.ts';
 	import { onDestroy, onMount } from 'svelte';
 	import { Chess } from 'chess.js';
 	import { page } from '$app/state';
@@ -128,8 +129,8 @@
 	});
 
 	function haptic(ms: number) {
-		if (!preferences.haptics || reducedMotion() || typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') return;
-		navigator.vibrate(ms);
+		if (!preferences.haptics || reducedMotion()) return;
+		vibrate(ms);
 	}
 
 	async function settle(score: 0 | 1) {
