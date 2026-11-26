@@ -62,9 +62,9 @@
 	{#if loaded}
 		{#if rows.length === 0}
 			<section class="card glow hero">
-				<img src="/img/node-locked.webp" alt="" />
+				<img src="/img/empty/practice.webp" alt="" />
 				<h2 class="h-title">Nothing to practise yet</h2>
-				<p class="muted">Learn a line in this depth first. Practice can start as soon as one line is learned, whether or not it is due.</p>
+				<p class="muted">Learn a line. Practice starts as soon as you do, due or not.</p>
 				<a class="btn btn-primary block" href={scope ? `/course/${scope}` : '/'}>Learn a line</a>
 			</section>
 		{:else}

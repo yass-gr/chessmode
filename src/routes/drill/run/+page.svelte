@@ -66,7 +66,7 @@
 		if (scope) {
 			const course = courses.find((item) => item.id === scope);
 			const gate = modeAvailability(mode, learned.length, course?.lines.length ?? 0);
-			if (gate.kind === 'locked') blocked = `Learn ${gate.remaining} more ${gate.remaining === 1 ? 'line' : 'lines'} to open ${mode === 'time' ? 'Time' : 'Drill'}.`;
+			if (gate.kind === 'locked') blocked = `Learn ${gate.remaining} more ${gate.remaining === 1 ? 'line' : 'lines'}. ${mode === 'time' ? 'Time' : 'Drill'} opens right after.`;
 			else if (gate.kind === 'unavailable') blocked = gate.reason;
 		}
 		pool = learned;
@@ -251,6 +251,7 @@
 
 {#if blocked}
 	<main class="page empty">
+		<img src="/img/empty/drill.webp" alt="" />
 		<h1 class="h-title">{mode === 'time' ? 'Time' : 'Drill'} is still locked</h1>
 		<p class="muted">{blocked}</p>
 		<a class="btn btn-primary block" href={scope ? `/course/${scope}` : '/drill'}>Back</a>
@@ -292,9 +293,9 @@
 	{/key}
 {:else if loaded}
 	<main class="page empty">
-		<img src="/img/node-locked.webp" alt="" />
+		<img src="/img/empty/drill.webp" alt="" />
 		<h1 class="h-title">No learned lines yet</h1>
-		<p class="muted">Drill and Time replay lines you have learned. Learn one first.</p>
+		<p class="muted">Learn one line. Drill and Time are ready the moment you do.</p>
 		<a class="btn btn-primary block" href={scope ? `/course/${scope}` : '/'}>Learn a line</a>
 	</main>
 {/if}
@@ -310,7 +311,7 @@
 
 {#if over}
 	<ResultSheet
-		image={mode === 'time' ? '/img/flame.webp' : '/img/knight.webp'}
+		image={mode === 'time' ? '/img/result/timed.webp' : '/img/result/mistakes.webp'}
 		eyebrow={isBest ? 'New personal best' : mode === 'time' ? 'Time is up' : 'Run finished'}
 		title={mode === 'time' ? `${points} ${points === 1 ? 'point' : 'points'}` : `${bestStreak} streak`}
 		subtitle={mode === 'time' ? `${cleanLines} clean ${cleanLines === 1 ? 'line' : 'lines'}.` : `${cleanLines} clean ${cleanLines === 1 ? 'line' : 'lines'} this run.`}
