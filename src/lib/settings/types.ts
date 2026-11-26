@@ -41,3 +41,26 @@ export const DEFAULT_COURSE_PREFERENCES: CoursePreferences = {
 	fastOpponent: true,
 	skipSharedStart: false
 };
+
+export type ReviewPerspective = 'w' | 'b' | 'both';
+export type ReviewOverlays = 'none' | 'played' | 'best' | 'both';
+
+export interface ReviewPreferences {
+	perspective: ReviewPerspective;
+	overlays: ReviewOverlays;
+	autoplay: boolean;
+	voice: boolean;
+	coach: boolean;
+	glyphs: boolean;
+}
+
+export const DEFAULT_REVIEW_PREFERENCES: ReviewPreferences = {
+	perspective: 'both',
+	overlays: 'both',
+	autoplay: true,
+	voice: false,
+	coach: true,
+	glyphs: true
+};
+
+export const REVIEW_PREFERENCES_KEY = 'review-preferences';
