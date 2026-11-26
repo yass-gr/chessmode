@@ -26,7 +26,7 @@
 				</a>
 			{/each}
 		</nav>
-		<a class="streak" href="/you" aria-label="{streakDays} day streak"><img src="/img/flame.webp" alt="" /><b>{streakDays}</b></a>
+		<a class="streak" href="/you" aria-label="{streakDays} day streak"><img src="/img/flame-small.webp" alt="" /><b>{streakDays}</b></a>
 		<a class="settings" href="/you" aria-label="Profile and settings"><Settings size={20} /></a>
 	</div>
 </header>
