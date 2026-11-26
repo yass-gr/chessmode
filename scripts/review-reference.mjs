@@ -4,7 +4,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { Chess } from 'chess.js';
 import { games } from './review-games.mjs';
 
-const binary = process.env.STOCKFISH_NATIVE ?? '/tmp/sf-native/stockfish/stockfish-ubuntu-x86-64-avx2';
+const binary = process.env.STOCKFISH_NATIVE ?? '/tmp/sf-native/stockfish/stockfish-linux-x86-64-universal';
 const engine = spawn(binary, [], { stdio: ['pipe', 'pipe', 'inherit'] });
 const lines = createInterface({ input: engine.stdout });
 let receive = () => {};
@@ -35,7 +35,7 @@ try {
   const positions = [];
   for (let ply = 0; ply <= moves.length; ply++) {
    const fen = game.fen();
-   const terminal = game.isCheckmate() ? { mate: 0 } : game.isDraw() ? { cp: 0 } : undefined;
+   const terminal = game.isCheckmate() ? { mate: 0 } : (game.isStalemate() || game.isInsufficientMaterial() || game.isDrawByFiftyMoves()) ? { cp: 0 } : undefined;
    if (terminal) positions.push({ fen, depth: 0, lines: [], score: terminal });
    else {
     const byDepth = new Map();
