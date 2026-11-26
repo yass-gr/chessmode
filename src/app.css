@@ -384,8 +384,8 @@ p {
 	color: var(--text-3);
 }
 .field svg {
-	width: 18px;
-	height: 18px;
+	width: 20px;
+	height: 20px;
 	color: var(--text-3);
 	flex: 0 0 auto;
 }
