@@ -6,6 +6,7 @@ const browser = await chromium.launch({ executablePath: process.env.PW_CHROMIUM 
 const results = [];
 try {
  for (const [index, pgn] of games.entries()) {
+  if (process.env.BENCH_GAME && Number(process.env.BENCH_GAME) !== index + 1) continue;
   const context = await browser.newContext();
   const page = await context.newPage();
   await page.addInitScript(() => {
