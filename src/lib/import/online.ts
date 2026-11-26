@@ -84,6 +84,26 @@ export function parseArchiveGames(value: unknown, username: string, importedAt: 
 	});
 }
 
+export async function parseArchiveGamesAsync(
+	value: unknown,
+	username: string,
+	importedAt: number,
+	signal: AbortSignal,
+	onProgress?: (completed: number, total: number) => void
+) {
+	const games = object(value).games;
+	if (!Array.isArray(games)) throw new Error('Chess.com returned an invalid game archive.');
+	const parsed: GameRecord[] = [];
+	for (let index = 0; index < games.length; index++) {
+		signal.throwIfAborted();
+		const game = parseChesscomGame(games[index], username, importedAt);
+		if (game) parsed.push(game);
+		if (index % 10 === 9 || index === games.length - 1) onProgress?.(index + 1, games.length);
+		if (index < games.length - 1) await new Promise<void>(resolve => setTimeout(resolve, 0));
+	}
+	return parsed;
+}
+
 export async function* readNdjson(body: ReadableStream<Uint8Array>): AsyncGenerator<unknown> {
 	const reader = body.getReader();
 	const decoder = new TextDecoder();
