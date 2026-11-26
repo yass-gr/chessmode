@@ -26,7 +26,7 @@
 				</a>
 			{/each}
 		</nav>
-		<a class="streak" href="/you" aria-label="{streakDays} day streak"><img src="/img/flame-small.webp" alt="" /><b>{streakDays}</b></a>
+		<a class="streak" href="/you" aria-label="{streakDays} day streak"><img src="/img/flame.webp" alt="" /><b>{streakDays}</b></a>
 		<a class="settings" href="/you" aria-label="Profile and settings"><Settings size={20} /></a>
 	</div>
 </header>
@@ -35,15 +35,19 @@
 	.header {
 		display: none;
 	}
+	@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+		.header {
+			backdrop-filter: blur(16px);
+			-webkit-backdrop-filter: blur(16px);
+		}
+	}
 	@media (min-width: 1024px) {
 		.header {
 			display: block;
 			position: sticky;
 			top: 0;
 			z-index: 40;
-			background: rgba(13, 13, 14, 0.86);
-			backdrop-filter: blur(16px);
-			-webkit-backdrop-filter: blur(16px);
+			background: rgba(13, 13, 14, 0.98);
 			border-bottom: 1px solid var(--stroke);
 		}
 		.inner {
