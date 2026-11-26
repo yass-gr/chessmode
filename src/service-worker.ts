@@ -54,13 +54,15 @@ async function respond(request: Request): Promise<Response> {
 	const hit = await cache.match(request, { ignoreVary: true });
 	if (hit) return hit;
 	const optionalData = OPTIONAL_DATA.exec(new URL(request.url).pathname);
-	if (optionalData && !sw.navigator.onLine) {
+	try {
+		const fresh = await fetch(request);
+		if (fresh.ok && fresh.type === 'basic') await cache.put(request, fresh.clone()).catch(() => {});
+		return fresh;
+	} catch (error) {
+		if (!optionalData) throw error;
 		const body = optionalData[1] === 'puzzles' ? '[]' : '{"games":0,"month":"","bands":[],"nodes":{}}';
 		return new Response(body, { headers: { 'Content-Type': 'application/json' } });
 	}
-	const fresh = await fetch(request);
-	if (fresh.ok && fresh.type === 'basic') void cache.put(request, fresh.clone());
-	return fresh;
 }
 
 sw.addEventListener('fetch', (event) => {
