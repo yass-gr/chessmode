@@ -13,6 +13,7 @@
 	<div class="list">
 		{#each BOOKS as book (book.id)}
 			<a class="card book" href="/books/{book.id}">
+				<img class="cover" src="/img/books/cover.webp" alt="" />
 				<p class="label">{book.author}</p>
 				<h2 class="h-title">{book.title}</h2>
 				<p class="muted">{book.summary}</p>
@@ -43,6 +44,7 @@
 		padding: 18px;
 		color: inherit;
 	}
+	.cover { width: 90px; height: 90px; object-fit: contain; grid-column: 2; grid-row: 1 / 5; }
 	.count {
 		margin: 4px 0 0;
 		color: var(--text-3);

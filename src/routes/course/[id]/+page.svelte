@@ -112,7 +112,7 @@
 
 		<div class="intro">
 			<div class="hero card">
-				<img src="/img/board-hero.webp" alt="" />
+				<img src={isCustom(course.id) ? '/img/board-hero.webp' : `/img/courses/${course.id}.webp`} alt="" />
 			</div>
 			<div>
 				<h1 class="h-display title">{course.name}</h1>

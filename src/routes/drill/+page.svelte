@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { BookOpen, Bot, ChevronRight, Compass, Flag } from '@lucide/svelte';
+	import { ChevronRight } from '@lucide/svelte';
 	import { courses } from '#lib/courses/index.ts';
 	import { isCustom } from '#lib/courses/custom.ts';
 	import { db, type LineProgress, type RatingRecord, type SessionLog } from '#lib/db.ts';
@@ -49,7 +49,7 @@
 	{#if loaded}
 		<div class="modes">
 			<article class="card mode">
-				<img src="/img/knight.webp" alt="" />
+				<img src="/img/train/drill.webp" alt="" />
 				<div class="body">
 					<p class="label">Streak</p>
 					<h2 class="h-title">Drill</h2>
@@ -60,7 +60,7 @@
 			</article>
 
 			<article class="card mode">
-				<img src="/img/flame.webp" alt="" />
+				<img src="/img/train/time.webp" alt="" />
 				<div class="body">
 					<p class="label">60 seconds</p>
 					<h2 class="h-title">Time</h2>
@@ -71,6 +71,7 @@
 			</article>
 
 			<article class="card mode wide">
+				<img src="/img/train/arena.webp" alt="" />
 				<div class="body">
 					<p class="label">Rated</p>
 					<h2 class="h-title">Arena</h2>
@@ -90,6 +91,7 @@
 			</article>
 
 			<article class="card mode wide">
+				<img src="/img/train/puzzles.webp" alt="" />
 				<div class="body">
 					<p class="label">Tactics</p>
 					<h2 class="h-title">Puzzles</h2>
@@ -121,10 +123,10 @@
 	<section class="more" aria-labelledby="more-heading">
 		<h2 id="more-heading" class="h-head">More ways to train</h2>
 		<div class="more-grid">
-			<a class="card more-card" href="/endgames"><span class="more-icon"><Flag size={20} /></span><span class="more-copy"><b>Endgames</b><small>Practice the final phase</small></span><ChevronRight size={18} /></a>
-			<a class="card more-card" href="/books"><span class="more-icon"><BookOpen size={20} /></span><span class="more-copy"><b>Reading</b><small>Study chess ideas</small></span><ChevronRight size={18} /></a>
-			<a class="card more-card" href="/bots"><span class="more-icon"><Bot size={20} /></span><span class="more-copy"><b>Bots</b><small>Play a practice game</small></span><ChevronRight size={18} /></a>
-			<a class="card more-card" href="/community"><span class="more-icon"><Compass size={20} /></span><span class="more-copy"><b>Openings</b><small>Explore more openings</small></span><ChevronRight size={18} /></a>
+			<a class="card more-card" href="/endgames"><img class="more-icon" src="/img/train/endgames.webp" alt="" /><span class="more-copy"><b>Endgames</b><small>Practice the final phase</small></span><ChevronRight size={18} /></a>
+			<a class="card more-card" href="/books"><img class="more-icon" src="/img/train/reading.webp" alt="" /><span class="more-copy"><b>Reading</b><small>Study chess ideas</small></span><ChevronRight size={18} /></a>
+			<a class="card more-card" href="/bots"><img class="more-icon" src="/img/train/bots.webp" alt="" /><span class="more-copy"><b>Bots</b><small>Play a practice game</small></span><ChevronRight size={18} /></a>
+			<a class="card more-card" href="/community"><img class="more-icon" src="/img/train/openings.webp" alt="" /><span class="more-copy"><b>Openings</b><small>Explore more openings</small></span><ChevronRight size={18} /></a>
 		</div>
 	</section>
 </main>
@@ -222,11 +224,14 @@
 		grid-column: 1 / -1;
 	}
 	.mode.wide {
-		grid-template-columns: 1fr;
+		grid-template-columns: 1fr 96px;
 	}
-	.mode.wide .body,
-	.per-course {
+	.mode.wide .body {
 		grid-column: 1;
+		grid-row: 1;
+	}
+	.per-course {
+		grid-column: 1 / -1;
 		grid-row: auto;
 	}
 	.per-course .btn {
@@ -260,13 +265,10 @@
 		text-decoration: none;
 	}
 	.more-icon {
-		display: grid;
-		place-items: center;
 		flex: none;
-		width: 36px;
-		height: 36px;
-		border-radius: 8px;
-		background: var(--surface-4);
+		width: 44px;
+		height: 44px;
+		object-fit: contain;
 	}
 	.more-copy {
 		display: grid;

@@ -94,7 +94,7 @@
 				{#each courses as c (c.id)}
 					{@const s = courseStats(c, progress, now)}
 					<button role="option" aria-selected={c.id === course?.id} class:on={c.id === course?.id} onclick={() => choose(c)}>
-						<span class="side" class:black={c.side === 'b'}></span>
+						{#if c.id.startsWith('custom-')}<span class="side" class:black={c.side === 'b'}></span>{:else}<img class="course-art" src="/img/courses/{c.id}.webp" alt="" />{/if}
 						<span class="t"><b>{c.name}</b><small>{c.side === 'w' ? 'White' : 'Black'} · {s.learned}/{s.total} learned</small></span>
 						{#if s.due}<span class="chip accent">{s.due} due</span>{/if}
 					</button>
@@ -106,6 +106,7 @@
 
 	{#if loaded && offerSetup}
 		<section class="card setup mobile-setup">
+			<img class="suggest-art" src="/img/onboarding/suggest.webp" alt="" />
 			<p class="h-head">Want a course suggested?</p>
 			<p class="muted">Optional. Your rating picks a starting point. You can train without it.</p>
 			<div class="setup-actions">
@@ -124,7 +125,7 @@
 				{@const sample = scoped.lines[0] ?? c.lines[0]}
 				<div class="card library-row">
 					<a href={resumeHref(c, depth, progress, now)}>
-						<MiniBoard fen={lineEnd(sample)} orientation={c.side === 'w' ? 'white' : 'black'} size={52} />
+						{#if c.id.startsWith('custom-')}<MiniBoard fen={lineEnd(sample)} orientation={c.side === 'w' ? 'white' : 'black'} size={52} />{:else}<img class="course-art" src="/img/courses/{c.id}.webp" alt="" />{/if}
 						<span class="t">
 							<b>{c.name}</b>
 							<small>{c.side === 'w' ? 'White' : 'Black'} · {lineTail(sample, 3)} · {scoped.learned}/{scoped.total} learned · {scoped.perfected} perfected</small>
@@ -225,6 +226,7 @@
 	{/if}
 	{#if loaded && offerSetup}
 		<section class="card setup desktop-setup">
+			<img class="suggest-art" src="/img/onboarding/suggest.webp" alt="" />
 			<p class="h-head">Want a course suggested?</p>
 			<p class="muted">Optional. Your rating picks a starting point. You can train without it.</p>
 			<div class="setup-actions">
@@ -237,6 +239,8 @@
 </main>
 
 <style>
+	.course-art { width: 52px; height: 52px; object-fit: contain; flex: none; }
+	.suggest-art { width: 80px; height: 80px; object-fit: contain; float: right; }
 	.setup {
 		display: grid;
 		gap: 8px;
