@@ -45,7 +45,9 @@
 <div class="coach" class:large={size === 'large'}>
 	{#if showMascot}
 		{#if failedSrc === src}
-			<span class="placeholder" role="img" aria-label="Coach"></span>
+			<span class="placeholder" role="img" aria-label="Coach">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 16.5 6.2 9l3.1 3.2L12 6l2.7 6.2L17.8 9 20 16.5V18H4v-1.5z" /></svg>
+			</span>
 		{:else}
 			<img src={src} alt="" onerror={() => { failedSrc = src; }} />
 		{/if}
@@ -67,28 +69,29 @@
 	}
 	img,
 	.placeholder {
-		width: 64px;
-		height: 64px;
+		width: 56px;
+		height: 56px;
 		flex: 0 0 auto;
 		border-radius: 50%;
 	}
 	img {
 		object-fit: cover;
-		background: var(--surface-4);
+		background: var(--surface-2);
 	}
 	.placeholder {
-		display: block;
-		background: var(--surface-4);
-		border: 1px solid var(--stroke-2);
+		display: grid;
+		place-items: center;
+		background: var(--surface-2);
+		border: 1px solid var(--stroke);
+		color: var(--text-3);
 	}
-	.large img,
-	.large .placeholder {
-		width: 96px;
-		height: 96px;
+	.placeholder svg {
+		width: 22px;
+		height: 22px;
 	}
 	.speech {
 		min-width: 0;
-		animation: coach-in 200ms var(--ease-out);
+		animation: coach-in var(--dur-press) var(--ease-out);
 	}
 	.headline {
 		margin: 0;
@@ -106,11 +109,22 @@
 	@keyframes coach-in {
 		from {
 			opacity: 0;
-			transform: translateY(6px);
+			transform: translateX(12px);
 		}
 		to {
 			opacity: 1;
 			transform: none;
+		}
+	}
+	@media (min-width: 1024px) {
+		img,
+		.placeholder {
+			width: 64px;
+			height: 64px;
+		}
+		.placeholder svg {
+			width: 24px;
+			height: 24px;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
