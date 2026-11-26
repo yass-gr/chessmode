@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
+	import { Crown } from '@lucide/svelte';
 	import type { Classification } from '#lib/review/types.ts';
 	import { reducedMotion } from '#lib/motion.ts';
 	import { coachExpression, MASCOT_SRC, type CoachPhase, type CoachExpression, type RetryMood } from './coach.ts';
@@ -55,7 +56,7 @@
 			{/if}
 			{#if failedSrc === MASCOT_SRC[front]}
 				<span class="placeholder" role="img" aria-label="Coach">
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 16.5 6.2 9l3.1 3.2L12 6l2.7 6.2L17.8 9 20 16.5V18H4v-1.5z" /></svg>
+					<Crown size={20} stroke-width={1.75} />
 				</span>
 			{:else}
 				{#key front}
@@ -111,9 +112,9 @@
 		border: 1px solid var(--stroke);
 		color: var(--text-3);
 	}
-	.placeholder svg {
-		width: 22px;
-		height: 22px;
+	.placeholder :global(svg) {
+		width: 20px;
+		height: 20px;
 	}
 	.speech {
 		min-width: 0;
@@ -157,9 +158,9 @@
 			width: 64px;
 			height: 64px;
 		}
-		.placeholder svg {
-			width: 24px;
-			height: 24px;
+		.placeholder :global(svg) {
+			width: 20px;
+			height: 20px;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
