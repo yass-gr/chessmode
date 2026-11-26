@@ -1,4 +1,4 @@
-import { Capacitor, CapacitorHttp } from '@capacitor/core';
+import { Capacitor, CapacitorHttp, SystemBars, SystemBarsStyle } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -11,8 +11,12 @@ export const isNative = () => Capacitor.isNativePlatform();
 export async function setupNative() {
 	if (!isNative()) return;
 	document.documentElement.classList.add('native');
+	// Android 15+ draws under a transparent status bar and ignores setBackgroundColor.
+	// Dark style is light icons. The page paints #0d0d0e into that band; safe-area
+	// padding (injected by SystemBars, or env() on iOS) keeps content below it.
+	void SystemBars.setStyle({ style: SystemBarsStyle.Dark });
 	void StatusBar.setStyle({ style: Style.Dark });
-	void StatusBar.setBackgroundColor({ color: '#0d0d0e' });
+	void StatusBar.setOverlaysWebView({ overlay: true });
 	void App.addListener('backButton', ({ canGoBack }) => {
 		if (location.pathname === '/') void App.exitApp();
 		else if (canGoBack) history.back();
