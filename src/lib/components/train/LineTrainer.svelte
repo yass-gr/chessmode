@@ -3,6 +3,7 @@
 	import { onMount, untrack } from 'svelte';
 	import { Chess } from 'chess.js';
 	import Board, { type Arrow, type Marker } from '#lib/components/Board.svelte';
+	import Mascot, { type MascotExpression } from '#lib/components/Mascot.svelte';
 	import Sheet from '#lib/components/Sheet.svelte';
 	import SettingsPanel from '#lib/components/settings/SettingsPanel.svelte';
 	import ResetCourse from '#lib/components/train/ResetCourse.svelte';
@@ -109,6 +110,13 @@
 	const opponentName = $derived(course.side === 'w' ? 'Black' : 'White');
 	const finalNote = $derived(line.plies[line.plies.length - 1]?.note);
 	const clean = $derived(run.mistakes === 0 && run.hints === 0);
+	const lessonExpression = $derived.by((): MascotExpression => {
+		if (run.view !== null) return 'thinking';
+		if (run.state.kind === 'wrong' || run.state.kind === 'fix') return 'encouraging';
+		if (run.state.kind === 'done') return 'celebrating';
+		if (run.state.kind === 'opponent' && shownPly?.student) return 'happy';
+		return 'neutral';
+	});
 
 	const arrows = $derived.by((): Arrow[] => {
 		if (!current || arrowKind === 'none') return [];
@@ -427,7 +435,11 @@
 						{/if}
 					</p>
 				{:else if run.state.kind === 'wrong' && wrong}
-					<span class="dot bad"></span>
+					{#if mode === 'learn'}
+						<Mascot expression="encouraging" size={40} />
+					{:else}
+						<span class="dot bad"></span>
+					{/if}
 					<div class="wrong-body">
 						<p>
 							<b>{wrong.san} is not the line.</b>
@@ -448,7 +460,11 @@
 						{/if}
 					</div>
 				{:else if run.state.kind === 'done'}
-					<span class="dot good"></span>
+					{#if mode === 'learn'}
+						<Mascot expression="celebrating" size={40} />
+					{:else}
+						<span class="dot good"></span>
+					{/if}
 					<p>
 						<b>{clean ? 'Line complete.' : `Line complete, ${run.mistakes} ${run.mistakes === 1 ? 'mistake' : 'mistakes'}.`}</b>
 						{#if open && finalNote} {finalNote}{/if}
@@ -463,13 +479,26 @@
 			{#if open}
 				<div class="feed" bind:this={feedEl}>
 					{#each feed as { ply, index } (index)}
-						<article class="note" class:latest={index === feed[feed.length - 1]?.index} class:mine={ply.student}>
-							<span class="san">{moveLabel(index)}{ply.san}</span>
-							<p>{ply.note ?? 'Played.'}</p>
+						{@const latest = index === feed[feed.length - 1]?.index}
+						{@const withMascot = mode === 'learn' && latest && run.state.kind !== 'wrong' && run.state.kind !== 'done'}
+						<article class="note" class:latest class:mine={ply.student} class:with-mascot={withMascot}>
+							{#if withMascot}
+								<Mascot expression={lessonExpression} size={40} />
+								<div class="note-copy">
+									<span class="san">{moveLabel(index)}{ply.san}</span>
+									<p>{ply.note ?? 'Played.'}</p>
+								</div>
+							{:else}
+								<span class="san">{moveLabel(index)}{ply.san}</span>
+								<p>{ply.note ?? 'Played.'}</p>
+							{/if}
 						</article>
 					{:else}
-						{#if mode === 'learn'}
-							<p class="empty">Notes on each move appear here as the line is played.</p>
+						{#if mode === 'learn' && run.state.kind !== 'wrong' && run.state.kind !== 'done'}
+							<div class="coach-note">
+								<Mascot expression={lessonExpression} size={40} />
+								<p class="empty">Notes on each move appear here as the line is played.</p>
+							</div>
 						{/if}
 					{/each}
 				</div>
@@ -704,6 +733,19 @@
 		background: var(--surface-2);
 		border-color: var(--stroke-2);
 		animation: rise var(--dur-press) var(--ease-out);
+	}
+	.note.with-mascot {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
+	}
+	.note-copy {
+		min-width: 0;
+	}
+	.coach-note {
+		display: flex;
+		align-items: center;
+		gap: 10px;
 	}
 	.note .san {
 		display: inline-block;
