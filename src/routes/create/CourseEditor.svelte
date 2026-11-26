@@ -196,15 +196,19 @@
 	<div class="fields">
 		<label class="field">
 			<span class="label">Chapter</span>
-			<select aria-label="Chapter" value={chapter?.id ?? ''} onchange={(event) => {
-				const id = event.currentTarget.value;
-				const chosen = working.chapters.find((item) => item.id === id);
-				cursor = { chapterId: id, lineId: chosen?.lines[0]?.id ?? '', ply: 0 };
-			}}>
-				{#each working.chapters as item (item.id)}<option value={item.id}>{item.name}</option>{/each}
-			</select>
+			<span class="select">
+				<select aria-label="Chapter" value={chapter?.id ?? ''} onchange={(event) => {
+					const id = event.currentTarget.value;
+					const chosen = working.chapters.find((item) => item.id === id);
+					cursor = { chapterId: id, lineId: chosen?.lines[0]?.id ?? '', ply: 0 };
+				}}>
+					{#each working.chapters as item (item.id)}<option value={item.id}>{item.name}</option>{/each}
+				</select>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+			</span>
 		</label>
 		<label class="field">
+			<span class="label">Chapter name</span>
 			<input aria-label="Chapter name" bind:value={chapterName} onchange={() => chapter && commit(renameChapter(working, chapter.id, chapterName))} />
 		</label>
 		<div class="row">
@@ -222,23 +226,30 @@
 		{#if chapter && chapter.lines.length}
 			<label class="field">
 				<span class="label">Line</span>
-				<select aria-label="Line" value={line?.id ?? ''} onchange={(event) => { cursor = { chapterId: chapter.id, lineId: event.currentTarget.value, ply: 0 }; }}>
-					{#each chapter.lines as item (item.id)}<option value={item.id}>{item.name}</option>{/each}
-				</select>
+				<span class="select">
+					<select aria-label="Line" value={line?.id ?? ''} onchange={(event) => { cursor = { chapterId: chapter.id, lineId: event.currentTarget.value, ply: 0 }; }}>
+						{#each chapter.lines as item (item.id)}<option value={item.id}>{item.name}</option>{/each}
+					</select>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+				</span>
 			</label>
 			<label class="field">
+				<span class="label">Line name</span>
 				<input aria-label="Line name" bind:value={lineName} onchange={() => line && commit(renameLine(working, active, lineName))} />
 			</label>
 			{#if working.chapters.length > 1}
 				<label class="field">
 					<span class="label">Move line to</span>
-					<select aria-label="Move line to chapter" value={chapter.id} onchange={(event) => {
-						const moved = moveLine(working, active, event.currentTarget.value);
-						error = moved.error ?? '';
-						if (!moved.error) commit(moved.file, moved.cursor);
-					}}>
-						{#each working.chapters as item (item.id)}<option value={item.id}>{item.name}</option>{/each}
-					</select>
+					<span class="select">
+						<select aria-label="Move line to chapter" value={chapter.id} onchange={(event) => {
+							const moved = moveLine(working, active, event.currentTarget.value);
+							error = moved.error ?? '';
+							if (!moved.error) commit(moved.file, moved.cursor);
+						}}>
+							{#each working.chapters as item (item.id)}<option value={item.id}>{item.name}</option>{/each}
+						</select>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+					</span>
 				</label>
 			{/if}
 			<div class="row">
@@ -273,7 +284,7 @@
 				<button type="button" class:on={color === swatch.id} style:background={swatch.hex} aria-label={swatch.label} aria-pressed={color === swatch.id} onclick={() => (color = swatch.id)}></button>
 			{/each}
 		</div>
-		{#if ply < 1}<p class="hint">Play a move, then mark the position it reaches. Saved marks use [%cal] and [%csl].</p>{:else}<p class="hint">{arrowFrom ? `Arrow from ${arrowFrom}. Tap the destination square.` : 'Green, red, orange and blue match the board marks.'}</p>{/if}
+		{#if ply < 1}<p class="hint">Play a move, then mark the position it reaches. Arrows and circles stay with that move.</p>{:else}<p class="hint">{arrowFrom ? `Arrow from ${arrowFrom}. Tap the destination square.` : 'Green, red, orange and blue match the board marks.'}</p>{/if}
 		<label class="field">
 			<span class="label">Note at this position</span>
 			<textarea rows="2" aria-label="Note at this position" bind:value={noteDraft} disabled={ply < 1} onchange={() => line && ply > 0 && commit(setAnnotation(working, active, noteDraft, spot.marks))}></textarea>
@@ -295,6 +306,9 @@
 		gap: 10px;
 		align-content: start;
 	}
+	.board-col {
+		order: -1;
+	}
 	.label {
 		color: var(--text-2);
 		font-size: 12px;
@@ -305,7 +319,6 @@
 		display: grid;
 		gap: 4px;
 	}
-	select,
 	textarea {
 		width: 100%;
 		color: var(--text);
@@ -313,12 +326,39 @@
 		border: 0;
 		font: inherit;
 	}
-	select {
+	.select {
+		position: relative;
+		display: block;
+		min-width: 0;
+	}
+	.select select {
+		width: 100%;
 		height: 36px;
+		padding-right: 28px;
+		appearance: none;
+		color: var(--text);
+		background: transparent;
+		border: 0;
+		font: 500 16px var(--font);
+		cursor: pointer;
+	}
+	.select select option {
+		background: var(--surface-1);
+		color: var(--text);
+	}
+	.select svg {
+		position: absolute;
+		top: 50%;
+		right: 0;
+		width: 16px;
+		height: 16px;
+		transform: translateY(-50%);
+		color: var(--text-3);
+		pointer-events: none;
 	}
 	textarea {
 		resize: vertical;
-		font: 15px/1.45 var(--font);
+		font: 16px/1.45 var(--font);
 	}
 	.row {
 		display: flex;
@@ -326,8 +366,10 @@
 		gap: 8px;
 	}
 	.row .btn {
-		height: 44px;
-		padding: 0 14px;
+		flex: 1 1 140px;
+		height: auto;
+		min-height: 44px;
+		padding: 10px 14px;
 		font-size: 14px;
 		white-space: normal;
 		text-align: center;
@@ -363,8 +405,8 @@
 		gap: 8px;
 	}
 	.colors button {
-		width: 36px;
-		height: 36px;
+		width: 44px;
+		height: 44px;
 		border-radius: 50%;
 		box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 	}
@@ -387,7 +429,6 @@
 			align-items: start;
 		}
 		.board-col {
-			order: -1;
 			position: sticky;
 			top: 12px;
 		}
