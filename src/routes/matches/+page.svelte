@@ -105,10 +105,34 @@
 <main class="page matches">
 	<header>
 		<h1>Matches</h1>
-		<nav class="tools" aria-label="Analysis">
-			<a href="/explorer">Opening explorer</a>
-			<a href="/analysis">Analysis board</a>
-			<a href="/opening-review">Opening review</a>
+		<nav class="entries" aria-label="Analysis">
+			<a class="card entry" href="/explorer">
+				<span class="mark" aria-hidden="true">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8" /><path d="M12 8v4l3 2" /></svg>
+				</span>
+				<span class="copy">
+					<b>Opening explorer</b>
+					<span>How often each reply is played.</span>
+				</span>
+			</a>
+			<a class="card entry" href="/analysis">
+				<span class="mark" aria-hidden="true">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z" /><path d="M4 12h16M12 5v14" /></svg>
+				</span>
+				<span class="copy">
+					<b>Analysis board</b>
+					<span>Play both sides and run the engine.</span>
+				</span>
+			</a>
+			<a class="card entry" href="/opening-review">
+				<span class="mark" aria-hidden="true">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12" /><path d="M4 6h.01M4 12h.01M4 18h.01" /></svg>
+				</span>
+				<span class="copy">
+					<b>Opening review</b>
+					<span>Where your games left a course.</span>
+				</span>
+			</a>
 		</nav>
 	</header>
 	<div class="columns">
@@ -165,18 +189,59 @@
 
 <style>
 	.matches { max-width: 1060px; }
-	header { margin-bottom: 18px; }
-	h1 { font-size: clamp(28px, 4vw, 38px); letter-spacing: -.045em; line-height: 1.1; }
-	.tools {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px 14px;
-		margin-top: 8px;
+	header {
+		margin-bottom: 18px;
+		padding-top: 28px;
 	}
-	.tools a {
+	h1 { font-size: clamp(28px, 4vw, 38px); letter-spacing: -.045em; line-height: 1.1; }
+	.entries {
+		display: grid;
+		gap: 8px;
+		margin-top: 14px;
+	}
+	.entry {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		min-height: 72px;
+		padding: 12px 14px;
+	}
+	.entry > * {
+		position: relative;
+		z-index: 1;
+	}
+	.mark {
+		display: grid;
+		flex: 0 0 auto;
+		place-items: center;
+		width: 36px;
+		height: 36px;
+		border-radius: 12px;
+		background: var(--accent-soft);
 		color: var(--accent-hi);
+	}
+	.mark svg {
+		width: 18px;
+		height: 18px;
+	}
+	.copy {
+		min-width: 0;
+	}
+	.copy b,
+	.copy span {
+		display: block;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.copy b {
 		font-size: 14px;
-		font-weight: 650;
+		letter-spacing: -0.02em;
+	}
+	.copy span {
+		color: var(--text-2);
+		font-size: 12px;
+		line-height: 1.35;
 	}
 	h2 { font-size: 17px; letter-spacing: -.02em; }
 	h2 span { margin-left: 6px; color: var(--text-2); font: 12px var(--mono); }
@@ -201,5 +266,6 @@
 	.empty { padding: 14px; }
 	@media (min-width: 780px) {
 		.columns { grid-template-columns: minmax(300px, 370px) 1fr; gap: 28px; }
+		.entries { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 	}
 </style>
