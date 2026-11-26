@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.css';
+	import { setupNative, isNative } from '#lib/native.ts';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { onNavigate } from '$app/navigation';
@@ -15,6 +16,8 @@
 	/** Safari animates its own edge-swipe back; animating the pop again would play it twice. */
 	let edgeSwipeAt = 0;
 	onMount(() => {
+		void setupNative();
+		if (import.meta.env.PROD && !isNative() && 'serviceWorker' in navigator) void navigator.serviceWorker.register('/service-worker.js');
 		// A touchstart listener is also what lets iOS Safari apply :active on touch-down.
 		const touch = (e: TouchEvent) => {
 			const x = e.touches[0]?.clientX ?? innerWidth / 2;
