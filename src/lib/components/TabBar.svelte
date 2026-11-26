@@ -1,21 +1,22 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { BookOpen, Target, Zap, LineChart, UserRound } from '@lucide/svelte';
 
 	const tabs = [
-		{ href: '/', label: 'Learn', match: (p: string) => p === '/' || p.startsWith('/course') || p.startsWith('/learn') || p.startsWith('/quiz'), icon: 'M4 11l8-7 8 7v9h-5v-6H9v6H4z' },
-		{ href: '/practice', label: 'Practice', match: (p: string) => p.startsWith('/practice'), icon: 'M4 4h16v16H4zM4 12h16M12 4v16' },
-		{ href: '/drill', label: 'Drill', match: (p: string) => p.startsWith('/drill'), icon: 'M13 3L5 14h6l-1 7 8-11h-6z' },
-		{ href: '/matches', label: 'Matches', match: (p: string) => p.startsWith('/matches') || p.startsWith('/review') || p.startsWith('/explorer') || p.startsWith('/analysis') || p.startsWith('/opening-review'), icon: 'M3 17l5-6 4 4 8-9M14 6h6v6' },
-		{ href: '/you', label: 'You', match: (p: string) => p.startsWith('/you'), icon: 'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21c1.5-4 4.5-6 8-6s6.5 2 8 6' }
+		{ href: '/', label: 'Learn', match: (p: string) => p === '/' || p.startsWith('/course') || p.startsWith('/learn') || p.startsWith('/quiz'), Icon: BookOpen },
+		{ href: '/practice', label: 'Practice', match: (p: string) => p.startsWith('/practice'), Icon: Target },
+		{ href: '/drill', label: 'Drill', match: (p: string) => p.startsWith('/drill'), Icon: Zap },
+		{ href: '/matches', label: 'Matches', match: (p: string) => p.startsWith('/matches') || p.startsWith('/review') || p.startsWith('/explorer') || p.startsWith('/analysis') || p.startsWith('/opening-review'), Icon: LineChart },
+		{ href: '/you', label: 'You', match: (p: string) => p.startsWith('/you'), Icon: UserRound }
 	];
 </script>
 
 <nav class="tabbar" aria-label="Main">
 	{#each tabs as t (t.href)}
 		{@const on = t.match(page.url.pathname)}
-		<a href={t.href} class:on aria-current={on ? 'page' : undefined}>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={t.icon} /></svg>
-			{t.label}
+		<a href={t.href} class:on aria-label={t.label} aria-current={on ? 'page' : undefined}>
+			<span class="highlight" aria-hidden="true"></span>
+			<t.Icon size={20} stroke-width={1.75} />
 		</a>
 	{/each}
 </nav>
@@ -26,8 +27,10 @@
 		left: 50%;
 		transform: translateX(-50%);
 		bottom: calc(14px + var(--safe-bottom));
-		width: min(calc(100% - 24px), 520px);
+		width: auto;
+		max-width: calc(100% - 24px);
 		height: var(--tabbar-h);
+		padding: 6px 8px;
 		border-radius: 24px;
 		background: rgba(29, 29, 31, 0.72);
 		backdrop-filter: blur(20px) saturate(180%);
@@ -37,41 +40,40 @@
 			inset 0 1px 0 rgba(255, 255, 255, 0.06),
 			0 20px 30px -16px rgba(0, 0, 0, 0.9);
 		display: flex;
-		justify-content: space-around;
+		gap: 4px;
 		align-items: center;
+		justify-content: center;
 		z-index: 40;
 	}
 	a {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 4px;
-		font-size: 10px;
-		font-weight: 500;
+		position: relative;
+		width: 44px;
+		height: 44px;
+		display: grid;
+		place-items: center;
 		color: var(--text-3);
-		padding: 8px 0;
+		border-radius: 12px;
+		transition: color 0.2s ease;
 		user-select: none;
 		-webkit-user-select: none;
 		-webkit-touch-callout: none;
-		transition: color 0.2s ease;
 	}
-	a svg {
-		width: 22px;
-		height: 22px;
-		transition: transform var(--dur-press) var(--ease-out);
+	a .highlight {
+		position: absolute;
+		inset: 6px;
+		border-radius: 10px;
+		background: var(--surface-3, rgba(255, 255, 255, 0.08));
+		opacity: 0;
+		transition: opacity 0.2s ease;
+		z-index: -1;
 	}
-	a:active svg {
-		transform: scale(0.86);
-	}
+	a.on { color: var(--accent-hi); }
+	a.on .highlight { opacity: 1; }
 	@media (prefers-reduced-transparency: reduce) {
 		.tabbar {
 			background: var(--surface-2);
 			backdrop-filter: none;
 			-webkit-backdrop-filter: none;
 		}
-	}
-	a.on {
-		color: var(--accent-hi);
 	}
 </style>
