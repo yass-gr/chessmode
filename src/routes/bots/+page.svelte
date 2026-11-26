@@ -28,7 +28,7 @@
 				{#if item.mascot}
 					<Mascot expression="happy" size={48} alt="" />
 				{:else}
-					<span class="mark" data-bot={item.id} aria-hidden="true">{item.initials}</span>
+					<img class="portrait" src="/img/bots/{item.id}.webp" alt="" />
 				{/if}
 				<span>
 					<b>{item.name}</b>
@@ -76,33 +76,7 @@
 	.bot small {
 		color: var(--text-3);
 	}
-	.mark {
-		display: grid;
-		place-items: center;
-		flex: 0 0 auto;
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		font-size: 18px;
-		font-weight: 600;
-		letter-spacing: -0.03em;
-	}
-	.mark[data-bot='pip'] {
-		background: color-mix(in srgb, var(--text-2) 24%, var(--surface-1));
-		color: var(--text);
-	}
-	.mark[data-bot='lark'] {
-		background: color-mix(in srgb, var(--good) 22%, var(--surface-1));
-		color: var(--good);
-	}
-	.mark[data-bot='bram'] {
-		background: color-mix(in srgb, var(--warn) 24%, var(--surface-1));
-		color: var(--warn);
-	}
-	.mark[data-bot='nessa'] {
-		background: color-mix(in srgb, var(--eval-graph-black) 70%, var(--surface-3));
-		color: var(--text);
-	}
+	.portrait { width: 48px; height: 48px; object-fit: contain; flex: none; }
 	.section {
 		margin: 26px 0 10px;
 	}

@@ -205,7 +205,7 @@
 					{/each}
 				</div>
 			{:else}
-				<p class="card empty">Imported games appear here.</p>
+				<div class="card empty"><img src="/img/empty/matches.webp" alt="" width="120" height="120" style="object-fit: contain" /><p>Imported games appear here.</p></div>
 			{/if}
 		</section>
 	</div>

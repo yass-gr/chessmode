@@ -79,6 +79,7 @@
 	{#if ready}
 		{#key stepId}
 			<div class="panel">
+				<img class="setup-art" src="/img/onboarding/suggest.webp" alt="" />
 				{#if stepId === 'rating'}
 					<h1 id="setup-title" class="h-title">What's your rating?</h1>
 					<p class="muted">A guess is enough. It only sets a starting rating where you don't have one yet.</p>
@@ -141,6 +142,7 @@
 </main>
 
 <style>
+	.setup-art { width: 96px; height: 96px; object-fit: contain; float: right; }
 	.setup {
 		display: grid;
 		align-content: start;

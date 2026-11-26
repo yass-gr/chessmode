@@ -9,6 +9,7 @@
 
 <main class="page">
 	<header class="head">
+		<img class="header-art" src="/img/community/header.webp" alt="" />
 		<p class="label">The shipped courses</p>
 		<h1 class="h-display">Openings</h1>
 		<p class="muted">Every course here can be tried from the first line, with no account. Publishing a private repertoire for other people waits on sync, which this app does not do yet.</p>
@@ -33,12 +34,14 @@
 		gap: 6px;
 		padding: 28px 0 16px;
 	}
+	.header-art { width: 110px; height: 110px; object-fit: contain; justify-self: end; grid-row: 1 / 4; grid-column: 2; }
 	.list {
 		display: grid;
 		gap: 12px;
 	}
 	@media (min-width: 800px) {
-		.list {
+		.header-art { width: 110px; height: 110px; object-fit: contain; justify-self: end; grid-row: 1 / 4; grid-column: 2; }
+	.list {
 			grid-template-columns: 1fr 1fr;
 		}
 	}
