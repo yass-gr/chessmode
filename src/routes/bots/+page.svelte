@@ -28,7 +28,7 @@
 				{#if item.mascot}
 					<Mascot expression="happy" size={48} alt="" />
 				{:else}
-					<span class="mark" aria-hidden="true">{item.initials}</span>
+					<span class="mark" data-bot={item.id} aria-hidden="true">{item.initials}</span>
 				{/if}
 				<span>
 					<b>{item.name}</b>
@@ -67,7 +67,7 @@
 		color: inherit;
 	}
 	.bot.on {
-		box-shadow: inset 0 0 0 1px var(--accent);
+		box-shadow: inset 0 0 0 1px var(--stroke-2);
 	}
 	.bot b {
 		display: block;
@@ -78,11 +78,29 @@
 	.mark {
 		display: grid;
 		place-items: center;
+		flex: 0 0 auto;
 		width: 48px;
 		height: 48px;
-		border-radius: 16px;
-		background: var(--surface-3);
-		font-weight: 700;
+		border-radius: 50%;
+		font-size: 18px;
+		font-weight: 600;
+		letter-spacing: -0.03em;
+	}
+	.mark[data-bot='pip'] {
+		background: color-mix(in srgb, var(--text-2) 24%, var(--surface-1));
+		color: var(--text);
+	}
+	.mark[data-bot='lark'] {
+		background: color-mix(in srgb, var(--good) 22%, var(--surface-1));
+		color: var(--good);
+	}
+	.mark[data-bot='bram'] {
+		background: color-mix(in srgb, var(--warn) 24%, var(--surface-1));
+		color: var(--warn);
+	}
+	.mark[data-bot='nessa'] {
+		background: color-mix(in srgb, var(--eval-graph-black) 70%, var(--surface-3));
+		color: var(--text);
 	}
 	.section {
 		margin: 26px 0 10px;
