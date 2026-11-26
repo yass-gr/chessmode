@@ -27,6 +27,12 @@ export interface SessionLog {
 	mistakes: number;
 	/** Drill streak length or Time-mode score. */
 	score?: number;
+	/**
+	 * Time scoring unit. `moves` is move points. Missing means line scores, so older logs stay in their own bucket.
+	 */
+	scoreVersion?: 'lines' | 'moves';
+	/** Finished reps, when `lines` is being used as a score instead. */
+	reps?: number;
 	xp: number;
 }
 
