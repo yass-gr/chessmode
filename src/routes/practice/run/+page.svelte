@@ -140,7 +140,7 @@
 	{/key}
 	{#if outcome}
 		<ResultSheet
-			image={outcome.mistakes ? '/img/node-locked.webp' : '/img/node-done.webp'}
+			image={outcome.mistakes ? '/img/result/mistakes.webp' : '/img/result/practice.webp'}
 			eyebrow={outcome.mistakes >= 2 || outcome.hints >= 2 ? 'Needs another look' : outcome.mistakes || outcome.hints ? 'With help' : 'Clean'}
 			title={outcome.name}
 			subtitle="Next review {relativeTime(outcome.due)}. Confidence {outcome.confidence} of 10."
@@ -157,20 +157,20 @@
 	{/if}
 {:else if loaded}
 	<main class="page done">
-		<img src={finished ? '/img/node-active.webp' : '/img/node-locked.webp'} alt="" />
+		<img src={finished ? '/img/result/practice.webp' : '/img/empty/practice.webp'} alt="" />
 		{#if finished}
 			<p class="label">Practice · +{finished * 5} XP</p>
 			<h1 class="h-display">{finished} {finished === 1 ? 'line' : 'lines'}</h1>
 			<p class="muted">Nothing else in this depth is learned yet.</p>
 		{:else if requested}
 			<h1 class="h-display">Learn it first</h1>
-			<p class="muted">Practice recalls lines you have already learned.</p>
+			<p class="muted">Learn this line once. Practice can bring it back after that.</p>
 			{#if getCourse(requested.split('/')[0])}
 				<a class="btn btn-primary block" href="/learn/{requested.split('/')[0]}/{requested.split('/')[1]}">Learn this line</a>
 			{/if}
 		{:else}
 			<h1 class="h-display">Nothing to practise yet</h1>
-			<p class="muted">Learn a line in this depth. It will show up here, due or not.</p>
+			<p class="muted">Learn a line. It shows up here as soon as you do, due or not.</p>
 		{/if}
 		<div class="actions">
 			<a class="btn btn-primary block" href={scopeId ? `/course/${scopeId}` : '/'}>{scopeId ? 'Back to the course' : 'Learn a line'}</a>

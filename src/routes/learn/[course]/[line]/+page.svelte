@@ -86,6 +86,7 @@
 	{/key}
 	{#if result}
 		<ResultSheet
+			expression="celebrating"
 			eyebrow="Line learned · +10 XP"
 			title={line.name}
 			subtitle="{finalNote ? `${finalNote} ` : ''}{result.next ? 'The next new line is ready.' : 'That was the last new line in this depth. Practice is next.'}{result.learned === 1 ? ' Practice is open.' : result.learned === 3 ? ' Drill and Time are open.' : ''}"
