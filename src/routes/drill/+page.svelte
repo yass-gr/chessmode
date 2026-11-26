@@ -117,6 +117,12 @@
 			{/if}
 		</p>
 	{/if}
+	<nav class="more" aria-label="More training">
+		<a href="/endgames">Endgames</a>
+		<a href="/books">Reading</a>
+		<a href="/bots">Bots</a>
+		<a href="/community">Openings</a>
+	</nav>
 </main>
 
 <style>
@@ -228,6 +234,16 @@
 		box-shadow: inset 0 1px 0 var(--highlight);
 		text-shadow: none;
 		pointer-events: none;
+	}
+	.more {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 14px;
+		margin-top: 18px;
+	}
+	.more a {
+		color: var(--accent-hi);
+		font-weight: 600;
 	}
 	.avail {
 		margin-top: 16px;

@@ -27,12 +27,18 @@ describe('navKind', () => {
 		expect(navKind('/matches', '/explorer')).toBe('present');
 		expect(navKind('/analysis', '/matches', -1)).toBe('dismiss');
 		expect(navKind('/drill/run', '/drill')).toBe('dismiss');
+		expect(navKind('/drill', '/endgames/play')).toBe('present');
+		expect(navKind('/endgames/play', '/endgames', -1)).toBe('dismiss');
+		expect(navKind('/bots', '/bots/play')).toBe('present');
 	});
 
 	it('pushes from one flow to the next', () => {
 		expect(navKind('/learn/caro-kann/a', '/learn/caro-kann/b')).toBe('push');
 		expect(navKind('/matches', '/opening-review')).toBe('push');
 		expect(navKind('/opening-review', '/matches')).toBe('pop');
+		expect(navKind('/drill', '/endgames')).toBe('push');
+		expect(navKind('/endgames', '/drill')).toBe('pop');
+		expect(navKind('/books/last-pieces', '/books')).toBe('pop');
 	});
 });
 
