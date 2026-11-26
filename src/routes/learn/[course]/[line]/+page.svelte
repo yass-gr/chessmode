@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { getCourse } from '#lib/courses/index.ts';
+	import { courseIntro } from '#lib/courses/intro.ts';
 	import { courseScope, defaultDepth, type DepthChoice } from '#lib/courses/depth.ts';
 	import type { LineKey } from '#lib/courses/types.ts';
+	import CourseIntro, { type Intro } from '#lib/components/courses/CourseIntro.svelte';
 	import LineTrainer from '#lib/components/train/LineTrainer.svelte';
 	import ResultSheet from '#lib/components/train/ResultSheet.svelte';
-	import { db, type LineProgress } from '#lib/db.ts';
+	import { db, getSetting, setSetting, type LineProgress } from '#lib/db.ts';
 	import { logSession } from '#lib/progress.ts';
 	import { readCoursePreferences } from '#lib/settings/preferences.ts';
 	import { finishLearn } from '#lib/srs.ts';
@@ -29,6 +31,7 @@
 	let ready = $state(false);
 	let play = $state(0);
 	let result = $state<{ mistakes: number; next?: string; learned: number } | undefined>();
+	let intro = $state<Intro | undefined>();
 
 	$effect(() => {
 		const courseId = params.course;
@@ -52,12 +55,19 @@
 			choice = depth;
 			startAt = openingSkip({ mode: 'learn', enabled: prefs.skipSharedStart, lines: scope.lines, line: current, firstLearn });
 			shared = scope.lines.length >= 2 && commonPrefix(scope.lines) >= 2;
+			const media = courseIntro(loaded.id);
+			intro = media && !(await getSetting(`intro/${loaded.id}`, false)) ? media : undefined;
 			ready = true;
 		})();
 	});
 
 	const scope = $derived(course ? courseScope(course, choice, progress) : undefined);
 	const finalNote = $derived(line?.plies[line.plies.length - 1]?.note);
+
+	async function dismissIntro() {
+		if (course) await setSetting(`intro/${course.id}`, true);
+		intro = undefined;
+	}
 
 	async function onfinish(attempt: AttemptResult) {
 		if (!course || !line || result) return;
@@ -72,6 +82,11 @@
 <svelte:head><title>{line?.name ?? 'Learn'} · Chessmode</title></svelte:head>
 
 {#if course && line && ready}
+	{#if intro}
+		<div class="intro-layer">
+			<CourseIntro {intro} onclose={dismissIntro} />
+		</div>
+	{/if}
 	{#key `${line.key}:${play}`}
 		<LineTrainer
 			{course}
@@ -114,3 +129,19 @@
 		<a class="btn btn-surface" href="/">Home</a>
 	</main>
 {/if}
+
+<style>
+	.intro-layer {
+		position: fixed;
+		z-index: 40;
+		inset: 0;
+		display: grid;
+		align-content: center;
+		padding: 16px;
+		background: rgba(13, 13, 14, 0.72);
+	}
+	.intro-layer :global(.intro) {
+		width: min(100%, 560px);
+		margin: 0 auto;
+	}
+</style>
