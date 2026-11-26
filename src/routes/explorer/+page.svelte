@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { plural } from '#lib/format.ts';
 	import { ChevronLeft } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -201,13 +202,13 @@
 				{#if loading}
 					Loading games…
 				{:else if position?.kind === 'sparse'}
-					Sparse sample · {position.games.toLocaleString()} games
+					Sparse sample · {position.games.toLocaleString()} {plural(position.games, 'game')}
 				{:else if position?.kind === 'empty-band'}
 					No games in this rating band
 				{:else if position?.kind === 'unavailable'}
 					{notice || 'No opening data for this position'}
 				{:else if position}
-					{position.games.toLocaleString()} games
+					{position.games.toLocaleString()} {plural(position.games, 'game')}
 					{#if origin === 'saved' && month}· saved {month}{/if}
 					{#if origin === 'online'}· Lichess{/if}
 				{/if}

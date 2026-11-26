@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { plural } from '#lib/format.ts';
 	import { ChevronDown, ChevronLeft, ChevronRight, Trash2 } from '@lucide/svelte';
 	import { slide } from 'svelte/transition';
 	import { easeOut, reducedMotion } from '#lib/motion.ts';
@@ -119,7 +120,7 @@
 				<p class="tagline muted">{course.tagline}</p>
 				<div class="meta">
 					<span class="chip"><span class="side" class:black={course.side === 'b'}></span>{course.side === 'w' ? 'White' : 'Black'}</span>
-					<span class="chip">{course.lines.length} lines</span>
+					<span class="chip">{course.lines.length} {plural(course.lines.length, 'line')}</span>
 					<span class="chip">{course.chapters.length} {course.chapters.length === 1 ? 'chapter' : 'chapters'}</span>
 					<span class="chip">≈{Math.round(minutes / 6) * 6 >= 60 ? `${Math.round(minutes / 60)} h` : `${minutes} min`}</span>
 				</div>

@@ -1,3 +1,4 @@
+import { plural } from '#lib/format.ts';
 import type { Course, LineKey } from '#lib/courses/types.ts';
 import type { LineProgress } from '#lib/db.ts';
 import { courseScope, defaultDepth, type DepthChoice } from '#lib/courses/depth.ts';
@@ -119,7 +120,7 @@ export function pendingNotice(course: Course, choice: DepthChoice, progress: Rea
 			id: `learned:${scope.tier}`,
 			eyebrow: 'Milestone',
 			title: `${tier.name} complete`,
-			body: next ? `All ${tier.count} lines learned. You can add ${next.name}, or stay with ${tier.name}.` : `All ${tier.count} lines learned. Reviews keep them sharp.`,
+			body: next ? `All ${tier.count} ${plural(tier.count, 'line')} learned. You can add ${next.name}, or stay with ${tier.name}.` : `All ${tier.count} ${plural(tier.count, 'line')} learned. Reviews keep them sharp.`,
 			stay: next ? `Stay on ${tier.name}` : 'Keep training',
 			go: next ? { label: `Continue with ${next.name}`, tier: scope.tier + 1 } : undefined
 		};
@@ -129,7 +130,7 @@ export function pendingNotice(course: Course, choice: DepthChoice, progress: Rea
 			id: `perfected:${scope.tier}`,
 			eyebrow: 'Milestone',
 			title: `${tier.name} perfected`,
-			body: next ? `All ${tier.count} lines, flawless. You can add ${next.name}, or stay with ${tier.name}.` : `All ${tier.count} lines, flawless. Reviews keep them sharp.`,
+			body: next ? `All ${tier.count} ${plural(tier.count, 'line')}, flawless. You can add ${next.name}, or stay with ${tier.name}.` : `All ${tier.count} ${plural(tier.count, 'line')}, flawless. Reviews keep them sharp.`,
 			stay: next ? `Stay on ${tier.name}` : 'Stay sharp',
 			go: next ? { label: `Continue with ${next.name}`, tier: scope.tier + 1 } : undefined
 		};

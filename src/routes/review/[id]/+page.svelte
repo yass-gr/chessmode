@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { plural } from '#lib/format.ts';
 	import { ArrowRightLeft, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Ellipsis, Sun } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import Board, { type Arrow, type Marker } from '#lib/components/Board.svelte';
@@ -181,7 +182,7 @@
 	});
 	const coach = $derived.by((): CoachView => {
 		if (screen === 'loading' || !review || !game) {
-			return { phase: 'loading', headline: 'Looking through the game…', detail: plies.length ? `${progress?.ply ?? 0} of ${plies.length} moves` : undefined };
+			return { phase: 'loading', headline: 'Looking through the game…', detail: plies.length ? `${progress?.ply ?? 0} of ${plies.length} ${plural(plies.length, 'move')}` : undefined };
 		}
 		if (screen === 'overview') return { phase: 'overview', ...overviewVerdict(game, review) };
 		if (concluded && decision.kind === 'mainline') {

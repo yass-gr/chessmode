@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { plural } from '#lib/format.ts';
 	import Sheet from '#lib/components/Sheet.svelte';
 	import { tierBlurb } from '#lib/courses/scope.ts';
 	import type { DepthTier } from '#lib/courses/depth.ts';
@@ -38,7 +39,7 @@
 					</span>
 					<span class="desc">{tierBlurb(tier.name)}</span>
 				</span>
-				<span class="count">{tier.count} lines</span>
+				<span class="count">{tier.count} {plural(tier.count, 'line')}</span>
 			</button>
 		{/each}
 	</div>
