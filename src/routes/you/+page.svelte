@@ -284,9 +284,12 @@
 	}
 	.tiles {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: 1fr 1fr;
 		gap: 8px;
 		margin-top: 18px;
+	}
+	.tile:last-child:nth-child(odd) {
+		grid-column: 1 / -1;
 	}
 	.tile {
 		padding: 12px;
@@ -461,6 +464,12 @@
 	@media (min-width: 900px) {
 		main.page {
 			max-width: 720px;
+		}
+		.tiles {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+		.tile:last-child:nth-child(odd) {
+			grid-column: auto;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
