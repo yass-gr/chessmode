@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { Volume2, VolumeX, X } from '@lucide/svelte';
 	import { isMuted, setMuted } from '#lib/sound.ts';
 
 	interface Props {
@@ -21,14 +22,14 @@
 <main class="shell">
 	<header class="topbar">
 		<a class="icon-btn" href={closeHref} aria-label="Close">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+			<X size={18} stroke-width={1.75} />
 		</a>
 		<div class="status">{@render status()}</div>
 		<button class="icon-btn" onclick={toggleSound} aria-label={muted ? 'Turn sound on' : 'Turn sound off'} aria-pressed={!muted}>
 			{#if muted}
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z" /><path d="M23 9l-6 6M17 9l6 6" /></svg>
+				<VolumeX size={18} stroke-width={1.75} />
 			{:else}
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z" /><path d="M15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14" /></svg>
+				<Volume2 size={18} stroke-width={1.75} />
 			{/if}
 		</button>
 	</header>
