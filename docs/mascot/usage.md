@@ -7,7 +7,7 @@ These assets are intended for integration by the app. Coach expressions share a 
 | `static/img/mascot/neutral.webp` | Neutral coach in review and lesson notes | None |
 | `static/img/mascot/happy.webp` | Happy coach feedback | None |
 | `static/img/mascot/thinking.webp` | Thinking coach or hint | None |
-| `static/img/mascot/wince.webp` | Gentle response to a blunder | None |
+| `static/img/mascot/wince.webp` | Gentle response to a blunder, and an arena loss | `knight.webp` in arena losses |
 | `static/img/mascot/celebrating.webp` | Celebratory coach feedback | None |
 | `static/img/mascot/encouraging.webp` | Encouraging coach feedback | None |
 | `static/img/mascot/full.webp` | Full mascot for general use | None |
@@ -18,7 +18,6 @@ These assets are intended for integration by the app. Coach expressions share a 
 | `static/img/icon-maskable-512.png` | Maskable installed app icon | None |
 | `static/img/result/win.webp` | Arena win result | `node-done.webp` in arena wins |
 | `static/img/result/draw.webp` | Arena draw result | `king.webp` in arena draws |
-| `static/img/result/loss.webp` | Arena loss result | `knight.webp` in arena losses |
 | `static/img/result/quiz.webp` | Chapter quiz result | `king.webp` in quiz results |
 | `static/img/result/practice.webp` | Practice result | `node-done.webp` in practice results |
 | `static/img/result/timed.webp` | Timed drill result | `flame.webp` in timed results |
