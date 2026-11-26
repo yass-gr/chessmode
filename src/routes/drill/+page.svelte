@@ -35,7 +35,7 @@
 <main class="page">
 	<header class="head">
 		<h1 class="h-display">Drill</h1>
-		<p class="muted">Your learned lines, back to back, until one slips.</p>
+		<p class="muted">Learned lines, one pass at a time. A miss or a hint breaks the streak.</p>
 	</header>
 
 	<div class="scopes" role="group" aria-label="Course">
@@ -52,7 +52,7 @@
 				<div class="body">
 					<p class="label">Streak</p>
 					<h2 class="h-title">Drill</h2>
-					<p class="muted">Random lines, no hints. One wrong move ends the run.</p>
+					<p class="muted">Every learned line once, then the offer to learn more. A miss or a hint breaks the streak.</p>
 					<p class="pb">Best <b>{best(scoped, 'drill')}</b> {best(scoped, 'drill') === 1 ? 'line' : 'lines'}</p>
 				</div>
 				<a class="btn btn-primary block" class:disabled={gate.kind !== 'available'} href={gate.kind === 'available' ? href('drill') : undefined} aria-disabled={gate.kind !== 'available'}>Start drill</a>
@@ -63,8 +63,8 @@
 				<div class="body">
 					<p class="label">60 seconds</p>
 					<h2 class="h-title">Time</h2>
-					<p class="muted">Clean lines win back {TIME_MODE.cleanMs / 1000} seconds, mistakes cost {TIME_MODE.mistakeMs / 1000}. The clock speeds up as you score.</p>
-					<p class="pb">Best <b>{best(scoped, 'time')}</b> {best(scoped, 'time') === 1 ? 'line' : 'lines'}</p>
+					<p class="muted">Each correct move scores a point. A clean line adds time from its length, and a wrong move costs {TIME_MODE.penaltyMs / 1000} seconds.</p>
+					<p class="pb">Best <b>{best(scoped, 'time')}</b> {best(scoped, 'time') === 1 ? 'point' : 'points'}</p>
 				</div>
 				<a class="btn btn-white block" class:disabled={gate.kind !== 'available'} href={gate.kind === 'available' ? href('time') : undefined} aria-disabled={gate.kind !== 'available'}>Start the clock</a>
 			</article>
