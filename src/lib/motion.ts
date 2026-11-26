@@ -7,14 +7,15 @@ export type NavKind = 'push' | 'pop' | 'present' | 'dismiss' | 'none';
 
 const TAB_ROOTS = new Set(['/', '/practice', '/drill', '/matches', '/you']);
 
-/** Full-screen flows hide the tab bar. */
-export const isImmersive = (path: string) => /^\/(learn|practice\/run|drill\/run|quiz|review|arena|puzzles)\b/.test(path);
+/** Full-screen flows hide the tab bar. Opening review stays in the Matches tab because it is a list. */
+export const isImmersive = (path: string) => /^\/(learn|practice\/run|drill\/run|quiz|review|arena|puzzles|explorer|analysis)\b/.test(path);
 
 /** Where the back button leads; the catalog sits between Learn and a course because that is how you reach one. */
 const PARENTS: [RegExp, string][] = [
 	[/^\/create$/, '/courses'],
 	[/^\/courses$/, '/'],
-	[/^\/course\/[^/]+$/, '/courses']
+	[/^\/course\/[^/]+$/, '/courses'],
+	[/^\/(explorer|analysis|opening-review)$/, '/matches']
 ];
 
 function parent(path: string): string | undefined {

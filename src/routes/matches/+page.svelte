@@ -105,6 +105,11 @@
 <main class="page matches">
 	<header>
 		<h1>Matches</h1>
+		<nav class="tools" aria-label="Analysis">
+			<a href="/explorer">Opening explorer</a>
+			<a href="/analysis">Analysis board</a>
+			<a href="/opening-review">Opening review</a>
+		</nav>
 	</header>
 	<div class="columns">
 		<section class="card import" aria-label="Import games">
@@ -162,6 +167,17 @@
 	.matches { max-width: 1060px; }
 	header { margin-bottom: 18px; }
 	h1 { font-size: clamp(28px, 4vw, 38px); letter-spacing: -.045em; line-height: 1.1; }
+	.tools {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 14px;
+		margin-top: 8px;
+	}
+	.tools a {
+		color: var(--accent-hi);
+		font-size: 14px;
+		font-weight: 650;
+	}
 	h2 { font-size: 17px; letter-spacing: -.02em; }
 	h2 span { margin-left: 6px; color: var(--text-2); font: 12px var(--mono); }
 	.columns { display: grid; gap: 22px; align-items: start; }

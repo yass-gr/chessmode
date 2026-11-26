@@ -752,6 +752,12 @@
 		<div class="titles">
 			<h1>Game review</h1>
 			{#if game}<p>{[review?.opening?.name ?? progress?.opening?.name ?? game.opening?.name, game.speed, game.result].filter(Boolean).join(' · ')}</p>{/if}
+			{#if game}
+				<div class="handoff">
+					<a href={`/analysis?game=${encodeURIComponent(game.id)}`}>Open in analysis board</a>
+					<a href={`/analysis?game=${encodeURIComponent(game.id)}&add=course`}>Add to a course</a>
+				</div>
+			{/if}
 		</div>
 		{#if game}
 			<button type="button" class="icon-btn" aria-label="Flip board" onclick={() => { orientation = other(orientation); }}>
@@ -954,6 +960,18 @@
 	.titles {
 		flex: 1;
 		min-width: 0;
+	}
+	.handoff {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 12px;
+		margin-top: 4px;
+	}
+	.handoff a {
+		color: var(--accent-hi);
+		font-size: 12px;
+		font-weight: 650;
+		white-space: normal;
 	}
 	h1 {
 		font-size: 22px;
