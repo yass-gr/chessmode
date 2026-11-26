@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Board, { type Arrow, type Marker } from '#lib/components/Board.svelte';
+	import Sheet from '#lib/components/Sheet.svelte';
 	import Coach from '#lib/components/review/Coach.svelte';
 	import ReviewSettings from '#lib/components/review/ReviewSettings.svelte';
 	import EvalBar from '#lib/components/review/EvalBar.svelte';
@@ -54,6 +55,7 @@
 	let touch: { x: number; y: number } | undefined;
 	let panelBody = $state<HTMLDivElement>();
 	let settingsOpen = $state(false);
+	let moreOpen = $state(false);
 	const promotions = [
 		{ piece: 'Queen', key: 'q' },
 		{ piece: 'Rook', key: 'r' },
@@ -87,6 +89,22 @@
 	const graphWin = $derived(progress?.win ?? []);
 	const bestLabel = $derived(current?.branches?.recommended.steps[0] ? lineAction(current.branches.recommended.steps[0].explanation, 'recommended') : '');
 	const followLabel = $derived(current?.branches && current.branches.played.steps.length > 1 ? lineAction(current.branches.played.steps[1].explanation, 'played') : '');
+	type DockAction = { id: string; label: string; run: () => void };
+	const dockActions = $derived.by((): DockAction[] => {
+		const actions: DockAction[] = [];
+		if (bestLabel) actions.push({ id: 'best', label: bestLabel, run: () => openBranch('recommended') });
+		if (followLabel) {
+			actions.push({
+				id: 'follow',
+				label: followLabel === bestLabel ? 'Show the follow-up' : followLabel,
+				run: () => openBranch('played')
+			});
+		}
+		if (current && isRetryable(current)) actions.push({ id: 'retry', label: 'Retry', run: retryHere });
+		return actions;
+	});
+	const visibleActions = $derived(dockActions.slice(0, 2));
+	const overflowActions = $derived(dockActions.slice(2));
 	const hasPreviousMoment = $derived(decision.kind === 'mainline' && moments.some((ply) => ply < decision.ply));
 	const primaryLabel = $derived.by(() => {
 		if (concluded) return 'Back to overview';
@@ -867,11 +885,18 @@
 								<button class="btn btn-surface" type="button" aria-label="Previous key moment" disabled={!hasPreviousMoment} onclick={previousMoment}>Previous</button>
 								<button class="btn btn-primary grow" type="button" onclick={primary}>{primaryLabel}</button>
 							</div>
-							<div class="dock-row scroll">
-								{#if bestLabel}<button class="btn btn-surface" type="button" onclick={() => openBranch('recommended')}>{bestLabel}</button>{/if}
-								{#if followLabel}<button class="btn btn-surface" type="button" onclick={() => openBranch('played')}>{followLabel === bestLabel ? 'Show the follow-up' : followLabel}</button>{/if}
-								{#if current && isRetryable(current)}<button class="btn btn-surface" type="button" onclick={retryHere}>Retry</button>{/if}
-							</div>
+							{#if visibleActions.length}
+								<div class="dock-row actions">
+									{#each visibleActions as action (action.id)}
+										<button class="btn btn-surface" type="button" onclick={action.run}>{action.label}</button>
+									{/each}
+									{#if overflowActions.length}
+										<button type="button" class="icon-btn" aria-label="More actions" aria-expanded={moreOpen} aria-haspopup="dialog" onclick={() => { moreOpen = true; }}>
+											<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.6" fill="currentColor" /><circle cx="12" cy="12" r="1.6" fill="currentColor" /><circle cx="18" cy="12" r="1.6" fill="currentColor" /></svg>
+										</button>
+									{/if}
+								</div>
+							{/if}
 						{/if}
 					</div>
 				{/if}
@@ -883,6 +908,17 @@
 		<p role="status" class="card empty">Loading game…</p>
 	{/if}
 </main>
+
+{#if moreOpen && overflowActions.length}
+	<Sheet labelledby="review-more-title" ondismiss={() => { moreOpen = false; }}>
+		<div class="more-sheet">
+			<h2 id="review-more-title">More</h2>
+			{#each overflowActions as action (action.id)}
+				<button class="btn btn-surface block" type="button" onclick={() => { moreOpen = false; action.run(); }}>{action.label}</button>
+			{/each}
+		</div>
+	</Sheet>
+{/if}
 
 {#if settingsOpen && game}
 	<ReviewSettings
@@ -1076,14 +1112,39 @@
 		display: grid;
 		gap: 8px;
 		flex: 0 0 auto;
+		min-width: 0;
+		max-width: 100%;
 	}
 	.dock-row {
 		display: flex;
 		gap: 8px;
 		align-items: center;
+		min-width: 0;
+		max-width: 100%;
 	}
 	.dock-row.scroll {
 		overflow-x: auto;
+	}
+	.dock-row.actions {
+		flex-wrap: wrap;
+	}
+	.dock-row.actions .btn {
+		flex: 1 1 0;
+		min-width: 0;
+		max-width: 100%;
+		height: auto;
+		min-height: 44px;
+		padding: 8px 12px;
+		white-space: normal;
+		line-height: 1.25;
+		text-align: center;
+	}
+	.more-sheet {
+		display: grid;
+		gap: 10px;
+	}
+	.more-sheet h2 {
+		font-size: 18px;
 	}
 	.dock .btn {
 		height: 44px;
