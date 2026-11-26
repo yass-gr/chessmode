@@ -75,8 +75,7 @@ export function classify({ move, before, scoreAfter, previous, inBook }: Classif
 	const blunder = loss + epsilon >= THRESHOLDS.mistake;
 	const afterEP = expectedPoints(scoreAfter, color, nextTurn);
 
-	if (inBook) classification = 'book';
-	else if (actual.length === 1) classification = 'only';
+	if (actual.length === 1) classification = 'only';
 	else if (loss <= THRESHOLDS.findLoss + epsilon && afterEP >= THRESHOLDS.findAfter
 		&& bestEP < THRESHOLDS.findBefore
 		&& materialBalance(position, color) - exchangeBalance(new Chess(fenAfter), color) >= THRESHOLDS.findMaterial) {
@@ -90,5 +89,7 @@ export function classify({ move, before, scoreAfter, previous, inBook }: Classif
 	} else {
 		classification = loss <= epsilon ? 'best' : lossLabels.find(([, limit]) => loss + epsilon < limit)?.[0] ?? 'blunder';
 	}
+	if (inBook && !['loose', 'mistake', 'missed', 'blunder'].includes(classification)
+		&& best.score.mate === undefined && scoreAfter.mate === undefined) classification = 'book';
 	return { classification, loss };
 }
