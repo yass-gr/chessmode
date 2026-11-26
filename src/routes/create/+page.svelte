@@ -37,6 +37,9 @@
 	let focusFen = $state('');
 	let focusToken = $state(0);
 	let loadError = $state('');
+	let dropping = $state(false);
+	let fileInput = $state<HTMLInputElement | undefined>();
+	let dragDepth = 0;
 
 	const titled = $derived({ id, name: name.trim() || 'My course', side });
 	const lineCount = $derived(draft?.chapters.reduce((total, chapter) => total + chapter.lines.length, 0) ?? 0);
@@ -67,9 +70,13 @@
 		}
 	});
 
-	function listed(lines: ReimportLine[]) {
-		const shown = lines.slice(0, 8).map((line) => line.name);
-		return lines.length > 8 ? `${shown.join(', ')} and ${lines.length - 8} more` : shown.join(', ');
+	function listed(items: ReimportLine[]) {
+		const shown = items.slice(0, 8).map((line) => line.name);
+		return items.length > 8 ? `${shown.join(', ')} and ${items.length - 8} more` : shown.join(', ');
+	}
+
+	function count(total: number, one: string, many: string) {
+		return `${total} ${total === 1 ? one : many}`;
 	}
 
 	function ingest(text: string) {
@@ -126,7 +133,42 @@
 	});
 
 	async function readFile(file: File | undefined) {
-		if (file) ingest(await file.text());
+		if (!file) return;
+		source = 'pgn';
+		ingest(await file.text());
+	}
+
+	function openFile() {
+		fileInput?.click();
+	}
+
+	function onFile(event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		void readFile(input.files?.[0]);
+		input.value = '';
+	}
+
+	function dragEnter(event: DragEvent) {
+		event.preventDefault();
+		dragDepth += 1;
+		dropping = true;
+	}
+
+	function dragOver(event: DragEvent) {
+		event.preventDefault();
+		if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+	}
+
+	function dragLeave() {
+		dragDepth = Math.max(0, dragDepth - 1);
+		dropping = dragDepth > 0;
+	}
+
+	function onDrop(event: DragEvent) {
+		event.preventDefault();
+		dragDepth = 0;
+		dropping = false;
+		void readFile(event.dataTransfer?.files[0]);
 	}
 
 	function download() {
@@ -200,7 +242,7 @@
 		if (!ready || structureError || parseError || !lineCount) return;
 		saving = true;
 		try {
-			const file = { ...ready, tagline: `${lineCount} ${lineCount === 1 ? 'line' : 'lines'} imported from PGN.` };
+			const file = { ...ready, tagline: `${count(lineCount, 'line', 'lines')} imported from PGN.` };
 			await saveCustomCourse(file);
 			await goto(`/course/${id}`);
 		} catch (error) {
@@ -231,9 +273,13 @@
 	{/if}
 	<p class="muted lead">Turn your own repertoire into a course. Every branch becomes a line you learn, practice and drill like any other.</p>
 
-	<div class="seg" use:seg role="group" aria-label="Source">
-		<button aria-pressed={source === 'study'} onclick={() => (source = 'study')}>Lichess study</button>
-		<button aria-pressed={source === 'pgn'} onclick={() => (source = 'pgn')}>Paste PGN</button>
+	<div class="source-head">
+		<div class="seg" use:seg role="group" aria-label="Source">
+			<button aria-pressed={source === 'study'} onclick={() => (source = 'study')}>Lichess study</button>
+			<button aria-pressed={source === 'pgn'} onclick={() => (source = 'pgn')}>Paste PGN</button>
+		</div>
+		<button class="btn btn-surface" type="button" onclick={openFile}>Open PGN file</button>
+		<input class="sr-only" bind:this={fileInput} type="file" accept=".pgn,text/plain" tabindex="-1" aria-label="PGN file" onchange={onFile} />
 	</div>
 
 	{#if source === 'study'}
@@ -244,13 +290,13 @@
 			<button class="btn btn-surface" disabled={!studyId || fetching} onclick={fetchStudy}>{fetching ? 'Loading…' : 'Load'}</button>
 		</div>
 		{#if fetchError}<p class="error">{fetchError}</p>{:else if url && !studyId}<p class="hint muted">Paste a public study link, for example lichess.org/study/abcd1234.</p>{/if}
-		{#if pgn && source === 'study'}<p class="hint muted">Loaded {pgn.match(/^\[Event /gm)?.length ?? 1} chapters.</p>{/if}
+		{#if pgn && source === 'study'}<p class="hint muted">Loaded {count(pgn.match(/^\[Event /gm)?.length ?? 1, 'chapter', 'chapters')}.</p>{/if}
 	{:else}
-		<label class="field area" ondragover={(event) => event.preventDefault()} ondrop={(event) => { event.preventDefault(); void readFile(event.dataTransfer?.files[0]); }}>
+		<label class="field area" class:dropping ondragenter={dragEnter} ondragover={dragOver} ondragleave={dragLeave} ondrop={onDrop}>
 			<textarea rows="8" placeholder={'1. e4 c6 2. d4 d5 (2... g6) 3. e5 Bf5 *'} bind:value={pgn} aria-label="PGN" spellcheck={false} oninput={() => { if (pgn !== pgnEcho) ingest(pgn); }}></textarea>
+			{#if dropping}<span class="drop">Drop the PGN file</span>{/if}
 		</label>
-		<label>Choose a PGN file <input type="file" accept=".pgn,text/plain" onchange={(event) => readFile(event.currentTarget.files?.[0])} /></label>
-		<p class="hint muted">Paste or drop PGN. Variations become separate lines. Edit chapters, moves, notes and arrows on the board below.</p>
+		<p class="hint muted">Paste or drop a PGN. Chapters, notes and arrows are kept. Each variation becomes its own line.</p>
 	{/if}
 
 	<label class="field">
@@ -267,9 +313,9 @@
 
 	{#if ready && lineCount}
 		<section class="card result">
-			<p><b>{lineCount} {lineCount === 1 ? 'line' : 'lines'}</b> for {side === 'w' ? 'White' : 'Black'}.</p>
+			<p><b>{count(lineCount, 'line', 'lines')}</b> for {side === 'w' ? 'White' : 'Black'}.</p>
 			{#if skipped}
-				<p class="warn">Skipped {skipped} {skipped === 1 ? 'chapter that starts' : 'chapters that start'} from a set-up position or another variant.</p>
+				<p class="warn">Skipped {count(skipped, 'chapter that starts', 'chapters that start')} from a set-up position or another variant.</p>
 			{/if}
 			{#if conflicts.length}
 				<p class="warn">Your PGN gives two moves for you in {conflicts.length === 1 ? 'one position' : `${conflicts.length} positions`}. A course needs one answer, so the first is kept.</p>
@@ -278,7 +324,7 @@
 				</ul>
 			{/if}
 			{#each ready.chapters as chapter}
-				<p><b>{chapter.name}</b> · {chapter.lines.length} {chapter.lines.length === 1 ? 'line' : 'lines'}</p>
+				<p><b>{chapter.name}</b> · {count(chapter.lines.length, 'line', 'lines')}</p>
 			{/each}
 			<button class="btn btn-surface" onclick={download}>Export preview as PGN</button>
 		</section>
@@ -292,9 +338,9 @@
 			{:else}
 				<p><b>{report.progressKept} of {report.progressTotal}</b> learned {report.progressTotal === 1 ? 'line keeps its progress' : 'lines keep their progress'}.</p>
 			{/if}
-			<p>Added {report.added.length}{report.added.length ? `: ${listed(report.added)}` : ''}</p>
-			<p>Changed {report.changed.length}{report.changed.length ? `: ${report.changed.slice(0, 8).map((line) => `${line.previousName} → ${line.name}`).join(', ')}` : ''}</p>
-			<p>Removed {report.removed.length}{report.removed.length ? `: ${listed(report.removed)}` : ''}</p>
+			<p>Added {count(report.added.length, 'line', 'lines')}{report.added.length ? `: ${listed(report.added)}` : ''}</p>
+			<p>Changed {count(report.changed.length, 'line', 'lines')}{report.changed.length ? `: ${report.changed.slice(0, 8).map((line) => `${line.previousName} → ${line.name}`).join(', ')}` : ''}</p>
+			<p>Removed {count(report.removed.length, 'line', 'lines')}{report.removed.length ? `: ${listed(report.removed)}` : ''}</p>
 		</section>
 	{/if}
 
@@ -303,11 +349,15 @@
 	{/if}
 
 	{#if ready && lineCount}
-		<label class="field choice">Compare coverage with a local opening sample
-			<select value={coverageSource} onchange={(event) => selectCoverage(event.currentTarget.value)}>
-				<option value="">Choose a sample</option>
-				{#each courses.filter((course) => !course.id.startsWith('custom-')) as course}<option value={course.id}>{course.name}</option>{/each}
-			</select>
+		<label class="field choice">
+			<span class="label">Compare coverage with a local opening sample</span>
+			<span class="select">
+				<select aria-label="Compare coverage with a local opening sample" value={coverageSource} onchange={(event) => selectCoverage(event.currentTarget.value)}>
+					<option value="">Choose a sample</option>
+					{#each courses.filter((course) => !course.id.startsWith('custom-')) as course}<option value={course.id}>{course.name}</option>{/each}
+				</select>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+			</span>
 		</label>
 		{#if coverage && explorer}<CoveragePanel {coverage} {explorer} onselect={openGap} />{/if}
 	{/if}
@@ -332,8 +382,23 @@
 		display: grid;
 		gap: 12px;
 		align-content: start;
-		padding-bottom: 140px;
+		padding-bottom: calc(var(--tabbar-h) + 26px + 52px + 36px + var(--safe-bottom));
 		container-type: inline-size;
+	}
+	.source-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+	}
+	.source-head .seg {
+		flex: 1 1 220px;
+		min-width: 0;
+	}
+	.source-head .btn {
+		flex: 1 1 160px;
+		height: 48px;
+		padding: 0 16px;
 	}
 	.actions {
 		display: flex;
@@ -349,12 +414,30 @@
 		min-width: 0;
 	}
 	.area {
+		position: relative;
 		height: auto;
+		align-items: stretch;
 		padding: 12px 16px;
 	}
 	.area textarea {
 		resize: vertical;
 		font: 16px/1.5 var(--mono);
+	}
+	.area.dropping {
+		border-color: var(--accent-line);
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(255, 107, 44, 0.12);
+	}
+	.drop {
+		position: absolute;
+		inset: 8px;
+		display: grid;
+		place-items: center;
+		border: 1px dashed var(--accent);
+		border-radius: 12px;
+		background: var(--accent-soft);
+		color: var(--accent-hi);
+		font-weight: 600;
+		pointer-events: none;
 	}
 	.hint,
 	.error,
@@ -391,17 +474,43 @@
 	}
 	.choice {
 		height: auto;
+		align-items: stretch;
 		padding: 10px 16px;
 		display: grid;
-		gap: 6px;
+		gap: 4px;
 	}
-	.choice select {
+	.choice .label {
+		color: var(--text-2);
+	}
+	.select {
+		position: relative;
+		display: block;
+		min-width: 0;
+	}
+	.select select {
 		width: 100%;
 		height: 36px;
+		padding-right: 28px;
+		appearance: none;
 		color: var(--text);
 		background: transparent;
 		border: 0;
-		font: inherit;
+		font: 500 16px var(--font);
+		cursor: pointer;
+	}
+	.select select option {
+		background: var(--surface-1);
+		color: var(--text);
+	}
+	.select svg {
+		position: absolute;
+		top: 50%;
+		right: 0;
+		width: 16px;
+		height: 16px;
+		transform: translateY(-50%);
+		color: var(--text-3);
+		pointer-events: none;
 	}
 	.cta {
 		position: fixed;
