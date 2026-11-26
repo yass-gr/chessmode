@@ -16,25 +16,36 @@ function enqueue(work: () => Promise<void>): Promise<void> {
 	return run;
 }
 
+function stored(profile: OnboardingProfile, status: OnboardingProfile['status'] = profile.status): OnboardingProfile {
+	return {
+		status,
+		bracket: profile.bracket,
+		goals: [...profile.goals],
+		motivation: profile.motivation,
+		side: profile.side,
+		updatedAt: Date.now()
+	};
+}
+
 export async function readOnboarding(): Promise<OnboardingProfile> {
 	return parseOnboarding(await getSetting<unknown>(ONBOARDING_KEY, null));
 }
 
 export function writeOnboarding(profile: OnboardingProfile): Promise<void> {
-	return enqueue(() => setSetting(ONBOARDING_KEY, { ...profile, updatedAt: Date.now() }));
+	return enqueue(() => setSetting(ONBOARDING_KEY, stored(profile)));
 }
 
 export function dismissOnboarding(): Promise<void> {
 	return enqueue(async () => {
 		const current = parseOnboarding(await getSetting<unknown>(ONBOARDING_KEY, null));
-		await setSetting(ONBOARDING_KEY, { ...current, status: 'dismissed', updatedAt: Date.now() });
+		await setSetting(ONBOARDING_KEY, stored(current, 'dismissed'));
 	});
 }
 
 /** Saves a finished profile and fills missing per-course ratings. Existing ratings stay. */
 export function completeOnboarding(profile: OnboardingProfile): Promise<void> {
 	return enqueue(async () => {
-		const ready = { ...profile, status: 'completed' as const, updatedAt: Date.now() };
+		const ready = stored(profile, 'completed');
 		if (!isReady(ready)) throw new Error('Setup is incomplete.');
 		await setSetting(ONBOARDING_KEY, ready);
 		const existing = await db.ratings.toArray();
