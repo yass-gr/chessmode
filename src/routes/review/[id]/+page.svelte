@@ -149,7 +149,7 @@
 	const marker = $derived.by((): Marker | undefined => {
 		if (!prefs.glyphs || decision.kind !== 'mainline' || !current) return;
 		const info = CLASSIFICATIONS[current.classification];
-		return { square: current.uci.slice(2, 4), glyph: info.glyph, color: info.color, label: info.label };
+		return { square: current.uci.slice(2, 4), classification: current.classification, glyph: info.glyph, color: info.color, label: info.label };
 	});
 	const arrows = $derived.by((): Arrow[] => {
 		if (decision.kind === 'retry') {
@@ -818,7 +818,7 @@
 							{/if}
 							{#if screen === 'loading' || fading}
 								<div class="loading-layer" class:done={fading}>
-									<ReviewLoading progress={percent} finished={fading}>
+									<ReviewLoading {game} progress={percent} finished={fading}>
 										{#snippet coach()}{@render coachBubble('large')}{/snippet}
 									</ReviewLoading>
 								</div>
@@ -1364,17 +1364,8 @@
 			padding-bottom: calc(6px + var(--safe-bottom));
 			background: linear-gradient(180deg, rgba(13, 13, 14, 0), var(--bg) 22%);
 		}
-		.review[data-screen='overview'] .panel-body {
-			padding-bottom: calc(84px + var(--safe-bottom));
-		}
 		.review[data-screen='overview'] .dock {
-			position: fixed;
-			z-index: 5;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			padding: 12px var(--gutter) calc(12px + var(--safe-bottom));
-			background: linear-gradient(180deg, rgba(13, 13, 14, 0), var(--bg) 28%);
+			padding: 12px 0 calc(12px + var(--safe-bottom));
 		}
 	}
 	@media (min-width: 1024px) {

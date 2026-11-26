@@ -20,6 +20,7 @@ test('import Chess.com games', async ({ page }) => {
 	if (process.env.E2E_ONLINE !== '1') {
 		await page.route('https://api.chess.com/pub/player/hikaru/games/**', route => route.fulfill({
 			status: 200, contentType: 'application/json', body: fixture(route.request().url().endsWith('/archives') ? 'chesscom-archives.json' : 'chesscom-month.json')
+				.replaceAll('Scandinavian-Defense-Closed-2...dxe4-3.Nxe4', 'Pirc-Defense-Classical-Variation-4...Bg7-5.Be3-O-O-6.Qd2')
 		}));
 	}
 	await page.goto('/matches');
@@ -28,6 +29,8 @@ test('import Chess.com games', async ({ page }) => {
 	await page.getByRole('button', { name: 'Import recent games' }).click();
 	await expect(page.getByRole('status')).toContainText(/Imported \d+ standard games/);
 	await expect(page.getByRole('link', { name: /vs\./ }).first()).toBeVisible();
+	await expect(page.getByText(/Pirc Defense Classical Variation/).first()).toBeVisible();
+	await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
 });
 
 test('paste a PGN and complete a Stockfish review', async ({ page }) => {
