@@ -282,7 +282,7 @@
 			style:top={markerPos.top}
 			style:background={marker.classification ? undefined : marker.color}
 			aria-label={marker.label}
-			title={marker.label}>{#if marker.classification}<LabelIcon classification={marker.classification} size={30} />{:else}{marker.glyph}{/if}</span
+			title={marker.label}>{#if marker.classification}<LabelIcon classification={marker.classification} size={32} />{:else}{marker.glyph}{/if}</span
 		>
 	{/if}
 </div>
@@ -325,8 +325,8 @@
 	.marker {
 		position: absolute;
 		z-index: 5;
-		width: 30px;
-		min-width: 30px;
+		width: 32px;
+		min-width: 32px;
 		aspect-ratio: 1;
 		transform: translate(-60%, -40%);
 		border-radius: 50%;

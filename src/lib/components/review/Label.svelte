@@ -3,11 +3,11 @@
 	import { CLASSIFICATIONS } from '#lib/review/classify.ts';
 	import type { Classification } from '#lib/review/types.ts';
 
-	let { classification, named = false, size = 20 }: { classification: Classification; named?: boolean; size?: number } = $props();
+	let { classification, named = false, size = 22 }: { classification: Classification; named?: boolean; size?: number } = $props();
 	const info = $derived(CLASSIFICATIONS[classification]);
 </script>
 
-<span class="label" title={info.label}>
+<span class="label" title={info.label} style:color={named ? info.color : undefined}>
 	<LabelIcon {classification} {size} />
 	{#if named}{info.label}{:else}<span class="sr">{info.label}</span>{/if}
 </span>

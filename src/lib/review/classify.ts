@@ -4,17 +4,17 @@ import { materialBalance, exchangeBalance } from '#lib/review/material.ts';
 import type { Classification, PositionAnalysis, Score } from '#lib/review/types.ts';
 
 export const CLASSIFICATIONS: Record<Classification, { label: string; glyph: string; color: string; rank: number }> = {
-	find: { label: 'Find', glyph: '!!', color: '#c7a6ff', rank: 10 },
-	sharp: { label: 'Sharp', glyph: '!', color: '#93dfbf', rank: 9 },
-	best: { label: 'Best', glyph: '★', color: '#3ecf8e', rank: 8 },
-	strong: { label: 'Strong', glyph: '✓✓', color: '#67cfa9', rank: 7 },
-	good: { label: 'Good', glyph: '✓', color: '#7cc4ff', rank: 6 },
-	book: { label: 'Book', glyph: '▤', color: '#8e8e94', rank: 5 },
-	only: { label: 'Only', glyph: '→', color: '#a3a3a8', rank: 4 },
-	loose: { label: 'Loose', glyph: '?!', color: '#f5b83d', rank: 3 },
-	mistake: { label: 'Mistake', glyph: '?', color: '#ff8f57', rank: 2 },
-	missed: { label: 'Missed', glyph: '✕', color: '#f4a98e', rank: 1 },
-	blunder: { label: 'Blunder', glyph: '??', color: '#ff5a52', rank: 0 }
+	find: { label: 'Brilliant', glyph: '!!', color: '#26C2A3', rank: 10 },
+	sharp: { label: 'Great', glyph: '!', color: '#749BBF', rank: 9 },
+	best: { label: 'Best', glyph: '★', color: '#81B64C', rank: 8 },
+	strong: { label: 'Excellent', glyph: '👍', color: '#96BC4B', rank: 7 },
+	good: { label: 'Good', glyph: '✓', color: '#95B776', rank: 6 },
+	book: { label: 'Book', glyph: '▤', color: '#D5A47D', rank: 5 },
+	only: { label: 'Forced', glyph: '→', color: '#97AF8B', rank: 4 },
+	loose: { label: 'Inaccuracy', glyph: '?!', color: '#F7C631', rank: 3 },
+	mistake: { label: 'Mistake', glyph: '?', color: '#FFA459', rank: 2 },
+	missed: { label: 'Miss', glyph: '×', color: '#FF7769', rank: 1 },
+	blunder: { label: 'Blunder', glyph: '??', color: '#FA412D', rank: 0 }
 };
 
 export const THRESHOLDS = {
