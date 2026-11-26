@@ -18,7 +18,7 @@ export interface PositionAnalysis {
 }
 
 /**
- * Move classes, worst-to-best ordering lives in CLASSIFICATIONS. Our own names (not Chess.com's):
+ * Move classes, worst-to-best ordering lives in CLASSIFICATIONS. Internal keys map to display names:
  * find = brilliant, sharp = great, strong = excellent, loose = inaccuracy, missed = miss, only = forced.
  */
 export type Classification =

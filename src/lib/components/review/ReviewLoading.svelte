@@ -2,16 +2,17 @@
 	import type { Snippet } from 'svelte';
 	import type { Classification, GameRecord } from '#lib/review/types.ts';
 	import Label from './Label.svelte';
-	let { game, progress = 0, finished = false, coach }: { game: GameRecord; progress?: number; finished?: boolean; coach?: Snippet } = $props();
-	const labels: Classification[] = ['find', 'sharp', 'best', 'strong', 'good', 'book', 'only', 'mistake', 'missed', 'blunder'];
+	let { game, progress = 0, finished = false, shortRating = false, coach }: { game: GameRecord; progress?: number; finished?: boolean; shortRating?: boolean; coach?: Snippet } = $props();
+	const labels: Classification[] = ['find', 'sharp', 'best', 'strong', 'good', 'book', 'only', 'loose', 'mistake', 'missed', 'blunder'];
 	const percent = $derived(Math.max(0, Math.min(100, progress)));
 </script>
 <div class:finished class="loading" aria-busy={!finished} aria-label="Analyzing game">
 	<div class="coach-slot">{#if coach}{@render coach()}{:else}<p>Analyzing your game…</p>{/if}</div>
 	<div class="card chart"><div class="grid"></div><div class="horizontal"></div><div class="progress-track"><div style:width={`${percent}%`}></div></div></div>
+	<div class="result-placeholder"><i class="skeleton"></i></div>
 	<div class="card placeholders">
-		<div class="players">{#each [game.white, game.black] as player, index}<section><b class="name">{player.name && player.name !== '?' ? player.name : index === 0 ? 'White' : 'Black'}</b><span>{index === 0 ? 'White' : 'Black'}</span><i class="skeleton metric"></i><span>Accuracy</span><i class="skeleton rating"></i><span>Game rating</span></section>{/each}</div>
-		{#each labels as label}<div class="tally"><i class="skeleton count"></i><Label classification={label} named size={24} /><i class="skeleton count"></i></div>{/each}
+		<div class="players">{#each [game.white, game.black] as player, index}<section><b class="name">{player.name && player.name !== '?' ? player.name : index === 0 ? 'White' : 'Black'}</b><span>{index === 0 ? 'White' : 'Black'}</span><i class="skeleton metric"></i><span>Accuracy</span>{#if !shortRating}<i class="skeleton rating"></i><span>Game rating</span>{/if}</section>{/each}{#if shortRating}<p class="rating-note">Not enough moves for a game rating</p>{/if}</div>
+		{#each labels as label}<div class="tally"><i class="skeleton count"></i><Label classification={label} named size={28} /><i class="skeleton count"></i></div>{/each}
 	</div>
 	<div class="status" role="status">Analyzing · {Math.floor(percent)}%</div>
 </div>
@@ -66,9 +67,12 @@
 		background: var(--accent);
 		transition: width 500ms ease;
 	}
+	.result-placeholder { display: grid; place-items: center; height: 18px; }
+	.result-placeholder i { width: 180px; height: 12px; }
 	.placeholders { padding: 14px; }
 	.players { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 3px 0 15px; }
 	.players section { min-width: 0; display: grid; justify-items: center; gap: 3px; }
+	.rating-note { grid-column: 1 / -1; text-align: center; color: var(--text-3); font-size: 12px; margin: 3px 0 0; }
 	.name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 	.players span, .status { color: var(--text-2); font-size: 12px; }
 	.skeleton { display: block; border-radius: 4px; background: var(--surface-4); }

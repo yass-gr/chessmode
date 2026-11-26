@@ -47,14 +47,14 @@
   --eval-graph-white:#deddd9;
   --eval-graph-black:#77777c;
 
-  /* move labels (Chessmode's own names) */
-  --m-book:#8e8e94;
-  --m-best:#3ecf8e;
-  --m-good:#7cc4ff;
-  --m-loose:#f5b83d;
-  --m-mistake:#ff8f57;
-  --m-blunder:#ff5a52;
-  --m-find:#c7a6ff;
+  /* move labels */
+  --m-book:#D5A47D;
+  --m-best:#81B64C;
+  --m-good:#95B776;
+  --m-loose:#F7C631;
+  --m-mistake:#FFA459;
+  --m-blunder:#FA412D;
+  --m-find:#26C2A3;
 
   /* board */
   --sq-light:#d9d3c9;
@@ -362,7 +362,7 @@ footer{padding:40px 0 64px;color:var(--text-3);font-size:13px}
       <div class="grad" style="background:var(--g-card-glow),var(--surface-1)">g-card-glow · active state light</div>
     </div>
     <h3 class="sub" style="margin-top:32px">Move labels</h3>
-    <p style="color:var(--text-2);margin:-6px 0 14px;max-width:60ch;font-size:14px">Chessmode's own names for game review. Each label carries a symbol and a word, so colour is never the only signal.</p>
+    <p style="color:var(--text-2);margin:-6px 0 14px;max-width:60ch;font-size:14px">Chess.com-style names for game review. Each label carries a symbol and a word, so colour is never the only signal.</p>
     <div class="btn-row" id="mvlabels"></div>
   </div>
 </section>
@@ -669,7 +669,7 @@ document.querySelectorAll("[data-fen]").forEach(el=>{
   el.innerHTML=h;
 });
 
-const LABELS=[["Book","B","--m-book"],["Best","!","--m-best"],["Good","+","--m-good"],["Loose","?!","--m-loose"],["Mistake","?","--m-mistake"],["Blunder","??","--m-blunder"],["Find","!!","--m-find"]];
+const LABELS=[["Book","B","--m-book"],["Best","!","--m-best"],["Good","+","--m-good"],["Inaccuracy","?!","--m-loose"],["Mistake","?","--m-mistake"],["Blunder","??","--m-blunder"],["Brilliant","!!","--m-find"]];
 const lab=(n,s,v,c)=>`<span class="mv"><i style="background:var(${v})">${s}</i>${n}${c!=null?` <span style="color:var(--text-3)">${c}</span>`:""}</span>`;
 document.getElementById("mvlabels").innerHTML=LABELS.map(([n,s,v])=>lab(n,s,v)).join("");
 const counts=[8,14,9,3,2,1,1];

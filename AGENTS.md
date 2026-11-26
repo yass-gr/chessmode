@@ -24,8 +24,7 @@ no server. Product decisions live in `PLAN.md`; the visual language lives in `de
 - Styling: use the tokens and component classes in `src/app.css` (`.btn`, `.btn-primary`, `.card`,
   `.seg`, `.chip`, `.progress`, `.option`, `.field`, `.page`). Dark only. One orange accent for the next
   action, the target square or progress. Mobile first (390px), and every screen must also work on desktop.
-- Our own move-label names, never Chess.com's: find (!!), sharp (!), best, strong, good, book, only,
-  loose (?!), mistake (?), missed, blunder (??).
+- Move labels display Chess.com-style names (Brilliant, Great, Best, Excellent, Good, Book, Forced, Inaccuracy, Mistake, Miss, Blunder); internal keys stay find/sharp/best/strong/good/book/only/loose/mistake/missed/blunder.
 - Comments only for a non-obvious why.
 
 ## Checks before every commit

@@ -53,7 +53,7 @@ test('retry a losing move in the Fool\'s Mate review', async ({ page }) => {
 	await page.getByRole('button', { name: 'Review PGN' }).click();
 	await expect(page.getByRole('slider', { name: 'Selected position on evaluation graph' })).toHaveAttribute('aria-valuemax', '4', { timeout: 150_000 });
 	await page.getByText('Moves and key moments').click();
-	await expect(page.getByRole('region', { name: 'Key moments' }).getByText(/mistake|blunder|missed/i).first()).toBeVisible();
+	await expect(page.getByRole('region', { name: 'Key moments' }).getByText(/mistake|blunder|miss/i).first()).toBeVisible();
 	await page.getByRole('button', { name: 'Retry White mistakes' }).click();
 	await expect(page.getByRole('button', { name: 'Hint', exact: true })).toBeVisible();
 	const board = page.getByRole('application', { name: /Chess board/ });

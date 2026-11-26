@@ -6,11 +6,8 @@
 	import { accuracyText, firstClassPly } from './evaluation.ts';
 
 	let { game, review, onselect }: { game: GameRecord; review: GameReview; onselect?: (ply: number) => void } = $props();
-	const primary: Classification[] = ['find', 'sharp', 'best', 'strong', 'good', 'book', 'only', 'mistake', 'missed', 'blunder'];
-	const common: Classification[] = ['best', 'strong', 'good'];
-	let expanded = $state(false);
-	const visible = $derived(primary.filter(label => !common.includes(label) || common.filter(item => review.white.counts[item] + review.black.counts[item] > 0).includes(label)));
-	const extra: Classification[] = ['loose'];
+	const labels: Classification[] = ['find', 'sharp', 'best', 'strong', 'good', 'book', 'only', 'loose', 'mistake', 'missed', 'blunder'];
+	const shortRating = $derived([review.white, review.black].every(stats => stats.ratingContext?.kind === 'unavailable' && stats.ratingContext.reason === 'short-sample'));
 	function jump(label: Classification, color: 'w' | 'b') {
 		const target = firstClassPly(review.moves, label, color);
 		if (target !== undefined) onselect?.(target);
@@ -21,8 +18,8 @@
 	<div class="tally">
 		{#each ['w', 'b'] as color, index}
 			{@const count = index === 0 ? review.white.counts[label] : review.black.counts[label]}
-			{#if index === 1}<span class="label"><Label classification={label} named size={24} /></span>{/if}
-			<button type="button" disabled={!count || !onselect} aria-label={`${color === 'w' ? 'White' : 'Black'}: ${count} ${CLASSIFICATIONS[label].label} ${plural(count, 'move')}`} onclick={() => jump(label, index === 0 ? 'w' : 'b')}>{count}</button>
+			{#if index === 1}<span class="label"><Label classification={label} named size={28} /></span>{/if}
+			<button type="button" style:color={count ? CLASSIFICATIONS[label].color : undefined} disabled={!count || !onselect} aria-label={`${color === 'w' ? 'White' : 'Black'}: ${count} ${CLASSIFICATIONS[label].label} ${plural(count, 'move')}`} onclick={() => jump(label, index === 0 ? 'w' : 'b')}>{count}</button>
 		{/each}
 	</div>
 {/snippet}
@@ -35,12 +32,11 @@
 			{@const hasMoves = review.moves.some(move => move.color === (index === 0 ? 'w' : 'b'))}
 			{@const rating = stats.ratingContext?.kind === 'available' ? stats.ratingContext.value : stats.ratingContext ? undefined : stats.estimatedRating || undefined}
 			{@const ratingReason = stats.ratingContext?.kind === 'unavailable' && stats.ratingContext.reason === 'missing-data' ? 'No rating data' : 'Not enough moves'}
-			<section><b class="name" title={name}>{name}</b><span>{side === 'white' ? 'White' : 'Black'}</span><strong>{hasMoves ? accuracyText(stats.accuracy) : '–'}{#if hasMoves}<small>%</small>{/if}</strong><span>Accuracy</span><b title={rating ? 'Estimated performance for this game' : ratingReason}>{rating ?? '–'}</b><span>{rating ? 'Game rating' : ratingReason}</span></section>
+			<section><b class="name" title={name}>{name}</b><span>{side === 'white' ? 'White' : 'Black'}</span><strong>{hasMoves ? accuracyText(stats.accuracy) : '–'}{#if hasMoves}<small>%</small>{/if}</strong><span>Accuracy</span>{#if !shortRating}<b title={rating ? 'Estimated performance for this game' : ratingReason}>{rating ?? '–'}</b><span>{rating ? 'Game rating' : ratingReason}</span>{/if}</section>
 		{/each}
+		{#if shortRating}<p class="rating-note">Not enough moves for a game rating</p>{/if}
 	</div>
-	<div class="tallies">{#each visible as label}{@render tally(label)}{/each}</div>
-	<div class:expanded class="extra" inert={!expanded}><div>{#each extra as label}{@render tally(label)}{/each}</div></div>
-	<button class="expand" type="button" aria-expanded={expanded} onclick={() => { expanded = !expanded; }}>{expanded ? 'Show less' : 'Show more'}</button>
+	<div class="tallies">{#each labels as label}{@render tally(label)}{/each}</div>
 </div>
 <style>
 	.summary {
@@ -84,10 +80,11 @@
 		text-align: center;
 		font-size: 13px;
 	}
-	.tally .label { text-align: left; color: var(--text); font: 600 14px var(--font); }
+	.rating-note { grid-column: 1 / -1; text-align: center; color: var(--text-3); font-size: 12px; margin: 3px 0 0; }
+	.tally .label { text-align: left; font: 600 14px var(--font); }
 	.tally button {
 		padding: 7px;
-		font: 600 13px var(--mono);
+		font: 700 16px var(--font);
 	}
 	.tally button:not(:disabled) {
 		cursor: pointer;
@@ -95,34 +92,8 @@
 	.tally button:not(:disabled):hover {
 		color: var(--accent-hi);
 	}
-	.tally button:disabled {
+	.tally button:disabled:not([style]) {
 		color: var(--text-3);
 	}
-	.extra {
-		display: grid;
-		grid-template-rows: 0fr;
-		opacity: 0;
-		transition:
-			grid-template-rows 150ms cubic-bezier(0.5, 0, 0.6, 1),
-			opacity 100ms cubic-bezier(0.5, 0, 0.6, 1);
-	}
-	.extra.expanded {
-		grid-template-rows: 1fr;
-		opacity: 1;
-	}
-	.extra > div {
-		overflow: hidden;
-	}
-	.expand {
-		display: block;
-		width: 100%;
-		padding: 10px;
-		color: var(--text-2);
-		font-size: 12px;
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.extra {
-			transition: none;
-		}
-	}
+
 </style>

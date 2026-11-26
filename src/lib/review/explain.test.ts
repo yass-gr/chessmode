@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import type { Fen, San, Uci } from '#lib/chess/types.ts';
-import { explain } from '#lib/review/explain.ts';
+import { explain, moveHeadline } from '#lib/review/explain.ts';
 import type { MoveReview } from '#lib/review/types.ts';
 
 const position = '4k3/8/2p5/3p4/8/8/8/3QK3 w - - 0 1' as Fen;
@@ -74,4 +74,14 @@ it('names a promotion, a quiet best move, and a piece that steps out of danger',
 		best: { ...move.best, pv: ['a1b1' as Uci] }
 	}, []).played.steps[0].explanation;
 	expect(saved).toBe('Rb1 steps the rook out of danger.');
+});
+
+
+it('uses the displayed move names and natural articles', () => {
+ expect(moveHeadline('g4', 'blunder')).toBe('g4 is a blunder.');
+ expect(moveHeadline('e5', 'book')).toBe('e5 is a book move.');
+ expect(moveHeadline('Nf3', 'find')).toBe('Nf3 is brilliant.');
+ expect(moveHeadline('Nf3', 'sharp')).toBe('Nf3 is great.');
+ expect(moveHeadline('Nf3', 'loose')).toBe('Nf3 is an inaccuracy.');
+ expect(moveHeadline('Nf3', 'missed')).toBe('Nf3 is a miss.');
 });

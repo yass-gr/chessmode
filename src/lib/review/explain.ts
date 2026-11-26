@@ -1,7 +1,6 @@
 import { Chess, type PieceSymbol, type Square } from 'chess.js';
 import { other, type Color, type Fen, type Uci } from '#lib/chess/types.ts';
 import { materialBalance } from '#lib/review/material.ts';
-import { CLASSIFICATIONS } from '#lib/review/classify.ts';
 import type { MoveReview } from '#lib/review/types.ts';
 
 const PIECE_NAMES = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' } satisfies Record<PieceSymbol, string>;
@@ -33,25 +32,22 @@ function wonMaterial({ delta, own, opponent }: ReturnType<typeof materialChange>
 	return piece ? 'a ' + PIECE_NAMES[piece] : undefined;
 }
 
+export function moveHeadline(san: string, classification: MoveReview['classification']): string {
+	const descriptions: Record<MoveReview['classification'], string> = {
+		find: 'brilliant', sharp: 'great', best: 'best', strong: 'excellent', good: 'good',
+		book: 'a book move', only: 'forced', loose: 'an inaccuracy', mistake: 'a mistake',
+		missed: 'a miss', blunder: 'a blunder'
+	};
+	return `${san} is ${descriptions[classification]}.`;
+}
+
 export function explain(
 	move: Pick<MoveReview, 'san' | 'uci' | 'classification' | 'color' | 'fenBefore' | 'best' | 'scoreAfter'>,
 	replyPv: readonly Uci[],
 	openingName?: string
 ): MoveReview['explanation'] {
 	const { san, classification, color, fenBefore, best, scoreAfter } = move;
-	const label = CLASSIFICATIONS[classification].label.toLowerCase();
-	const headlines: Partial<Record<MoveReview['classification'], string>> = {
-		find: san + ' is a brilliant sacrifice.',
-		best: san + ' is best.',
-		sharp: san + ' is a sharp move.',
-		strong: san + ' is a strong move.',
-		good: san + ' is a good move.',
-		book: san + ' is a book move.',
-		only: san + ' is the only legal move.',
-		loose: san + ' is a loose move.',
-		missed: san + ' misses an opportunity.'
-	};
-	const headline = headlines[classification] ?? san + ' is a ' + label + '.';
+	const headline = moveHeadline(san, classification);
 	if (classification === 'book') return { headline, detail: openingName };
 	if (classification === 'missed') {
 		const mate = best.score.mate;

@@ -19,6 +19,7 @@
 	import { reducedMotion } from '#lib/motion.ts';
 	import { DEFAULT_DEPTH, DEPTHS, DEPTH_SETTING, reviewCacheKey, reviewGame, type ReviewDepth, type ReviewProgress } from '#lib/review/analyse.ts';
 	import { CLASSIFICATIONS } from '#lib/review/classify.ts';
+	import { moveHeadline } from '#lib/review/explain.ts';
 	import { keyMomentPlies, nextGuidedDestination } from '#lib/review/moments.ts';
 	import { playReviewEvent } from '#lib/review/review-audio.ts';
 	import { findDeviation } from '#lib/review/repertoire.ts';
@@ -189,7 +190,7 @@
 			return { phase: 'complete', headline: 'That is the whole game.', detail: 'Return to the overview, or step through any move.' };
 		}
 		if (decision.kind === 'rewinding') {
-			return { phase: 'retry', retry: 'playing', headline: 'Let’s look at that position again.', detail: `${decision.move.san} was ${CLASSIFICATIONS[decision.move.classification].label.toLowerCase()}.` };
+			return { phase: 'retry', retry: 'playing', headline: 'Let’s look at that position again.', detail: moveHeadline(decision.move.san, decision.move.classification).replace(' is ', ' was ') };
 		}
 		if (decision.kind === 'retry') {
 			if (decision.status === 'checking') return { phase: 'retry', retry: 'playing', headline: 'Checking that move…' };
@@ -213,7 +214,7 @@
 			return { phase: 'followup', headline: step.explanation };
 		}
 		if (!current) return { phase: 'move', headline: 'Starting position.', detail: 'Next jumps to the first key moment.' };
-		return { phase: 'move', classification: current.classification, headline: current.explanation.headline, detail: current.explanation.detail };
+		return { phase: 'move', classification: current.classification, headline: moveHeadline(current.san, current.classification), detail: current.explanation.detail };
 	});
 
 	$effect(() => {
@@ -808,6 +809,7 @@
 							{#if review && (screen === 'overview' || fading)}
 								<div class="overview-layer">
 									<Overview {game} {review} ply={decision.ply} onselect={select} />
+									<button class="btn btn-primary block overview-action" type="button" onclick={startPass}>Start review</button>
 									{@render repertoireCard()}
 									<details class="card archive">
 										<summary><ChevronRight size={18} stroke-width={1.75} />Moves and key moments</summary>
@@ -818,7 +820,7 @@
 							{/if}
 							{#if screen === 'loading' || fading}
 								<div class="loading-layer" class:done={fading}>
-									<ReviewLoading {game} progress={percent} finished={fading}>
+									<ReviewLoading {game} progress={percent} finished={fading} shortRating={plies.length < 19}>
 										{#snippet coach()}{@render coachBubble('large')}{/snippet}
 									</ReviewLoading>
 								</div>
@@ -851,11 +853,7 @@
 					{/if}
 				</div>
 
-				{#if screen === 'overview' && review}
-					<div class="dock">
-						<button class="btn btn-primary block" type="button" onclick={startPass}>Start review</button>
-					</div>
-				{:else if screen === 'review' && review}
+				{#if screen === 'review' && review}
 					<div class="dock">
 						{#if promo}
 							<div class="dock-row scroll" role="group" aria-label="Promote pawn">
@@ -1105,6 +1103,7 @@
 	.stage > * {
 		grid-area: 1 / 1;
 	}
+	.overview-action { margin-bottom: 12px; }
 	.overview-layer {
 		display: grid;
 		gap: 12px;
@@ -1175,7 +1174,7 @@
 	.dock .grow {
 		flex: 1 1 auto;
 	}
-	.dock .block {
+	.overview-action {
 		height: 52px;
 		padding: 0 26px;
 		font-size: 16px;
