@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ChevronLeft, Search } from '@lucide/svelte';
 	import { seg } from '#lib/components/seg.ts';
 	import { onMount } from 'svelte';
 	import { courses } from '#lib/courses/index.ts';
@@ -29,14 +30,14 @@
 <main class="page">
 	<header class="top">
 		<a class="icon-btn" href="/" aria-label="Back">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+			<ChevronLeft size={18} stroke-width={1.75} />
 		</a>
 		<h1 class="h-title">Courses</h1>
 		<a class="btn sm btn-surface create" href="/create">Create</a>
 	</header>
 
 	<label class="field search">
-		<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
+		<Search size={20} stroke-width={1.75} />
 		<input type="search" placeholder="Search by name or moves, e.g. 1.d4 d5 2.Nc3" bind:value={text} aria-label="Search courses" autocapitalize="none" spellcheck={false} />
 	</label>
 
