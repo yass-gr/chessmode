@@ -6,6 +6,7 @@
 	import { db, getSetting, setSetting } from '#lib/db.ts';
 	import { fetchGames, PLATFORMS, type OnlineSource } from '#lib/import/fetch-games.ts';
 	import { parsePgn } from '#lib/import/pgn.ts';
+	import { Compass, LayoutGrid, List } from '@lucide/svelte';
 	import type { GameRecord, GameReview } from '#lib/review/types.ts';
 
 	const sources: OnlineSource[] = ['lichess', 'chesscom'];
@@ -108,7 +109,7 @@
 		<nav class="entries" aria-label="Analysis">
 			<a class="card entry" href="/explorer">
 				<span class="mark" aria-hidden="true">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8" /><path d="M12 8v4l3 2" /></svg>
+					<Compass size={18} stroke-width={1.75} />
 				</span>
 				<span class="copy">
 					<b>Opening explorer</b>
@@ -117,7 +118,7 @@
 			</a>
 			<a class="card entry" href="/analysis">
 				<span class="mark" aria-hidden="true">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z" /><path d="M4 12h16M12 5v14" /></svg>
+					<LayoutGrid size={18} stroke-width={1.75} />
 				</span>
 				<span class="copy">
 					<b>Analysis board</b>
@@ -126,7 +127,7 @@
 			</a>
 			<a class="card entry" href="/opening-review">
 				<span class="mark" aria-hidden="true">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12" /><path d="M4 6h.01M4 12h.01M4 18h.01" /></svg>
+					<List size={18} stroke-width={1.75} />
 				</span>
 				<span class="copy">
 					<b>Opening review</b>
@@ -220,10 +221,7 @@
 		background: var(--accent-soft);
 		color: var(--accent-hi);
 	}
-	.mark svg {
-		width: 18px;
-		height: 18px;
-	}
+
 	.copy {
 		min-width: 0;
 	}
