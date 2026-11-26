@@ -84,6 +84,10 @@
 	.tier.selected .count {
 		color: var(--text-2);
 	}
+	.tier.selected:focus,
+	.tier.selected:focus-visible {
+		outline: none;
+	}
 	.btn {
 		margin-top: 10px;
 	}
