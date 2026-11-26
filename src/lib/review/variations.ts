@@ -89,10 +89,13 @@ export function goTo(board: AnalysisBoard, cursor: number): AnalysisBoard {
 	return next === board.cursor ? board : { ...board, cursor: next };
 }
 
-/** Other moves already stored at the cursor. The active continuation is not listed again. */
+/**
+ * Other moves already stored at the cursor. The active continuation is not listed again.
+ * Match the move, not the object: Svelte wraps one edge in a separate proxy on each path.
+ */
 export function otherMoves(board: AnalysisBoard): LineEdge[] {
-	const current = board.line[board.cursor];
-	return nodeAt(board).children.filter((child) => child !== current);
+	const current = board.line[board.cursor]?.uci;
+	return nodeAt(board).children.filter((child) => child.uci !== current);
 }
 
 /** Switches the active spine to a variation that already starts at the cursor. */
