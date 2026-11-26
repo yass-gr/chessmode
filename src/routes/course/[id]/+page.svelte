@@ -112,7 +112,7 @@
 
 		<div class="intro">
 			<div class="hero card">
-				<img src={isCustom(course.id) ? '/img/board-hero.webp' : `/img/courses/${course.id}.webp`} alt="" />
+				<img src={isCustom(course.id) ? '/img/books/cover.webp' : `/img/courses/${course.id}.webp`} alt="" />
 			</div>
 			<div>
 				<h1 class="h-display title">{course.name}</h1>
@@ -307,6 +307,7 @@
 		background: var(--g-card-glow), radial-gradient(circle at 50% 40%, #252527, #141415 75%);
 	}
 	.hero img {
+		min-height: 0;
 		width: 100%;
 		height: 100%;
 		object-fit: contain;

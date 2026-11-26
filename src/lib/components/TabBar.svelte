@@ -28,9 +28,7 @@
 		max-width: calc(100% - 24px);
 		padding: 6px 12px;
 		border-radius: 26px;
-		background: rgba(29, 29, 31, 0.72);
-		backdrop-filter: blur(20px) saturate(180%);
-		-webkit-backdrop-filter: blur(20px) saturate(180%);
+		background: rgba(29, 29, 31, 0.98);
 		border: 1px solid var(--stroke-2);
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.06),
@@ -67,6 +65,12 @@
 	}
 	a.on { color: var(--accent-hi); }
 	a.on .highlight { background: rgba(255, 255, 255, 0.12); }
+	@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+		.tabbar {
+			backdrop-filter: blur(20px) saturate(180%);
+			-webkit-backdrop-filter: blur(20px) saturate(180%);
+		}
+	}
 	@media (min-width: 1024px) {
 		.tabbar {
 			display: none;
