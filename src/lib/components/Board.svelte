@@ -8,6 +8,7 @@
 	/** A small round badge in the top-right corner of a square, e.g. a move classification. */
 	export interface Marker {
 		square: string;
+		classification?: import('#lib/review/types.ts').Classification;
 		glyph: string;
 		color: string;
 		label?: string;
@@ -15,6 +16,7 @@
 </script>
 
 <script lang="ts">
+	import LabelIcon from '#lib/components/review/LabelIcon.svelte';
 	import { onMount, tick } from 'svelte';
 	import { Chessground } from 'chessground';
 	import type { Api } from 'chessground/api';
@@ -278,9 +280,9 @@
 			class="marker"
 			style:left={markerPos.left}
 			style:top={markerPos.top}
-			style:background={marker.color}
+			style:background={marker.classification ? undefined : marker.color}
 			aria-label={marker.label}
-			title={marker.label}>{marker.glyph}</span
+			title={marker.label}>{#if marker.classification}<LabelIcon classification={marker.classification} size={30} />{:else}{marker.glyph}{/if}</span
 		>
 	{/if}
 </div>
@@ -323,8 +325,8 @@
 	.marker {
 		position: absolute;
 		z-index: 5;
-		width: 5.2%;
-		min-width: 18px;
+		width: 30px;
+		min-width: 30px;
 		aspect-ratio: 1;
 		transform: translate(-60%, -40%);
 		border-radius: 50%;

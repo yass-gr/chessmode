@@ -21,7 +21,7 @@
 	<div class="tally">
 		{#each ['w', 'b'] as color, index}
 			{@const count = index === 0 ? review.white.counts[label] : review.black.counts[label]}
-			{#if index === 1}<span class="label"><Label classification={label} named /></span>{/if}
+			{#if index === 1}<span class="label"><Label classification={label} named size={24} /></span>{/if}
 			<button type="button" disabled={!count || !onselect} aria-label={`${color === 'w' ? 'White' : 'Black'}: ${count} ${CLASSIFICATIONS[label].label} ${plural(count, 'move')}`} onclick={() => jump(label, index === 0 ? 'w' : 'b')}>{count}</button>
 		{/each}
 	</div>
@@ -84,6 +84,7 @@
 		text-align: center;
 		font-size: 13px;
 	}
+	.tally .label { text-align: left; color: var(--text); font: 600 14px var(--font); }
 	.tally button {
 		padding: 7px;
 		font: 600 13px var(--mono);

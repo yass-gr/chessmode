@@ -267,7 +267,7 @@
 	}
 	h2 { font-size: 17px; letter-spacing: -.02em; }
 	h2 span { margin-left: 6px; color: var(--text-2); font: 12px var(--mono); }
-	.columns { display: grid; gap: 22px; align-items: start; }
+	.columns { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; align-items: start; }
 	:global(.native) .columns { grid-template-columns: minmax(0, 1fr); }
 	.import { display: grid; gap: 14px; padding: 16px; background: var(--g-card-glow), var(--surface-2); }
 	form { display: grid; gap: 11px; }
@@ -295,14 +295,14 @@
 	.game { min-height: 70px; padding: 11px 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 	.game + .game { border-top: 1px solid var(--stroke); }
 	@media (hover: hover) and (pointer: fine) { .game:hover b { color: var(--accent-hi); } }
-	.game div { min-width: 0; }
+	.game div { min-width: 0; flex: 1; }
 	.game b, .metadata, .opening { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 	.metadata, .opening, .empty { color: var(--text-2); font-size: 13px; }
 	.opening { font-size: 12px; }
 	.chip { flex-shrink: 0; }
 	.empty { padding: 14px; }
 	@media (min-width: 780px) {
-		.columns { grid-template-columns: minmax(300px, 370px) 1fr; gap: 28px; }
+		.columns { grid-template-columns: minmax(300px, 370px) minmax(0, 1fr); gap: 28px; }
 		.entries { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 	}
 	@media (min-width: 1024px) {
