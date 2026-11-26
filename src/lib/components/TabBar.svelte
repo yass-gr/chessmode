@@ -2,18 +2,25 @@
 	import { page } from '$app/state';
 	import { BookOpen, Target, Zap, LineChart, UserRound } from '@lucide/svelte';
 
+	/** `/` matches only the home page. Every other prefix matches that path and its children. */
 	const tabs = [
-		{ href: '/', label: 'Learn', match: (p: string) => p === '/' || p.startsWith('/course') || p.startsWith('/learn') || p.startsWith('/quiz'), Icon: BookOpen },
-		{ href: '/practice', label: 'Practice', match: (p: string) => p.startsWith('/practice'), Icon: Target },
-		{ href: '/drill', label: 'Drill', match: (p: string) => p.startsWith('/drill'), Icon: Zap },
-		{ href: '/matches', label: 'Matches', match: (p: string) => p.startsWith('/matches') || p.startsWith('/review') || p.startsWith('/explorer') || p.startsWith('/analysis') || p.startsWith('/opening-review'), Icon: LineChart },
-		{ href: '/you', label: 'You', match: (p: string) => p.startsWith('/you'), Icon: UserRound }
+		{ href: '/', label: 'Learn', prefixes: ['/', '/course', '/courses', '/learn', '/quiz', '/onboarding', '/create', '/books', '/community'], Icon: BookOpen },
+		{ href: '/practice', label: 'Practice', prefixes: ['/practice', '/puzzles'], Icon: Target },
+		{ href: '/drill', label: 'Drill', prefixes: ['/drill', '/arena', '/bots', '/endgames'], Icon: Zap },
+		{ href: '/matches', label: 'Matches', prefixes: ['/matches', '/review', '/explorer', '/analysis', '/opening-review'], Icon: LineChart },
+		{ href: '/you', label: 'You', prefixes: ['/you'], Icon: UserRound }
 	];
+
+	const path = $derived(page.url.pathname);
+
+	function owns(prefixes: string[], pathname: string) {
+		return prefixes.some((prefix) => prefix === '/' ? pathname === '/' : pathname === prefix || pathname.startsWith(prefix + '/'));
+	}
 </script>
 
 <nav class="tabbar" aria-label="Main">
 	{#each tabs as t (t.href)}
-		{@const on = t.match(page.url.pathname)}
+		{@const on = owns(t.prefixes, path)}
 		<a href={t.href} class:on aria-label={t.label} aria-current={on ? 'page' : undefined}>
 			<span class="highlight" aria-hidden="true"></span>
 			<t.Icon size={20} stroke-width={1.75} />
