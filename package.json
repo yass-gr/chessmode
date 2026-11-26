@@ -18,10 +18,12 @@
 		"validate:courses": "for f in src/lib/courses/*.json; do node scripts/validate-course.mjs $f || exit 1; done",
 		"cap:sync": "vite build && cap sync",
 		"android:run": "npm run cap:sync && cap run android",
-		"android:build": "npm run cap:sync && cd android && ./gradlew assembleDebug"
+		"android:build": "npm run cap:sync && cd android && ./gradlew assembleDebug",
+		"test:e2e": "playwright test"
 	},
 	"devDependencies": {
 		"@capacitor/cli": "8.6.3",
+		"@playwright/test": "1.65.1",
 		"@sveltejs/adapter-static": "^4.0.1",
 		"@sveltejs/kit": "^3.2.0",
 		"@sveltejs/vite-plugin-svelte": "^7.3.1",
