@@ -143,7 +143,7 @@ export interface BuiltCourse {
 }
 
 /** One line per leaf of the tree, keeping the first student move wherever the PGN offers several. */
-export function buildCourse(tree: TreeNode, options: { id: string; name: string; side: Color }): BuiltCourse {
+export function buildCourse(tree: TreeNode, options: { id: string; name: string; side: Color; mainLine?: string }): BuiltCourse {
 	const lines: { id: string; name: string; pgn: string }[] = [];
 	const conflicts: string[] = [];
 
@@ -183,7 +183,7 @@ export function buildCourse(tree: TreeNode, options: { id: string; name: string;
 				return `${number}${e.san}${note}`;
 			})
 			.join(' ');
-		const name = split < 0 ? 'Main line' : label(path.slice(0, split + 2), split);
+		const name = split < 0 ? (options.mainLine ?? 'Main line') : label(path.slice(0, split + 2), split);
 		return { id: `line-${index + 1}`, name, pgn };
 	}
 
@@ -226,7 +226,7 @@ export function buildPgnCourse(pgn: string, options: { id: string; name: string;
 	const conflicts: string[] = [];
 	let serial = 0;
 	for (const [name, group] of groups) {
-		const result = buildCourse(readPgnTree(group.map((game) => `[Event "game"]\n\n${game.movetext}`).join('\n\n')).tree, options);
+		const result = buildCourse(readPgnTree(group.map((game) => `[Event "game"]\n\n${game.movetext}`).join('\n\n')).tree, { ...options, mainLine: name });
 		base ??= result.file;
 		conflicts.push(...result.conflicts.map((conflict) => `${name}: ${conflict}`));
 		const built = result.file.chapters[0].lines;
