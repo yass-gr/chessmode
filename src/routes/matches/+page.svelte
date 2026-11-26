@@ -267,6 +267,7 @@
 	h2 { font-size: 17px; letter-spacing: -.02em; }
 	h2 span { margin-left: 6px; color: var(--text-2); font: 12px var(--mono); }
 	.columns { display: grid; gap: 22px; align-items: start; }
+	:global(.native) .columns { grid-template-columns: minmax(0, 1fr); }
 	.import { display: grid; gap: 14px; padding: 16px; background: var(--g-card-glow), var(--surface-2); }
 	form { display: grid; gap: 11px; }
 	summary {
