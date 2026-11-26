@@ -144,7 +144,8 @@
 
 <svelte:head><title>You · Chessmode</title></svelte:head>
 
-<main class="page">
+<main class="page profile">
+	<div>
 	<section class="hero">
 		<img src="/img/flame.webp" alt="" />
 		<div class="big">{current}</div>
@@ -212,6 +213,8 @@
 		</div>
 	{/if}
 
+	</div>
+	<div>
 	<h2 class="label section">Settings</h2>
 	<div class="card list">
 		<a class="setting" href="/onboarding">
@@ -253,6 +256,7 @@
 	</div>
 
 	<p class="about">Chessmode is free and open source (GPL-3.0). Progress stays on this device until you export it.</p>
+	</div>
 </main>
 
 <style>
@@ -445,6 +449,16 @@
 		}
 		.tile:last-child:nth-child(odd) {
 			grid-column: auto;
+		}
+	}
+	@media (min-width: 1024px) {
+		main.page {
+			max-width: 1200px;
+		}
+		.profile {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			gap: 32px;
 		}
 	}
 </style>
