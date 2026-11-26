@@ -76,9 +76,12 @@
 <style>
 	.heat {
 		display: grid;
+		min-width: 0;
 		gap: 10px;
 	}
 	.scroll {
+		min-width: 0;
+		max-width: 100%;
 		overflow-x: auto;
 		overscroll-behavior-x: contain;
 		padding-bottom: 2px;
@@ -90,6 +93,7 @@
 	}
 	.week {
 		display: grid;
+		grid-template-columns: 16px;
 		grid-template-rows: 16px repeat(7, 16px);
 		gap: 3px;
 	}
