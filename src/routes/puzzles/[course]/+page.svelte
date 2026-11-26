@@ -256,7 +256,7 @@
 						<p><b>Not the move.</b> {change ? `Rating ${change > 0 ? '+' : ''}${change}.` : ''} One miss is the whole loss. Find the move, or see it.</p>
 					{:else if attempt.feedback === 'recovered'}
 						<span class="dot good"></span>
-						<p><b>Recovered.</b> You found it after the miss. The rating stays at the loss{change ? ` (${change > 0 ? '+' : ''}${change})` : ''}. A second click does not charge you again.</p>
+						<p><b>Recovered.</b> You found it after a miss. Your rating already counted the miss, so it does not change again.</p>
 					{:else if attempt.feedback === 'failed'}
 						<span class="dot bad"></span><p><b>Solution shown.</b> {theme ? `${theme}. ` : ''}The miss is the only rating change.</p>
 					{:else}
