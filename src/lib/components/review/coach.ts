@@ -10,7 +10,7 @@ const HAPPY: Classification[] = ['best', 'strong', 'good', 'book', 'only'];
 export function coachExpression(phase: CoachPhase, classification?: Classification, retry?: RetryMood): CoachExpression {
 	if (phase === 'loading' || phase === 'followup') return 'thinking';
 	if (phase === 'overview') return 'neutral';
-	if (phase === 'complete') return 'celebrating';
+	if (phase === 'complete') return 'happy';
 	if (phase === 'retry') return retry === 'right' ? 'celebrating' : retry === 'wrong' ? 'encouraging' : 'thinking';
 	if (classification === 'find' || classification === 'sharp') return 'celebrating';
 	if (classification === 'loose' || classification === 'mistake' || classification === 'missed') return 'encouraging';
