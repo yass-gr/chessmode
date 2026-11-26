@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { plural } from '#lib/format.ts';
 	import { courses } from '#lib/courses/index.ts';
 	import { communityShelf } from '#lib/community/shelf.ts';
 
@@ -18,7 +19,7 @@
 		{#each shelf as course (course.id)}
 			<a class="card item" href={course.href}>
 				<div class="copy">
-					<p class="label">{course.side === 'w' ? 'White' : 'Black'} · {course.lines} lines</p>
+					<p class="label">{course.side === 'w' ? 'White' : 'Black'} · {course.lines} {plural(course.lines, 'line')}</p>
 					<h2 class="h-title">{course.name}</h2>
 					<p class="muted">{course.tagline}</p>
 				</div>

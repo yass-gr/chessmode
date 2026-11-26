@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { plural } from '#lib/format.ts';
 	import { seg } from '#lib/components/seg.ts';
 	import { onMount } from 'svelte';
 	import { liveQuery } from 'dexie';
@@ -80,7 +81,7 @@
 				const result = await fetchGames(
 					platform, username, request.signal,
 					(completed, total) => {
-						if (!request.signal.aborted) importProgress = `${completed}/${total} games`;
+						if (!request.signal.aborted) importProgress = `${completed}/${total} ${plural(total, 'game')}`;
 					}
 				);
 				await db.transaction('rw', db.games, db.settings, async () => {

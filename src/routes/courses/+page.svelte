@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { plural } from '#lib/format.ts';
 	import { ChevronLeft, Search } from '@lucide/svelte';
 	import { seg } from '#lib/components/seg.ts';
 	import { onMount } from 'svelte';
@@ -63,7 +64,7 @@
 						<p class="label"><span class="side" class:black={course.side === 'b'}></span>{course.side === 'w' ? 'White' : 'Black'} · {course.level}</p>
 						<h2 class="h-head">{course.name}</h2>
 						<p class="tagline">{course.tagline}</p>
-						<p class="meta">{course.lines.length} lines · {course.chapters.length} chapters</p>
+						<p class="meta">{course.lines.length} {plural(course.lines.length, 'line')} · {course.chapters.length} {plural(course.chapters.length, 'chapter')}</p>
 					</div>
 				</a>
 				<div class="foot">

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { plural } from '#lib/format.ts';
 	import Label from '#lib/components/review/Label.svelte';
 	import { CLASSIFICATIONS } from '#lib/review/classify.ts';
 	import type { Classification, GameRecord, GameReview } from '#lib/review/types.ts';
@@ -21,7 +22,7 @@
 		{#each ['w', 'b'] as color, index}
 			{@const count = index === 0 ? review.white.counts[label] : review.black.counts[label]}
 			{#if index === 1}<span class="label"><Label classification={label} named /></span>{/if}
-			<button type="button" disabled={!count || !onselect} aria-label={`${color === 'w' ? 'White' : 'Black'}: ${count} ${CLASSIFICATIONS[label].label} moves`} onclick={() => jump(label, index === 0 ? 'w' : 'b')}>{count}</button>
+			<button type="button" disabled={!count || !onselect} aria-label={`${color === 'w' ? 'White' : 'Black'}: ${count} ${CLASSIFICATIONS[label].label} ${plural(count, 'move')}`} onclick={() => jump(label, index === 0 ? 'w' : 'b')}>{count}</button>
 		{/each}
 	</div>
 {/snippet}
