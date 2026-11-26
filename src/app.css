@@ -724,11 +724,14 @@ button.chip:active,
 		padding-bottom: 48px;
 	}
 }
-html.native body {
-	padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
-}
 html.native, html.native body {
+	background: var(--bg);
 	overscroll-behavior: none;
+}
+html.native body {
+	/* Clears the status bar and a camera cutout. SystemBars sets the custom property;
+	   env() covers iOS and WebViews that report insets themselves. */
+	padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
 }
 html.native {
 	-webkit-touch-callout: none;
