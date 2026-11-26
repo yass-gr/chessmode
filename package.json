@@ -19,7 +19,7 @@
 		"cap:sync": "vite build && cap sync",
 		"android:run": "npm run cap:sync && cap run android",
 		"android:build": "npm run cap:sync && cd android && ./gradlew assembleDebug",
-		"test:e2e": "playwright test"
+		"test:e2e": "vite build && playwright test"
 	},
 	"devDependencies": {
 		"@capacitor/cli": "8.6.3",

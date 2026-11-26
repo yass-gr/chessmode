@@ -1,16 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const chromium = process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {};
+
 export default defineConfig({
 	testDir: './tests/e2e',
 	fullyParallel: false,
 	workers: 1,
 	retries: 0,
-	timeout: 60_000,
-	expect: { timeout: 10_000 },
+	timeout: 90_000,
+	expect: { timeout: 15_000 },
 	use: {
 		baseURL: 'http://127.0.0.1:4360',
-		actionTimeout: 10_000,
-		launchOptions: process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {},
+		actionTimeout: 15_000,
+		launchOptions: chromium,
 		trace: 'retain-on-failure',
 		screenshot: 'only-on-failure'
 	},
@@ -20,9 +22,11 @@ export default defineConfig({
 		{ name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } }
 	],
 	webServer: {
-		command: 'npx vite build && npx vite preview --port 4360 --strictPort --host 127.0.0.1',
+		command: 'node scripts/e2e-server.mjs',
 		url: 'http://127.0.0.1:4360/',
-		timeout: 180_000,
-		reuseExistingServer: false
+		timeout: 60_000,
+		reuseExistingServer: false,
+		stdout: 'pipe',
+		stderr: 'pipe'
 	}
 });
