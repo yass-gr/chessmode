@@ -50,7 +50,7 @@
 			{#if bot.mascot}
 				<Mascot expression="neutral" size={36} alt="" />
 			{:else}
-				<span class="mark">{bot.initials}</span>
+				<span class="mark" data-bot={bot.id}>{bot.initials}</span>
 			{/if}
 			<div>
 				<strong>{bot.name}</strong>
@@ -113,11 +113,28 @@
 	.mark {
 		display: grid;
 		place-items: center;
+		flex: 0 0 auto;
 		width: 36px;
 		height: 36px;
-		border-radius: 12px;
-		background: var(--surface-3);
-		font-weight: 700;
+		border-radius: 50%;
+		font-size: 14px;
+		font-weight: 600;
+	}
+	.mark[data-bot='pip'] {
+		background: color-mix(in srgb, var(--text-2) 24%, var(--surface-1));
+		color: var(--text);
+	}
+	.mark[data-bot='lark'] {
+		background: color-mix(in srgb, var(--good) 22%, var(--surface-1));
+		color: var(--good);
+	}
+	.mark[data-bot='bram'] {
+		background: color-mix(in srgb, var(--warn) 24%, var(--surface-1));
+		color: var(--warn);
+	}
+	.mark[data-bot='nessa'] {
+		background: color-mix(in srgb, var(--eval-graph-black) 70%, var(--surface-3));
+		color: var(--text);
 	}
 	.turn {
 		margin: 0;
