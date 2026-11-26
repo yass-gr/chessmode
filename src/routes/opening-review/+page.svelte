@@ -67,8 +67,10 @@
 
 <main class="page opening">
 	<header class="top">
-		<a class="back" href="/matches" aria-label="Back to Matches">‹</a>
-		<div>
+		<a class="icon-btn" href="/matches" aria-label="Back to Matches">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+		</a>
+		<div class="titles">
 			<h1>Opening review</h1>
 			<p>Where your saved games left a course. Games stay on this device.</p>
 		</div>
@@ -80,7 +82,7 @@
 			<button type="button" aria-pressed={side === 'w'} onclick={() => (side = 'w')}>White</button>
 			<button type="button" aria-pressed={side === 'b'} onclick={() => (side = 'b')}>Black</button>
 		</div>
-		<div class="courses" role="group" aria-label="Course">
+		<div class="scroll" role="group" aria-label="Course">
 			<button class="chip" class:accent={courseId === ''} type="button" aria-pressed={courseId === ''} onclick={() => (courseId = '')}>All courses</button>
 			{#each list as course (course.id)}
 				<button class="chip" class:accent={courseId === course.id} type="button" aria-pressed={courseId === course.id} onclick={() => (courseId = course.id)}>{course.name}</button>
@@ -102,8 +104,8 @@
 							<p>{summary(row)}</p>
 						</div>
 						<div class="links">
-							<a class="btn sm" href={row.reviewHref}>Full review</a>
-							<a class="btn sm" href={row.positionHref}>Position</a>
+							<a class="btn sm btn-surface" href={row.reviewHref}>Full review</a>
+							<a class="btn sm btn-surface" href={row.positionHref}>Position</a>
 							<a class="btn sm btn-primary" href={trainHref(row, learned.has(row.line))}>{learned.has(row.line) ? 'Drill the line' : 'Learn the line'}</a>
 						</div>
 					</article>
@@ -124,7 +126,7 @@
 							<b>{title(row.gameId)}</b>
 							<p>{row.reason === 'unreadable' ? 'This PGN could not be read.' : 'No course matched this game.'}</p>
 						</div>
-						<a class="btn sm" href={row.reviewHref}>Full review</a>
+						<a class="btn sm btn-surface" href={row.reviewHref}>Full review</a>
 					</article>
 				{/each}
 			</div>
@@ -141,13 +143,17 @@
 	.top {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		margin-bottom: 16px;
+		gap: 12px;
+		padding: 14px 0 16px;
+	}
+	.titles {
+		flex: 1;
+		min-width: 0;
 	}
 	h1 {
-		font-size: clamp(26px, 4vw, 36px);
-		letter-spacing: -0.045em;
-		line-height: 1.1;
+		font-size: 22px;
+		letter-spacing: -0.03em;
+		line-height: 1.15;
 	}
 	.top p,
 	.meta,
@@ -156,32 +162,28 @@
 		color: var(--text-2);
 		font-size: 13px;
 	}
-	.back {
-		display: grid;
-		place-items: center;
-		width: 36px;
-		height: 36px;
-		border-radius: var(--r-pill);
-		background: var(--surface-2);
-		font-size: 22px;
-		line-height: 1;
-	}
-	.filters,
-	.courses {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
+	.top p {
+		line-height: 1.35;
 	}
 	.filters {
+		display: grid;
+		gap: 10px;
 		margin-bottom: 22px;
 	}
-	.chip {
-		cursor: pointer;
+	.scroll {
+		display: flex;
+		gap: 8px;
+		overflow-x: auto;
+		scrollbar-width: none;
+		margin: 0 calc(-1 * var(--gutter));
+		padding: 0 var(--gutter) 2px;
 	}
-	.chip.accent {
-		background: var(--accent-soft);
-		border-color: rgba(255, 107, 44, 0.35);
-		color: var(--accent-hi);
+	.scroll .chip {
+		flex: 0 0 auto;
+		height: 34px;
+		padding: 0 14px;
+		font-size: 13px;
+		cursor: pointer;
 	}
 	section + section {
 		margin-top: 22px;
@@ -197,6 +199,10 @@
 	}
 	.list {
 		padding: 4px 14px;
+	}
+	.list > * {
+		position: relative;
+		z-index: 1;
 	}
 	.row {
 		display: flex;
@@ -219,15 +225,14 @@
 		gap: 8px;
 	}
 	.empty {
+		position: relative;
+		z-index: 1;
 		padding: 14px;
 	}
 	.bad {
 		margin-bottom: 12px;
 		color: var(--bad);
 		font-size: 13px;
-	}
-	.btn.sm {
-		min-height: 36px;
 	}
 	@media (min-width: 800px) {
 		.row {
