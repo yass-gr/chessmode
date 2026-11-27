@@ -2,6 +2,7 @@ import { Chess } from 'chess.js';
 import { posKey, turnOf, type Color, type Fen, type Ply, type San } from '#lib/chess/types.ts';
 import { db } from '#lib/db.ts';
 import { ReviewPool } from '#lib/engine/review-pool.ts';
+import { getEngine } from '#lib/engine/stockfish.ts';
 import { readPgn } from '#lib/import/pgn.ts';
 import { centipawnLoss, estimatedRating, gameAccuracy, lichessWinPercent, moveAccuracy, ratingContext } from '#lib/review/accuracy.ts';
 import { CLASSIFICATIONS, classify } from '#lib/review/classify.ts';
@@ -60,11 +61,13 @@ function terminalScore(fen: Fen): Score | undefined {
 	if (position.isStalemate() || position.isInsufficientMaterial() || position.isDrawByFiftyMoves()) return { cp: 0 };
 }
 
-async function analysePosition(pool: ReviewPool, fen: Fen, index: number, depth: number, signal?: AbortSignal): Promise<{ analysis: PositionAnalysis; score: Score }> {
+async function analysePosition(pool: ReviewPool | undefined, fen: Fen, index: number, depth: number, nodes: number, signal?: AbortSignal): Promise<{ analysis: PositionAnalysis; score: Score }> {
 	signal?.throwIfAborted();
 	const terminal = terminalScore(fen);
 	if (terminal) return { analysis: { fen, depth: 0, lines: [] }, score: terminal };
-	const analysis = await pool.analyse(fen, index, depth, Number(import.meta.env.VITE_REVIEW_NODES) || 300_000, signal);
+	const analysis = pool
+		? await pool.analyse(fen, index, depth, nodes, signal)
+		: await getEngine().analyse(fen, { depth, multiPv: 2, signal });
 	const best = analysis.lines[0];
 	if (!best) throw new Error('Stockfish returned no evaluation for this position.');
 	return { analysis, score: best.score };
@@ -109,67 +112,69 @@ export async function reviewGame(game: GameRecord, opts: ReviewOptions = {}): Pr
 	if (!plies.length) throw new Error('The game has no moves to review.');
 	const book = await openingBook();
 	const moves: MoveReview[] = [];
-	const pool = new ReviewPool();
-	const abortPool = () => pool.dispose();
+	const nodes = Number(import.meta.env.VITE_REVIEW_NODES) || 0;
+	const pool = nodes > 0 ? new ReviewPool() : undefined;
+	const abortPool = () => pool?.dispose();
 	signal?.addEventListener('abort', abortPool, { once: true });
 	try {
-	const positions = [plies[0].fenBefore, ...plies.map(move => move.fenAfter)].map((fen, index) =>
-		analysePosition(pool, fen, index, depth, signal));
-	// Jobs can finish out of order; attach rejection handlers until their turn is consumed.
-	for (const position of positions) void position.catch(() => {});
-	let before = await positions[0];
-	const initialScore = before.score;
-	const win = [lichessWinPercent(initialScore, plies[0].color)];
-	let namedOpening: GameReview['opening'];
-	let inBook = true;
+		signal?.throwIfAborted();
+		const positions = [plies[0].fenBefore, ...plies.map(move => move.fenAfter)].map((fen, index) =>
+			analysePosition(pool, fen, index, depth, nodes, signal));
+		// Jobs can finish out of order; attach rejection handlers until their turn is consumed.
+		for (const position of positions) void position.catch(() => {});
+		let before = await positions[0];
+		const initialScore = before.score;
+		const win = [lichessWinPercent(initialScore, plies[0].color)];
+		let namedOpening: GameReview['opening'];
+		let inBook = true;
 
-	const report = () => onProgress?.({
-		ply: moves.length, total: plies.length, moves: [...moves], win: [...win],
-		initialScore, opening: namedOpening ?? game.opening
-	});
-	report();
-
-	for (const [index, move] of plies.entries()) {
-		const preferred = before.analysis.lines[0];
-		if (!preferred) throw new Error('This PGN continues after the game has ended.');
-		const after = await positions[index + 1];
-		const bookEntry: string | undefined = inBook ? book.get(posKey(move.fenAfter)) : undefined;
-		inBook = bookEntry !== undefined;
-		if (bookEntry) {
-			const [eco, name] = bookEntry.split('|');
-			if (name) namedOpening = { eco, name };
-		}
-		const winBefore = win[index];
-		const winAfter = lichessWinPercent(after.score, turnOf(move.fenAfter));
-		const best = {
-			uci: preferred.pv[0], pv: preferred.pv, score: preferred.score,
-			san: new Chess(move.fenBefore).move(preferred.pv[0]).san as San
-		};
-		const reviewed = {
-			...move, ply: index + 1, best, scoreAfter: after.score, winBefore, winAfter,
-			accuracy: move.color === 'w' ? moveAccuracy(winBefore, winAfter) : moveAccuracy(100 - winBefore, 100 - winAfter),
-			...classify({ move, before: before.analysis, scoreAfter: after.score, previous: moves.at(-1), inBook }),
-			alternatives: before.analysis.lines
-		};
-		moves.push({
-			...reviewed,
-			explanation: explain(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name),
-			branches: buildBranches(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name, !inBook && index > 0 && moves.at(-1)?.classification === 'book')
+		const report = () => onProgress?.({
+			ply: moves.length, total: plies.length, moves: [...moves], win: [...win],
+			initialScore, opening: namedOpening ?? game.opening
 		});
-		win.push(winAfter);
-		before = after;
 		report();
-	}
 
-	signal?.throwIfAborted();
-	const review: GameReview = {
-		gameId: game.id, depth, opening: namedOpening ?? game.opening, moves,
-		white: summarize(moves, win, 'w'), black: summarize(moves, win, 'b')
-	};
-	await db.reviews.put({ ...review, key });
-	return review;
+		for (const [index, move] of plies.entries()) {
+			const preferred = before.analysis.lines[0];
+			if (!preferred) throw new Error('This PGN continues after the game has ended.');
+			const after = await positions[index + 1];
+			const bookEntry: string | undefined = inBook ? book.get(posKey(move.fenAfter)) : undefined;
+			inBook = bookEntry !== undefined;
+			if (bookEntry) {
+				const [eco, name] = bookEntry.split('|');
+				if (name) namedOpening = { eco, name };
+			}
+			const winBefore = win[index];
+			const winAfter = lichessWinPercent(after.score, turnOf(move.fenAfter));
+			const best = {
+				uci: preferred.pv[0], pv: preferred.pv, score: preferred.score,
+				san: new Chess(move.fenBefore).move(preferred.pv[0]).san as San
+			};
+			const reviewed = {
+				...move, ply: index + 1, best, scoreAfter: after.score, winBefore, winAfter,
+				accuracy: move.color === 'w' ? moveAccuracy(winBefore, winAfter) : moveAccuracy(100 - winBefore, 100 - winAfter),
+				...classify({ move, before: before.analysis, scoreAfter: after.score, previous: moves.at(-1), inBook }),
+				alternatives: before.analysis.lines
+			};
+			moves.push({
+				...reviewed,
+				explanation: explain(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name),
+				branches: buildBranches(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name, !inBook && index > 0 && moves.at(-1)?.classification === 'book')
+			});
+			win.push(winAfter);
+			before = after;
+			report();
+		}
+
+		signal?.throwIfAborted();
+		const review: GameReview = {
+			gameId: game.id, depth, opening: namedOpening ?? game.opening, moves,
+			white: summarize(moves, win, 'w'), black: summarize(moves, win, 'b')
+		};
+		await db.reviews.put({ ...review, key });
+		return review;
 	} finally {
 		signal?.removeEventListener('abort', abortPool);
-		pool.dispose();
+		pool?.dispose();
 	}
 }
