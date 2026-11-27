@@ -33,6 +33,8 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: ''
       - name: Build signed APK
         working-directory: android
         env:
