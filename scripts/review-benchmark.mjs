@@ -11,6 +11,7 @@ try {
   const page = await context.newPage();
   await page.addInitScript(() => {
    window.benchmarkCommands = [];
+   window.addEventListener('review-preview', event => { window.benchmarkPreview = { review: event.detail, at: performance.now() }; });
    const post = Worker.prototype.postMessage;
    Worker.prototype.postMessage = function (message, ...args) {
     if (typeof message === 'string' && /^(setoption|go )/.test(message)) window.benchmarkCommands.push(message);
@@ -21,7 +22,7 @@ try {
   const environment = await page.evaluate(() => ({ isolated: crossOriginIsolated, hardwareConcurrency: navigator.hardwareConcurrency }));
   await page.getByText('Paste a PGN').click();
   await page.getByRole('textbox', { name: 'Game PGN' }).fill(pgn);
-  const start = performance.now();
+  const start = await page.evaluate(() => performance.now());
   await page.getByRole('button', { name: 'Review PGN' }).click();
   await page.waitForURL('**/review/**');
   const review = await page.evaluate(async () => {
@@ -34,9 +35,11 @@ try {
    }
    throw new Error('Review did not complete within five minutes');
   });
-  const ms = Math.round(performance.now() - start);
+  const end = await page.evaluate(() => performance.now());
+  const preview = await page.evaluate(() => window.benchmarkPreview);
+  const ms = Math.round(end - start);
   const commands = await page.evaluate(() => window.benchmarkCommands);
-  results.push({ game: index + 1, ms, environment, commands, review });
+  results.push({ game: index + 1, ms, previewMs: preview ? Math.round(preview.at - start) : undefined, preview: preview?.review, environment, commands, review });
   await writeFile(process.argv[2] ?? 'tests/fixtures/review-baseline.json', JSON.stringify(results, null, 2) + '\n');
   console.error(`game ${index + 1}/${games.length}: ${ms} ms`);
   await context.close();

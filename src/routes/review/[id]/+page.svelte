@@ -49,6 +49,7 @@
 	let concluded = $state(false);
 	let promo = $state<string | undefined>();
 	let status = $state('');
+	let refining = $state<number>();
 	let error = $state('');
 	let analysis: AbortController | undefined;
 	let retryAbort: AbortController | undefined;
@@ -226,6 +227,7 @@
 		progress = undefined;
 		error = '';
 		status = '';
+		refining = undefined;
 		screen = 'loading';
 		fading = false;
 		concluded = false;
@@ -342,6 +344,7 @@
 		progress = undefined;
 		error = '';
 		status = '';
+		refining = undefined;
 		try {
 			const cached = await db.reviews.get(reviewCacheKey(game.id, chosen));
 			if (run.signal.aborted) return;
@@ -353,13 +356,26 @@
 			}
 			const result = await reviewGame(game, {
 				depth: chosen, plies: $state.snapshot(plies), signal: run.signal,
-				onProgress: (value) => { if (!run.signal.aborted) progress = value; }
+				onProgress: (value) => { if (!run.signal.aborted) progress = value; },
+				onReview: (value, completed, total) => {
+					if (run.signal.aborted) return;
+					review = value;
+					if (import.meta.env.VITE_REVIEW_BENCHMARK && completed === 0) window.dispatchEvent(new CustomEvent('review-preview', { detail: value }));
+					progress = progressFrom(value);
+					refining = Math.round(completed / total * 100);
+					if (screen === 'loading') revealOverview();
+				}
 			});
 			if (run.signal.aborted) return;
 			review = result;
-			revealOverview();
+			progress = progressFrom(result);
+			refining = undefined;
+			if (screen === 'loading') revealOverview();
 		} catch (cause) {
-			if (!run.signal.aborted) error = cause instanceof Error ? cause.message : 'Analysis could not finish.';
+			if (!run.signal.aborted) {
+				refining = undefined;
+				error = cause instanceof Error ? cause.message : 'Analysis could not finish.';
+			}
 		}
 	}
 
@@ -790,6 +806,7 @@
 				{#if review && screen !== 'loading'}
 					<div class="panel-head">
 						{@render coachBubble(screen === 'review' ? 'compact' : 'large')}
+						{#if refining !== undefined}<span class="eyeline" role="status">Refining analysis · {refining}%</span>{/if}
 					</div>
 				{/if}
 
