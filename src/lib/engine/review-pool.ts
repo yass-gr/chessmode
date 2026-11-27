@@ -12,6 +12,7 @@ export function reviewWorkerCount(): number {
 export class ReviewPool {
 	private engines: Engine[];
 	private queues: Promise<void>[];
+	private closed = false;
 
 	constructor(count = reviewWorkerCount()) {
 		this.engines = Array.from({ length: count }, () => createReviewEngine());
@@ -22,10 +23,12 @@ export class ReviewPool {
 		const slot = index % this.engines.length;
 		const job = this.queues[slot].then(async () => {
 			signal?.throwIfAborted();
+			if (this.closed) throw new DOMException('Review pool was closed.', 'AbortError');
 			try {
 				return await this.engines[slot].analyse(fen, { depth, nodes, multiPv: 2, signal });
 			} catch (error) {
-				signal?.throwIfAborted();
+			signal?.throwIfAborted();
+				if (this.closed) throw error;
 				this.engines[slot].dispose();
 				this.engines[slot] = createReviewEngine();
 				return this.engines[slot].analyse(fen, { depth, nodes, multiPv: 2, signal });
@@ -36,6 +39,7 @@ export class ReviewPool {
 	}
 
 	dispose() {
+		this.closed = true;
 		for (const engine of this.engines) engine.dispose();
 	}
 }
