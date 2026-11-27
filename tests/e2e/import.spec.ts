@@ -26,7 +26,7 @@ test('import Chess.com games', async ({ page }) => {
 	await page.goto('/matches');
 	await page.getByRole('button', { name: 'Chess.com' }).click();
 	await page.getByRole('textbox', { name: 'Username' }).fill('Hikaru');
-	await page.getByRole('button', { name: 'Import recent games' }).click();
+	await page.getByRole('button', { name: 'Import last 50 games' }).click();
 	await expect(page.getByRole('status')).toContainText(/Imported \d+ standard games/);
 	await expect(page.getByRole('link', { name: /vs\./ }).first()).toBeVisible();
 	await expect(page.getByText(/Pirc Defense Classical Variation/).first()).toBeVisible();

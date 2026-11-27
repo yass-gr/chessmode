@@ -72,7 +72,7 @@ export function parseArchives(value: unknown, username: string) {
 	const prefix = 'https://api.chess.com/pub/player/' + username.toLowerCase() + '/games/';
 	return list.filter((url): url is string => typeof url === 'string'
 		&& url.toLowerCase().startsWith(prefix) && /^\d{4}\/\d{2}$/.test(url.slice(prefix.length)))
-		.sort().slice(-2);
+		.sort().slice(-2).reverse();
 }
 
 export function parseArchiveGames(value: unknown, username: string, importedAt: number) {
@@ -89,17 +89,21 @@ export async function parseArchiveGamesAsync(
 	username: string,
 	importedAt: number,
 	signal: AbortSignal,
-	onProgress?: (completed: number, total: number) => void
+	onProgress?: (completed: number, total: number) => void,
+	limit = 50,
+	completed = 0
 ) {
 	const games = object(value).games;
 	if (!Array.isArray(games)) throw new Error('Chess.com returned an invalid game archive.');
+	const selected = games.filter(game => object(game).rules === 'chess')
+		.sort((a, b) => (number(object(b).end_time) ?? 0) - (number(object(a).end_time) ?? 0)).slice(0, limit);
 	const parsed: GameRecord[] = [];
-	for (let index = 0; index < games.length; index++) {
+	for (let index = 0; index < selected.length; index++) {
 		signal.throwIfAborted();
-		const game = parseChesscomGame(games[index], username, importedAt);
+		const game = parseChesscomGame(selected[index], username, importedAt);
 		if (game) parsed.push(game);
-		if (index % 10 === 9 || index === games.length - 1) onProgress?.(index + 1, games.length);
-		if (index < games.length - 1) await new Promise<void>(resolve => setTimeout(resolve, 0));
+		if (index % 10 === 9 || index === selected.length - 1) onProgress?.(completed + index + 1, 50);
+		if (index < selected.length - 1) await new Promise<void>(resolve => setTimeout(resolve, 0));
 	}
 	return parsed;
 }
