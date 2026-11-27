@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getCourse } from '#lib/courses/index.ts';
+import { lazyCourse } from '#lib/courses/parse.ts';
 import type { Course } from '#lib/courses/types.ts';
 import { readPgn } from '#lib/import/pgn.ts';
 import { findDeviation } from '#lib/review/repertoire.ts';
@@ -40,6 +41,18 @@ describe('findDeviation', () => {
 		expect(findDeviation([rival, ...courses], game, 'b')?.course.id).toBe('rival');
 		expect(findDeviation([rival, ...courses], game, 'b', new Set(['caro-kann']))?.course.id).toBe('caro-kann');
 		expect(findDeviation(courses, game, 'b', new Set(['jobava-london']))?.course.id).toBe('caro-kann');
+	});
+
+	it('matches every first move in a course with multiple opening replies', () => {
+		const course = lazyCourse({
+			id: 'multiple', name: 'Multiple', side: 'b', level: '', tagline: '', description: '',
+			chapters: [{ id: 'main', name: 'Main', intro: '', lines: [
+				{ id: 'king', name: 'King', pgn: '1. e4 e5 2. Nf3 Nc6' },
+				{ id: 'queen', name: 'Queen', pgn: '1. d4 d5 2. c4 e6' }
+			] }]
+		});
+		expect(findDeviation([course], plies('1. e4 e5 2. Nf3 Nc6'), 'b')?.line).toBe('multiple/king');
+		expect(findDeviation([course], plies('1. d4 d5 2. c4 e6'), 'b')?.line).toBe('multiple/queen');
 	});
 
 	it('ignores games that never entered the opening', () => {

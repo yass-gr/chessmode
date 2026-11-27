@@ -13,21 +13,20 @@
 	});
 	const active = $derived(days.find((day) => day.day === selected) ?? days[days.length - 1]);
 
+	const dayFormat = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+	const monthFormat = new Intl.DateTimeFormat(undefined, { month: 'short' });
+
 	function spoken(day: HeatDay | undefined): string {
 		if (!day) return 'No training yet';
 		const [year, month, date] = day.day.split('-').map(Number);
-		const formatted = new Date(year, month - 1, date, 12).toLocaleDateString(undefined, {
-			day: 'numeric',
-			month: 'long',
-			year: 'numeric'
-		});
+		const formatted = dayFormat.format(new Date(year, month - 1, date, 12));
 		const reps = day.reps === 1 ? '1 rep' : `${day.reps} reps`;
 		return `${formatted}, ${reps}`;
 	}
 
 	function monthName(day: string): string {
 		const [year, month] = day.split('-').map(Number);
-		return new Date(year, month - 1, 1, 12).toLocaleString(undefined, { month: 'short' });
+		return monthFormat.format(new Date(year, month - 1, 1, 12));
 	}
 
 	onMount(() => {
@@ -49,14 +48,15 @@
 				<div class="week">
 					<span class="month">{month === columns[index - 1]?.[0]?.day.slice(0, 7) ? '' : monthName(column[0].day)}</span>
 					{#each column as day, row (day.day)}
+						{@const label = spoken(day)}
 						<button
 							type="button"
 							class="cell band-{day.band}"
 							class:on={active?.day === day.day}
 							style:grid-row={row + 2}
-							aria-label={spoken(day)}
+							aria-label={label}
 							aria-pressed={active?.day === day.day}
-							title={spoken(day)}
+							title={label}
 							onclick={() => (selected = day.day)}
 							onfocus={() => (selected = day.day)}
 						></button>

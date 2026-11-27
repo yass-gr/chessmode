@@ -38,6 +38,11 @@ type Step = Pick<CoursePly, 'san' | 'uci' | 'color' | 'fenBefore' | 'fenAfter'>;
  * and reused; replaying every line from move one made startup grow with the catalog.
  */
 const steps = new Map<string, Step>();
+const starts = new WeakMap<Course, () => Set<string>>();
+
+export function courseMayStartWith(course: Course, uci: string): boolean {
+	return starts.get(course)?.().has(uci) ?? true;
+}
 
 function plies(pgn: string, side: CourseFile['side']): CoursePly[] {
 	let fen = START_FEN;
@@ -103,7 +108,28 @@ export function lazyCourse(file: CourseFile): Course {
 	const lines = chapters.flatMap(chapter => chapter.lines);
 	const course = { id: file.id as CourseId, name: file.name, side: file.side, level: file.level,
 		tagline: file.tagline, description: file.description, chapters, lines };
-	return later(course, 'repertoire', () => buildRepertoire(lines));
+	const result = later(course, 'repertoire', () => buildRepertoire(lines));
+	let firstMoves: Set<string> | undefined;
+	starts.set(result, () => {
+		if (firstMoves) return firstMoves;
+		firstMoves = new Set();
+		const game = new Chess();
+		const moves = new Map<string, string>();
+		for (const chapter of file.chapters) for (const line of chapter.lines) {
+			const san = tokenize(line.pgn)[0]?.san;
+			if (!san) continue;
+			let uci = moves.get(san);
+			if (!uci) {
+				const move = game.move(san);
+				uci = move.from + move.to + (move.promotion ?? '');
+				game.undo();
+				moves.set(san, uci);
+			}
+			firstMoves.add(uci);
+		}
+		return firstMoves;
+	});
+	return result;
 }
 
 /** Replays every move now and rejects conflicting student moves; for data the student supplies. */
