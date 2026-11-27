@@ -158,7 +158,7 @@
 			if (update.score !== null) void settle(update.score);
 			return;
 		}
-		flash = { square: uci.slice(2, 4), glyph: '✓', color: 'var(--good)', label: 'Correct' };
+		flash = { square: uci.slice(2, 4), classification: 'good', label: 'Correct' };
 		later(600, () => (flash = undefined));
 		play(next.kind === 'solved' ? 'complete' : 'correct');
 		if (next.kind !== 'solved') return;
@@ -230,7 +230,7 @@
 					orientation={solver === 'w' ? 'white' : 'black'}
 					movable={game?.kind === 'solving' || game?.kind === 'opponent' ? solver : 'none'}
 					{lastMove}
-					marker={game?.kind === 'wrong' ? { square: game.played.slice(2, 4), glyph: '✕', color: 'var(--bad)', label: 'Wrong' } : flash}
+					marker={game?.kind === 'wrong' ? { square: game.played.slice(2, 4), classification: 'missed', label: 'Wrong' } : flash}
 					theme={preferences.theme}
 					pieces={preferences.pieces}
 					premove={{ session: p.id }}

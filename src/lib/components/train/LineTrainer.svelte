@@ -136,7 +136,7 @@
 	});
 	const marker = $derived<Marker | undefined>(
 		run.view === null && run.state.kind === 'wrong' && wrong
-			? { square: wrong.uci.slice(2, 4), glyph: '?', color: 'var(--bad)', label: 'Not the line' }
+			? { square: wrong.uci.slice(2, 4), classification: 'mistake', label: 'Not the line' }
 			: flash
 	);
 	const lastMove = $derived.by((): [string, string] | undefined => {
@@ -304,7 +304,7 @@
 			cueFor(expected);
 			buzz(12);
 			if (mode !== 'learn') {
-				flash = { square: expected.uci.slice(2, 4), glyph: '✓', color: 'var(--good)', label: 'Correct' };
+				flash = { square: expected.uci.slice(2, 4), classification: 'good', label: 'Correct' };
 				setTimeout(() => (flash = undefined), 700);
 			}
 		}
