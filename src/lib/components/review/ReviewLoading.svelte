@@ -90,7 +90,7 @@
 	.rating { width: 48px; height: 18px; margin-top: 8px; }
 	.count { width: 16px; height: 14px; justify-self: center; }
 	.tally { display: grid; grid-template-columns: 1fr 2.2fr 1fr; align-items: center; min-height: 44px; border-top: 1px solid var(--stroke); }
-	.tally .label { opacity: 0.55; }
+	.tally .label { display: flex; justify-content: center; opacity: 0.55; }
 	.status {
 		color: var(--text-2);
 		font-size: 12px;
