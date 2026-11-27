@@ -7,6 +7,7 @@
 	import type { Course, LineKey } from '#lib/courses/types.ts';
 	import { db, type LineProgress } from '#lib/db.ts';
 	import MiniBoard from '#lib/components/MiniBoard.svelte';
+	import InstallSuggestion from '#lib/components/InstallSuggestion.svelte';
 	import { activeCourse, loadProgress, setActiveCourse, loadDepth, loadLibrary, removeFromLibrary } from '#lib/train/data.ts';
 	import { courseScope, defaultDepth, type DepthChoice } from '#lib/courses/depth.ts';
 	import { normalizeDepth, resumeHref } from '#lib/courses/scope.ts';
@@ -103,6 +104,8 @@
 			</div>
 		{/if}
 	</header>
+
+	<InstallSuggestion />
 
 	{#if loaded && offerSetup}
 		<section class="card setup mobile-setup">
