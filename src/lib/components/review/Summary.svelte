@@ -144,7 +144,8 @@
 		text-align: center;
 	}
 	.tally .label {
-		text-align: left;
+		display: flex;
+		justify-content: center;
 	}
 	.count {
 		padding: 8px;
