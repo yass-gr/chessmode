@@ -91,6 +91,20 @@ function summarize(moves: MoveReview[], win: number[], color: Color): PlayerSumm
 }
 
 type EvaluatedPosition = { analysis: PositionAnalysis; score: Score };
+
+export function criticalPositions(moves: readonly MoveReview[]): number[] {
+	const candidates = new Set(['find', 'sharp', 'only', 'missed', 'mistake', 'blunder']);
+	const indices = new Set<number>();
+	for (const [index, move] of moves.entries()) {
+		if (move.classification === 'book') continue;
+		if (move.uci !== move.best.uci || move.loss >= 0.05 || candidates.has(move.classification)
+			|| Math.abs(move.winAfter - move.winBefore) >= 10) {
+			indices.add(index);
+			indices.add(index + 1);
+		}
+	}
+	return [...indices];
+}
 const previews = new Map<string, EvaluatedPosition[]>();
 
 function buildReview(game: GameRecord, depth: number, plies: readonly Ply[], book: Map<string, string>, positions: EvaluatedPosition[]): GameReview {
@@ -148,34 +162,35 @@ export async function reviewGame(game: GameRecord, opts: ReviewOptions = {}): Pr
 	signal?.addEventListener('abort', abortPool, { once: true });
 	try {
 		const fens = [plies[0].fenBefore, ...plies.map(move => move.fenAfter)];
-		let positions = previews.get(key);
+		const previewKey = key + ':preview';
+		let positions = previews.get(key) ?? (await db.settings.get(previewKey))?.value as EvaluatedPosition[] | undefined;
 		if (!positions) {
 			let done = 0;
 			positions = await Promise.all(fens.map(async (fen, index) => {
-				const result = await analysePosition(pool, fen, index, depth, 150_000, signal);
+				const result = await analysePosition(pool, fen, index, depth, 75_000, signal);
 				done++;
 				onProgress?.({ ply: Math.min(done, plies.length), total: plies.length, moves: [], win: [], initialScore: { cp: 0 } });
 				return result;
 			}));
 			previews.set(key, positions);
+			await db.settings.put({ key: previewKey, value: positions });
 		}
 		let review = buildReview(game, depth, plies, book, positions);
-		onReview?.(review, 0, fens.length);
-		const priority = review.moves.map((move, index) => ({ index, loss: move.loss, candidate: ['find', 'only', 'sharp'].includes(move.classification) }));
-		priority.sort((a, b) => (b.loss >= 0.05 ? 2 : b.candidate ? 1 : 0) - (a.loss >= 0.05 ? 2 : a.candidate ? 1 : 0) || b.loss - a.loss);
-		const order = [...new Set(priority.flatMap(({ index }) => [index, index + 1]))];
+		const order = criticalPositions(review.moves);
+		onReview?.(review, 0, order.length);
 		let refined = 0;
 		await Promise.all(order.map(async (index, slot) => {
-			const result = await analysePosition(pool, fens[index], slot, depth, depth === DEFAULT_DEPTH ? 2_000_000 : 0, signal);
+			const result = await analysePosition(pool, fens[index], slot, depth, depth === DEFAULT_DEPTH ? 400_000 : 0, signal);
 			signal?.throwIfAborted();
 			positions[index] = result;
 			refined++;
 			review = buildReview(game, depth, plies, book, positions);
-			onReview?.(review, refined, fens.length);
+			onReview?.(review, refined, order.length);
 		}));
 		signal?.throwIfAborted();
 		await db.reviews.put({ ...review, key });
 		previews.delete(key);
+		await db.settings.delete(previewKey);
 		return review;
 	} finally {
 		signal?.removeEventListener('abort', abortPool);

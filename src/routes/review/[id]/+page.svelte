@@ -362,7 +362,7 @@
 					review = value;
 					if (import.meta.env.VITE_REVIEW_BENCHMARK && completed === 0) window.dispatchEvent(new CustomEvent('review-preview', { detail: value }));
 					progress = progressFrom(value);
-					refining = Math.round(completed / total * 100);
+					refining = total ? Math.round(completed / total * 100) : undefined;
 					if (screen === 'loading') revealOverview();
 				}
 			});
