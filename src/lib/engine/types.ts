@@ -3,6 +3,7 @@ import type { PositionAnalysis } from '#lib/review/types.ts';
 
 export interface AnalyseOptions {
 	depth: number;
+	nodes?: number;
 	/** Stop the search after this many milliseconds as well as at `depth`. */
 	movetime?: number;
 	multiPv?: number;
