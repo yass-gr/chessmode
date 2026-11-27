@@ -4,19 +4,20 @@ import { readPgn } from '../src/lib/import/pgn.ts';
 import { classify } from '../src/lib/review/classify.ts';
 import { gameAccuracy, lichessWinPercent } from '../src/lib/review/accuracy.ts';
 
-const [resultPath, referencePath = 'tests/fixtures/review-reference.json'] = process.argv.slice(2);
+const [resultPath, referencePath = 'tests/fixtures/review-reference.json', pass = 'final'] = process.argv.slice(2);
 if (!resultPath) throw new Error('Usage: node scripts/review-quality.mjs <results.json> [reference.json]');
 const results = JSON.parse(readFileSync(resultPath, 'utf8'));
 const references = JSON.parse(readFileSync(referencePath, 'utf8'));
 const book = JSON.parse(readFileSync('static/data/openings.json', 'utf8'));
 const serious = new Set(['loose', 'mistake', 'missed', 'blunder', 'find', 'only']);
-let all = 0, allMatch = 0, seriousTotal = 0, seriousMatch = 0;
+let all = 0, allMatch = 0, seriousTotal = 0, seriousMatch = 0, seriousReference = 0;
 const games = [];
 for (const [index, ref] of references.entries()) {
- const result = results[index]?.review;
+ const result = pass === 'preview' ? results[index]?.preview : results[index]?.review;
  const moves = readPgn(ref.pgn).plies;
  if (!result || result.moves.length !== moves.length || ref.positions.length !== moves.length + 1) throw new Error(`Game ${index + 1}: mismatched length`);
  let inBook = true;
+ let gameAllMatch = 0, gameSeriousMatch = 0, gameSeriousTotal = 0, gameSeriousReference = 0;
  let prevRef, prevResult;
  const labels = { reference: [], result: [] };
  const win = { reference: [], result: [] };
@@ -35,13 +36,14 @@ for (const [index, ref] of references.entries()) {
   }
   win.reference.push(lichessWinPercent(after.score, turnOf(move.fenAfter)));
   win.result.push(lichessWinPercent(actual.scoreAfter, turnOf(move.fenAfter)));
-  all++; if (r.classification === b.classification) allMatch++;
+  all++; if (r.classification === b.classification) { allMatch++; gameAllMatch++; }
+  if (serious.has(r.classification)) { seriousReference++; gameSeriousReference++; }
   if (serious.has(r.classification) || serious.has(b.classification)) {
-   seriousTotal++; if (r.classification === b.classification) seriousMatch++;
+   seriousTotal++; gameSeriousTotal++; if (r.classification === b.classification) { seriousMatch++; gameSeriousMatch++; }
   }
  }
  const colors = moves.map(move => move.color);
  const accuracyDelta = Object.fromEntries(['w', 'b'].map(color => [color, gameAccuracy(win.result, colors, color) - gameAccuracy(win.reference, colors, color)]));
- games.push({ game: index + 1, ms: results[index].ms, accuracyDelta, labels });
+ games.push({ game: index + 1, ms: pass === 'preview' ? results[index].previewMs : results[index].ms, serious: { matches: gameSeriousMatch, total: gameSeriousTotal, n: gameSeriousReference, percent: gameSeriousTotal ? 100 * gameSeriousMatch / gameSeriousTotal : null }, all: { matches: gameAllMatch, total: moves.length, n: gameSeriousReference, percent: 100 * gameAllMatch / moves.length }, accuracyDelta, labels });
 }
-console.log(JSON.stringify({ serious: { matches: seriousMatch, total: seriousTotal, percent: 100 * seriousMatch / seriousTotal }, all: { matches: allMatch, total: all, percent: 100 * allMatch / all }, games }, null, 2));
+console.log(JSON.stringify({ serious: { matches: seriousMatch, total: seriousTotal, n: seriousReference, percent: 100 * seriousMatch / seriousTotal }, all: { matches: allMatch, total: all, n: seriousReference, percent: 100 * allMatch / all }, games }, null, 2));

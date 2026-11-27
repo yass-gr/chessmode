@@ -1,0 +1,419 @@
+{
+  "games": [
+    {
+      "game": 1,
+      "previewMs": 8275,
+      "finalMs": 108163,
+      "preview": {
+        "serious": {
+          "percent": 37.5,
+          "n": 6,
+          "runs": [
+            {
+              "matches": 3,
+              "total": 8,
+              "n": 6,
+              "percent": 37.5
+            },
+            {
+              "matches": 3,
+              "total": 8,
+              "n": 6,
+              "percent": 37.5
+            },
+            {
+              "matches": 3,
+              "total": 8,
+              "n": 6,
+              "percent": 37.5
+            }
+          ]
+        },
+        "all": {
+          "percent": 46,
+          "n": 6,
+          "runs": [
+            {
+              "matches": 23,
+              "total": 50,
+              "n": 6,
+              "percent": 46
+            },
+            {
+              "matches": 23,
+              "total": 50,
+              "n": 6,
+              "percent": 46
+            },
+            {
+              "matches": 23,
+              "total": 50,
+              "n": 6,
+              "percent": 46
+            }
+          ]
+        }
+      },
+      "final": {
+        "serious": {
+          "percent": 42.857142857142854,
+          "n": 6,
+          "runs": [
+            {
+              "matches": 3,
+              "total": 7,
+              "n": 6,
+              "percent": 42.857142857142854
+            },
+            {
+              "matches": 3,
+              "total": 7,
+              "n": 6,
+              "percent": 42.857142857142854
+            },
+            {
+              "matches": 3,
+              "total": 7,
+              "n": 6,
+              "percent": 42.857142857142854
+            }
+          ]
+        },
+        "all": {
+          "percent": 58,
+          "n": 6,
+          "runs": [
+            {
+              "matches": 29,
+              "total": 50,
+              "n": 6,
+              "percent": 58
+            },
+            {
+              "matches": 29,
+              "total": 50,
+              "n": 6,
+              "percent": 58
+            },
+            {
+              "matches": 29,
+              "total": 50,
+              "n": 6,
+              "percent": 58
+            }
+          ]
+        }
+      }
+    },
+    {
+      "game": 2,
+      "previewMs": 8635,
+      "finalMs": 105307,
+      "preview": {
+        "serious": {
+          "percent": 27.272727272727273,
+          "n": 22,
+          "runs": [
+            {
+              "matches": 6,
+              "total": 22,
+              "n": 22,
+              "percent": 27.272727272727273
+            },
+            {
+              "matches": 6,
+              "total": 22,
+              "n": 22,
+              "percent": 27.272727272727273
+            },
+            {
+              "matches": 6,
+              "total": 22,
+              "n": 22,
+              "percent": 27.272727272727273
+            }
+          ]
+        },
+        "all": {
+          "percent": 61.666666666666664,
+          "n": 22,
+          "runs": [
+            {
+              "matches": 37,
+              "total": 60,
+              "n": 22,
+              "percent": 61.666666666666664
+            },
+            {
+              "matches": 37,
+              "total": 60,
+              "n": 22,
+              "percent": 61.666666666666664
+            },
+            {
+              "matches": 37,
+              "total": 60,
+              "n": 22,
+              "percent": 61.666666666666664
+            }
+          ]
+        }
+      },
+      "final": {
+        "serious": {
+          "percent": 50,
+          "n": 22,
+          "runs": [
+            {
+              "matches": 11,
+              "total": 22,
+              "n": 22,
+              "percent": 50
+            },
+            {
+              "matches": 11,
+              "total": 22,
+              "n": 22,
+              "percent": 50
+            },
+            {
+              "matches": 11,
+              "total": 22,
+              "n": 22,
+              "percent": 50
+            }
+          ]
+        },
+        "all": {
+          "percent": 66.66666666666667,
+          "n": 22,
+          "runs": [
+            {
+              "matches": 40,
+              "total": 60,
+              "n": 22,
+              "percent": 66.66666666666667
+            },
+            {
+              "matches": 40,
+              "total": 60,
+              "n": 22,
+              "percent": 66.66666666666667
+            },
+            {
+              "matches": 40,
+              "total": 60,
+              "n": 22,
+              "percent": 66.66666666666667
+            }
+          ]
+        }
+      }
+    },
+    {
+      "game": 3,
+      "previewMs": 2771,
+      "finalMs": 14067,
+      "preview": {
+        "serious": {
+          "percent": 100,
+          "n": 1,
+          "runs": [
+            {
+              "matches": 1,
+              "total": 1,
+              "n": 1,
+              "percent": 100
+            },
+            {
+              "matches": 1,
+              "total": 1,
+              "n": 1,
+              "percent": 100
+            },
+            {
+              "matches": 1,
+              "total": 1,
+              "n": 1,
+              "percent": 100
+            }
+          ]
+        },
+        "all": {
+          "percent": 100,
+          "n": 1,
+          "runs": [
+            {
+              "matches": 7,
+              "total": 7,
+              "n": 1,
+              "percent": 100
+            },
+            {
+              "matches": 7,
+              "total": 7,
+              "n": 1,
+              "percent": 100
+            },
+            {
+              "matches": 7,
+              "total": 7,
+              "n": 1,
+              "percent": 100
+            }
+          ]
+        }
+      },
+      "final": {
+        "serious": {
+          "percent": 50,
+          "n": 1,
+          "runs": [
+            {
+              "matches": 1,
+              "total": 2,
+              "n": 1,
+              "percent": 50
+            },
+            {
+              "matches": 1,
+              "total": 2,
+              "n": 1,
+              "percent": 50
+            },
+            {
+              "matches": 1,
+              "total": 2,
+              "n": 1,
+              "percent": 50
+            }
+          ]
+        },
+        "all": {
+          "percent": 71.42857142857143,
+          "n": 1,
+          "runs": [
+            {
+              "matches": 5,
+              "total": 7,
+              "n": 1,
+              "percent": 71.42857142857143
+            },
+            {
+              "matches": 5,
+              "total": 7,
+              "n": 1,
+              "percent": 71.42857142857143
+            },
+            {
+              "matches": 5,
+              "total": 7,
+              "n": 1,
+              "percent": 71.42857142857143
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "preview": {
+    "serious": {
+      "percent": 32.25806451612903,
+      "n": 29,
+      "runs": [
+        {
+          "matches": 10,
+          "total": 31,
+          "n": 29,
+          "percent": 32.25806451612903
+        },
+        {
+          "matches": 10,
+          "total": 31,
+          "n": 29,
+          "percent": 32.25806451612903
+        },
+        {
+          "matches": 10,
+          "total": 31,
+          "n": 29,
+          "percent": 32.25806451612903
+        }
+      ]
+    },
+    "all": {
+      "percent": 57.26495726495727,
+      "n": 29,
+      "runs": [
+        {
+          "matches": 67,
+          "total": 117,
+          "n": 29,
+          "percent": 57.26495726495727
+        },
+        {
+          "matches": 67,
+          "total": 117,
+          "n": 29,
+          "percent": 57.26495726495727
+        },
+        {
+          "matches": 67,
+          "total": 117,
+          "n": 29,
+          "percent": 57.26495726495727
+        }
+      ]
+    }
+  },
+  "final": {
+    "serious": {
+      "percent": 48.38709677419355,
+      "n": 29,
+      "runs": [
+        {
+          "matches": 15,
+          "total": 31,
+          "n": 29,
+          "percent": 48.38709677419355
+        },
+        {
+          "matches": 15,
+          "total": 31,
+          "n": 29,
+          "percent": 48.38709677419355
+        },
+        {
+          "matches": 15,
+          "total": 31,
+          "n": 29,
+          "percent": 48.38709677419355
+        }
+      ]
+    },
+    "all": {
+      "percent": 63.24786324786325,
+      "n": 29,
+      "runs": [
+        {
+          "matches": 74,
+          "total": 117,
+          "n": 29,
+          "percent": 63.24786324786325
+        },
+        {
+          "matches": 74,
+          "total": 117,
+          "n": 29,
+          "percent": 63.24786324786325
+        },
+        {
+          "matches": 74,
+          "total": 117,
+          "n": 29,
+          "percent": 63.24786324786325
+        }
+      ]
+    }
+  }
+}

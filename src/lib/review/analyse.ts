@@ -2,7 +2,6 @@ import { Chess } from 'chess.js';
 import { posKey, turnOf, type Color, type Fen, type Ply, type San } from '#lib/chess/types.ts';
 import { db } from '#lib/db.ts';
 import { ReviewPool } from '#lib/engine/review-pool.ts';
-import { getEngine } from '#lib/engine/stockfish.ts';
 import { readPgn } from '#lib/import/pgn.ts';
 import { centipawnLoss, estimatedRating, gameAccuracy, lichessWinPercent, moveAccuracy, ratingContext } from '#lib/review/accuracy.ts';
 import { CLASSIFICATIONS, classify } from '#lib/review/classify.ts';
@@ -19,7 +18,7 @@ export const DEFAULT_DEPTH: ReviewDepth = 16;
 export const DEPTH_SETTING = 'reviewDepth';
 
 export function reviewCacheKey(gameId: string, depth: number) {
-	return gameId + ':' + depth + ':v3';
+	return gameId + ':' + depth + ':v4';
 }
 
 export interface ReviewProgress {
@@ -36,6 +35,7 @@ export interface ReviewOptions {
 	plies?: readonly Ply[];
 	signal?: AbortSignal;
 	onProgress?: (progress: ReviewProgress) => void;
+	onReview?: (review: GameReview, refined: number, total: number) => void;
 }
 
 let openings: Promise<Map<string, string>> | undefined;
@@ -61,13 +61,11 @@ function terminalScore(fen: Fen): Score | undefined {
 	if (position.isStalemate() || position.isInsufficientMaterial() || position.isDrawByFiftyMoves()) return { cp: 0 };
 }
 
-async function analysePosition(pool: ReviewPool | undefined, fen: Fen, index: number, depth: number, nodes: number, signal?: AbortSignal): Promise<{ analysis: PositionAnalysis; score: Score }> {
+async function analysePosition(pool: ReviewPool, fen: Fen, index: number, depth: number, nodes: number, signal?: AbortSignal): Promise<{ analysis: PositionAnalysis; score: Score }> {
 	signal?.throwIfAborted();
 	const terminal = terminalScore(fen);
 	if (terminal) return { analysis: { fen, depth: 0, lines: [] }, score: terminal };
-	const analysis = pool
-		? await pool.analyse(fen, index, depth, nodes, signal)
-		: await getEngine().analyse(fen, { depth, multiPv: 2, signal });
+	const analysis = await pool.analyse(fen, index, depth, nodes, signal);
 	const best = analysis.lines[0];
 	if (!best) throw new Error('Stockfish returned no evaluation for this position.');
 	return { analysis, score: best.score };
@@ -92,89 +90,95 @@ function summarize(moves: MoveReview[], win: number[], color: Color): PlayerSumm
 	};
 }
 
+type EvaluatedPosition = { analysis: PositionAnalysis; score: Score };
+const previews = new Map<string, EvaluatedPosition[]>();
+
+function buildReview(game: GameRecord, depth: number, plies: readonly Ply[], book: Map<string, string>, positions: EvaluatedPosition[]): GameReview {
+	const moves: MoveReview[] = [];
+	const win = [lichessWinPercent(positions[0].score, plies[0].color)];
+	let namedOpening: GameReview['opening'];
+	let inBook = true;
+	for (const [index, move] of plies.entries()) {
+		const before = positions[index];
+		const after = positions[index + 1];
+		const preferred = before.analysis.lines[0];
+		if (!preferred) throw new Error('This PGN continues after the game has ended.');
+		const bookEntry: string | undefined = inBook ? book.get(posKey(move.fenAfter)) : undefined;
+		inBook = bookEntry !== undefined;
+		if (bookEntry) {
+			const [eco, name] = bookEntry.split('|');
+			if (name) namedOpening = { eco, name };
+		}
+		const winBefore = win[index];
+		const winAfter = lichessWinPercent(after.score, turnOf(move.fenAfter));
+		const best = {
+			uci: preferred.pv[0], pv: preferred.pv, score: preferred.score,
+			san: new Chess(move.fenBefore).move(preferred.pv[0]).san as San
+		};
+		const reviewed = {
+			...move, ply: index + 1, best, scoreAfter: after.score, winBefore, winAfter,
+			accuracy: move.color === 'w' ? moveAccuracy(winBefore, winAfter) : moveAccuracy(100 - winBefore, 100 - winAfter),
+			...classify({ move, before: before.analysis, scoreAfter: after.score, previous: moves.at(-1), inBook }),
+			alternatives: before.analysis.lines
+		};
+		moves.push({
+			...reviewed,
+			explanation: explain(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name),
+			branches: buildBranches(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name, !inBook && index > 0 && moves.at(-1)?.classification === 'book')
+		});
+		win.push(winAfter);
+	}
+	return { gameId: game.id, depth, opening: namedOpening ?? game.opening, moves,
+		white: summarize(moves, win, 'w'), black: summarize(moves, win, 'b') };
+}
+
 export async function reviewGame(game: GameRecord, opts: ReviewOptions = {}): Promise<GameReview> {
-	const { depth = DEFAULT_DEPTH, signal, onProgress } = opts;
+	const { depth = DEFAULT_DEPTH, signal, onProgress, onReview } = opts;
 	signal?.throwIfAborted();
 	const key = reviewCacheKey(game.id, depth);
 	const cached = await db.reviews.get(key);
 	signal?.throwIfAborted();
-	if (cached) {
-		const first = cached.moves[0];
-		if (first) onProgress?.({
-			ply: cached.moves.length, total: cached.moves.length, moves: cached.moves,
-			win: [first.winBefore, ...cached.moves.map(move => move.winAfter)],
-			initialScore: first.best.score, opening: cached.opening
-		});
-		return cached;
-	}
-
+	if (cached) return cached;
 	const plies = opts.plies ?? readPgn(game.pgn).plies;
 	if (!plies.length) throw new Error('The game has no moves to review.');
 	const book = await openingBook();
-	const moves: MoveReview[] = [];
-	const nodes = Number(import.meta.env.VITE_REVIEW_NODES) || 0;
-	const pool = nodes > 0 ? new ReviewPool() : undefined;
-	const abortPool = () => pool?.dispose();
+	signal?.throwIfAborted();
+	const pool = new ReviewPool();
+	const abortPool = () => pool.dispose();
 	signal?.addEventListener('abort', abortPool, { once: true });
 	try {
-		signal?.throwIfAborted();
-		const positions = [plies[0].fenBefore, ...plies.map(move => move.fenAfter)].map((fen, index) =>
-			analysePosition(pool, fen, index, depth, nodes, signal));
-		// Jobs can finish out of order; attach rejection handlers until their turn is consumed.
-		for (const position of positions) void position.catch(() => {});
-		let before = await positions[0];
-		const initialScore = before.score;
-		const win = [lichessWinPercent(initialScore, plies[0].color)];
-		let namedOpening: GameReview['opening'];
-		let inBook = true;
-
-		const report = () => onProgress?.({
-			ply: moves.length, total: plies.length, moves: [...moves], win: [...win],
-			initialScore, opening: namedOpening ?? game.opening
-		});
-		report();
-
-		for (const [index, move] of plies.entries()) {
-			const preferred = before.analysis.lines[0];
-			if (!preferred) throw new Error('This PGN continues after the game has ended.');
-			const after = await positions[index + 1];
-			const bookEntry: string | undefined = inBook ? book.get(posKey(move.fenAfter)) : undefined;
-			inBook = bookEntry !== undefined;
-			if (bookEntry) {
-				const [eco, name] = bookEntry.split('|');
-				if (name) namedOpening = { eco, name };
-			}
-			const winBefore = win[index];
-			const winAfter = lichessWinPercent(after.score, turnOf(move.fenAfter));
-			const best = {
-				uci: preferred.pv[0], pv: preferred.pv, score: preferred.score,
-				san: new Chess(move.fenBefore).move(preferred.pv[0]).san as San
-			};
-			const reviewed = {
-				...move, ply: index + 1, best, scoreAfter: after.score, winBefore, winAfter,
-				accuracy: move.color === 'w' ? moveAccuracy(winBefore, winAfter) : moveAccuracy(100 - winBefore, 100 - winAfter),
-				...classify({ move, before: before.analysis, scoreAfter: after.score, previous: moves.at(-1), inBook }),
-				alternatives: before.analysis.lines
-			};
-			moves.push({
-				...reviewed,
-				explanation: explain(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name),
-				branches: buildBranches(reviewed, after.analysis.lines[0]?.pv ?? [], namedOpening?.name, !inBook && index > 0 && moves.at(-1)?.classification === 'book')
-			});
-			win.push(winAfter);
-			before = after;
-			report();
+		const fens = [plies[0].fenBefore, ...plies.map(move => move.fenAfter)];
+		let positions = previews.get(key);
+		if (!positions) {
+			let done = 0;
+			positions = await Promise.all(fens.map(async (fen, index) => {
+				const result = await analysePosition(pool, fen, index, depth, 150_000, signal);
+				done++;
+				onProgress?.({ ply: Math.min(done, plies.length), total: plies.length, moves: [], win: [], initialScore: { cp: 0 } });
+				return result;
+			}));
+			previews.set(key, positions);
 		}
-
+		let review = buildReview(game, depth, plies, book, positions);
+		onReview?.(review, 0, fens.length);
+		const priority = review.moves.map((move, index) => ({ index, loss: move.loss, candidate: ['find', 'only', 'sharp'].includes(move.classification) }));
+		priority.sort((a, b) => (b.loss >= 0.05 ? 2 : b.candidate ? 1 : 0) - (a.loss >= 0.05 ? 2 : a.candidate ? 1 : 0) || b.loss - a.loss);
+		const order = [...new Set(priority.flatMap(({ index }) => [index, index + 1]))];
+		let refined = 0;
+		await Promise.all(order.map(async (index, slot) => {
+			const result = await analysePosition(pool, fens[index], slot, depth, depth === DEFAULT_DEPTH ? 2_000_000 : 0, signal);
+			signal?.throwIfAborted();
+			positions[index] = result;
+			refined++;
+			review = buildReview(game, depth, plies, book, positions);
+			onReview?.(review, refined, fens.length);
+		}));
 		signal?.throwIfAborted();
-		const review: GameReview = {
-			gameId: game.id, depth, opening: namedOpening ?? game.opening, moves,
-			white: summarize(moves, win, 'w'), black: summarize(moves, win, 'b')
-		};
 		await db.reviews.put({ ...review, key });
+		previews.delete(key);
 		return review;
 	} finally {
 		signal?.removeEventListener('abort', abortPool);
-		pool?.dispose();
+		pool.dispose();
 	}
 }
