@@ -1,5 +1,6 @@
-import { posKey, type Color, type Ply } from '#lib/chess/types.ts';
+import { START_FEN, posKey, type Color, type Ply } from '#lib/chess/types.ts';
 import type { Course, CoursePly, LineKey } from '#lib/courses/types.ts';
+import { courseMayStartWith } from '#lib/courses/parse.ts';
 
 /** Where an imported game stopped following one of the player's courses. `ply` indexes the game's plies. */
 export type Deviation =
@@ -46,6 +47,7 @@ function longest(courses: Course[], plies: Ply[], userColor?: Color): Deviation 
 	let best: Deviation | undefined;
 	for (const course of courses) {
 		if (userColor && course.side !== userColor) continue;
+		if (plies[0] && posKey(plies[0].fenBefore) === posKey(START_FEN) && !courseMayStartWith(course, plies[0].uci)) continue;
 		const found = walk(course, plies);
 		if (found && found.ply > (best?.ply ?? -1)) best = found;
 	}
