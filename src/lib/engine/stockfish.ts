@@ -33,8 +33,8 @@ class Stockfish implements Engine {
 	private queue = Promise.resolve();
 	private multiPv = 1;
 
-	constructor() {
-		const threaded = globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== 'undefined';
+	constructor(private readonly review = false) {
+		const threaded = !review && globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== 'undefined';
 		const build = threaded ? 'stockfish-19-lite' : 'stockfish-19-lite-single';
 		this.worker = new Worker('/stockfish/' + build + '.js');
 		this.worker.onmessage = ({ data }) => {
@@ -56,9 +56,9 @@ class Stockfish implements Engine {
 		try {
 			await this.collect(['uci'], line => line === 'uciok');
 			const options = threaded
-				? ['setoption name Threads value ' + Math.max(1, navigator.hardwareConcurrency - 1)]
+				? ['setoption name Threads value ' + Math.max(1, Math.min(4, navigator.hardwareConcurrency - 1))]
 				: [];
-			await this.collect([...options, 'setoption name Hash value 128', 'isready'], line => line === 'readyok');
+			await this.collect([...options, 'setoption name Hash value ' + (this.review ? 32 : 128), 'isready'], line => line === 'readyok');
 		} finally {
 			clearTimeout(timeout);
 		}
@@ -133,7 +133,7 @@ class Stockfish implements Engine {
 			await this.collect([
 				...options,
 				'position fen ' + fen,
-				goCommand(depth, opts.movetime) + restriction
+				(opts.nodes ? 'go nodes ' + opts.nodes : goCommand(depth, opts.movetime)) + restriction
 			], message => {
 				if (message.startsWith('bestmove ')) {
 					const bestMove = message.split(' ')[1];
@@ -177,4 +177,8 @@ class Stockfish implements Engine {
 let shared: Engine | undefined;
 export function getEngine(): Engine {
 	return shared ??= new Stockfish();
+}
+
+export function createReviewEngine(): Engine {
+	return new Stockfish(true);
 }
