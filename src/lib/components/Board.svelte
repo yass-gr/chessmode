@@ -8,9 +8,7 @@
 	/** A small round badge in the top-right corner of a square, e.g. a move classification. */
 	export interface Marker {
 		square: string;
-		classification?: import('#lib/review/types.ts').Classification;
-		glyph: string;
-		color: string;
+		classification: import('#lib/review/types.ts').Classification;
 		label?: string;
 	}
 </script>
@@ -278,12 +276,10 @@
 	{#if marker && markerPos}
 		<span
 			class="marker"
-			class:badge={!!marker.classification}
 			style:left={markerPos.left}
 			style:top={markerPos.top}
-			style:background={marker.classification ? undefined : marker.color}
 			aria-label={marker.label}
-			title={marker.label}>{#if marker.classification}<LabelIcon classification={marker.classification} size={32} />{:else}{marker.glyph}{/if}</span
+			title={marker.label}><LabelIcon classification={marker.classification} size={32} /></span
 		>
 	{/if}
 </div>
@@ -326,27 +322,17 @@
 	.marker {
 		position: absolute;
 		z-index: 5;
-		width: 32px;
-		min-width: 32px;
+		width: clamp(20px, 5.6%, 36px);
+		min-width: 0;
 		aspect-ratio: 1;
 		transform: translate(-60%, -40%);
 		border-radius: 50%;
 		display: grid;
 		place-items: center;
-		color: #0d0d0e;
-		font: 700 clamp(9px, 1.6vw, 13px) / 1 var(--mono);
-		box-shadow:
-			0 0 0 2px rgba(13, 13, 14, 0.55),
-			0 4px 10px rgba(0, 0, 0, 0.45);
 		pointer-events: none;
 		animation: pop 0.22s var(--ease-out);
 	}
-	.marker.badge {
-		width: clamp(20px, 5.6%, 36px);
-		min-width: 0;
-		box-shadow: none;
-	}
-	.marker.badge :global(svg) {
+	.marker :global(svg) {
 		width: 100%;
 		height: 100%;
 	}

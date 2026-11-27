@@ -152,7 +152,7 @@
 	const marker = $derived.by((): Marker | undefined => {
 		if (!prefs.glyphs || decision.kind !== 'mainline' || !current) return;
 		const info = CLASSIFICATIONS[current.classification];
-		return { square: current.uci.slice(2, 4), classification: current.classification, glyph: info.glyph, color: info.color, label: info.label };
+		return { square: current.uci.slice(2, 4), classification: current.classification, label: info.label };
 	});
 	const arrows = $derived.by((): Arrow[] => {
 		if (decision.kind === 'retry') {
