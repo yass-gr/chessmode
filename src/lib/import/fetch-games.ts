@@ -30,7 +30,8 @@ export async function fetchGames(
 	source: OnlineSource,
 	input: string,
 	signal: AbortSignal,
-	onProgress?: (completed: number, total: number) => void
+	onProgress?: (completed: number, total: number) => void,
+	onDownload?: () => void
 ) {
 	const username = input.trim();
 	if (!/^[\w-]{1,40}$/.test(username)) throw new Error('Enter a valid ' + PLATFORMS[source] + ' username.');
@@ -51,11 +52,13 @@ export async function fetchGames(
 		const archives = await request(url, source, username, signal);
 		const months = parseArchives(await archives.json(), username);
 		for (const month of months) {
+			if (games.length >= 50) break;
+			onDownload?.();
 			const response = await request(month, source, username, signal, { allowMissing: true });
 			if (response.status === 404) missingArchives++;
 			else {
 				const body = await response.json();
-				games.push(...await parseArchiveGamesAsync(body, username, importedAt, signal, onProgress));
+				games.push(...await parseArchiveGamesAsync(body, username, importedAt, signal, onProgress, 50 - games.length, games.length));
 			}
 		}
 		if (missingArchives && missingArchives === months.length) {

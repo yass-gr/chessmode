@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { fetchGames } from '#lib/import/fetch-games.ts';
 import chessMonth from './fixtures/chesscom-month.json';
 import chessArchives from './fixtures/chesscom-archives.json';
 import lichessGames from './fixtures/lichess.ndjson?raw';
@@ -25,7 +26,7 @@ describe('game imports', () => {
 	});
 
 	it('uses the newest two Chess.com archives and keeps standard chess games', () => {
-		expect(parseArchives(chessArchives, 'Hikaru')).toEqual(chessArchives.archives.slice(-2));
+		expect(parseArchives(chessArchives, 'Hikaru')).toEqual(chessArchives.archives.slice(-2).reverse());
 		const games = parseArchiveGames(chessMonth, 'hikaru', 1000);
 		expect(games).toHaveLength(1);
 		expect(games[0]).toMatchObject({
@@ -46,6 +47,23 @@ describe('game imports', () => {
 		const controller = new AbortController();
 		setTimeout(() => controller.abort(), 0);
 		await expect(parseArchiveGamesAsync(value, 'hikaru', 1000, controller.signal)).rejects.toMatchObject({ name: 'AbortError' });
+	});
+
+	it('selects the newest standard games across at most two archives', async () => {
+		const template = chessMonth.games.find(game => game.rules === 'chess')!;
+		const makeGame = (id: number, rules = 'chess') => ({ ...template, rules, end_time: id, url: `https://www.chess.com/game/live/${id}` });
+		const newest = [makeGame(400, 'chess960'), ...Array.from({ length: 30 }, (_, i) => makeGame(200 + i)), makeGame(401, 'bughouse')];
+		const previous = Array.from({ length: 40 }, (_, i) => makeGame(100 + i));
+		const fetchMock = vi.fn(async (url: string | URL | Request) => {
+			const address = String(url);
+			return Response.json(address.endsWith('/archives') ? chessArchives : { games: address.endsWith('/11') ? newest : previous });
+		});
+		vi.stubGlobal('fetch', fetchMock);
+		try {
+			const { games } = await fetchGames('chesscom', 'hikaru', new AbortController().signal);
+			expect(games.map(game => game.id)).toEqual([...Array.from({ length: 30 }, (_, i) => `chesscom-${229 - i}`), ...Array.from({ length: 20 }, (_, i) => `chesscom-${139 - i}`)]);
+			expect(fetchMock.mock.calls.map(([url]) => String(url).slice(-7))).toEqual(['rchives', '2026/11', '2026/10']);
+		} finally { vi.unstubAllGlobals(); }
 	});
 
 	it('parses pasted PGN with annotations and a deterministic identifier', () => {

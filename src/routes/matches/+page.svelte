@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { plural } from '#lib/format.ts';
 	import { seg } from '#lib/components/seg.ts';
 	import { onMount } from 'svelte';
 	import { liveQuery } from 'dexie';
@@ -66,7 +65,7 @@
 		busy = true;
 		error = '';
 		message = '';
-		importProgress = '';
+		importProgress = 'Downloading…';
 		let timedOut = false;
 		let timeout: number | undefined;
 		try {
@@ -81,9 +80,11 @@
 				const result = await fetchGames(
 					platform, username, request.signal,
 					(completed, total) => {
-						if (!request.signal.aborted) importProgress = `${completed}/${total} ${plural(total, 'game')}`;
-					}
+						if (!request.signal.aborted) importProgress = `Importing… ${completed}/${total}`;
+					},
+					() => { if (!request.signal.aborted) importProgress = 'Downloading…'; }
 				);
+				request.signal.throwIfAborted();
 				await db.transaction('rw', db.games, db.settings, async () => {
 					await db.games.bulkPut(result.games);
 					await setSetting('games.username.' + platform, username);
@@ -172,7 +173,7 @@
 				<label class="field">
 					<input aria-label="Username" placeholder={PLATFORMS[source] + ' username'} bind:value={usernames[source]} required disabled={busy} autocapitalize="none" spellcheck={false} />
 				</label>
-				<button class="btn btn-primary block" disabled={busy}>{busy ? importProgress ? 'Importing… ' + importProgress : 'Importing…' : source === 'lichess' ? 'Import last 50 games' : 'Import recent games'}</button>
+				<button class="btn btn-primary block" disabled={busy}>{busy ? importProgress : 'Import last 50 games'}</button>
 			</form>
 			<details>
 				<summary><ChevronRight size={18} stroke-width={1.75} />Paste a PGN</summary>
@@ -184,7 +185,7 @@
 			{#if message}<p class="feedback" role="status">{message}</p>{/if}
 			{#if error}<p class="feedback error" role="alert">{error}</p>{/if}
 		</section>
-		<section aria-labelledby="games-label">
+		<section class="saved" aria-labelledby="games-label">
 			<h2 id="games-label">Saved games <span>{games.length}</span></h2>
 			{#if games.length}
 				<div class="card games">
@@ -206,7 +207,7 @@
 					{/each}
 				</div>
 			{:else}
-				<div class="card empty"><img src="/img/empty/matches.webp" alt="" width="120" height="120" style="object-fit: contain" /><p>Imported games appear here.</p></div>
+				<div class="empty"><img src="/img/empty/matches.webp" alt="" width="120" height="120" style="object-fit: contain" /><p>Imported games appear here.</p></div>
 			{/if}
 		</section>
 	</div>
@@ -267,7 +268,7 @@
 	}
 	h2 { font-size: 17px; letter-spacing: -.02em; }
 	h2 span { margin-left: 6px; color: var(--text-2); font: 12px var(--mono); }
-	.columns { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; align-items: start; }
+	.columns { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; align-items: stretch; }
 	:global(.native) .columns { grid-template-columns: minmax(0, 1fr); }
 	.import { display: grid; gap: 14px; padding: 16px; background: var(--g-card-glow), var(--surface-2); }
 	form { display: grid; gap: 11px; }
@@ -300,7 +301,8 @@
 	.metadata, .opening, .empty { color: var(--text-2); font-size: 13px; }
 	.opening { font-size: 12px; }
 	.chip { flex-shrink: 0; }
-	.empty { padding: 14px; }
+	.saved { display: flex; flex-direction: column; }
+	.empty { flex: 1; min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 	@media (min-width: 780px) {
 		.columns { grid-template-columns: minmax(300px, 370px) minmax(0, 1fr); gap: 28px; }
 		.entries { grid-template-columns: repeat(3, minmax(0, 1fr)); }
